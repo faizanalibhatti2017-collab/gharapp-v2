@@ -6,7 +6,7 @@
     <title>GharApp Pro V2</title>
     
     <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#007bff">
+    <meta name="theme-color" content="#f97316">
     <link rel="apple-touch-icon" href="logo.jpg">
     
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
@@ -15,123 +15,185 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
     
     <style>
-        :root { --primary: #f97316; --secondary: #a855f7; --success: #10b981; --danger: #ef4444; --bg: #0b0f1a; --card-bg: rgba(255, 255, 255, 0.05); }
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #0b0f1a; margin: 0; color: #f1f5f9; padding-bottom: 80px; }
+        :root { 
+            --primary: #f97316; 
+            --secondary: #a855f7; 
+            --success: #10b981; 
+            --danger: #ef4444; 
+            --bg-img: url('bg-image.jpg'); /* Aapki Background Picture */
+        }
 
-        .top-bar { background: #111827; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.1); }
+        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            background: #0b0f1a; 
+            margin: 0; 
+            color: #f1f5f9; 
+            padding-bottom: 80px; 
+            overflow-x: hidden;
+            width: 100%;
+        }
+
+        /* --- Splash Screen --- */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            background: #0b0f1a var(--bg-img) no-repeat center center;
+            background-size: cover;
+            z-index: 10000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.8s ease;
+        }
+        #splash-screen::after {
+            content: "GharApp Loading...";
+            color: white;
+            background: rgba(0,0,0,0.6);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+
+        /* --- Background Overlay Control --- */
+        .app-bg-container {
+            position: fixed;
+            inset: 0;
+            background: var(--bg-img) no-repeat center center;
+            background-size: cover;
+            z-index: -1;
+        }
+        /* Login ke baad 50% transparency layer */
+        .logged-in .app-bg-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: rgba(11, 15, 26, 0.6); /* Overlay layer */
+        }
+
+        /* --- Auth Screen --- */
+        #auth-screen {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .login-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+            width: 100%;
+            max-width: 320px;
+            text-align: center;
+            padding: 25px;
+            border-radius: 20px;
+        }
+
+        /* --- Rest of the UI (From your original) --- */
+        .top-bar { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(5px); padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111827; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
         .nav-btn { color: #94a3b8; background: none; border: none; text-align: center; font-size: 11px; flex: 1; }
         .nav-btn.active { color: var(--primary); }
         .nav-btn i { font-size: 22px; display: block; margin-bottom: 4px; }
 
-        .page { display: none; padding: 15px; }
+        .page { display: none; padding: 15px; position: relative; z-index: 1; }
         .page.active { display: block; }
-        .card { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
-        input, select { width: 100%; padding: 12px; background: #1e293b; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); color: white; margin-bottom: 12px; font-size: 16px; }
+        .card { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(5px); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        input, select { width: 100%; padding: 12px; background: rgba(30, 41, 59, 0.8); border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); color: white; margin-bottom: 12px; font-size: 16px; }
         .btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-weight: bold; }
-        .list-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .list-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
         @media print {
-            body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
-            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash { display: none !important; }
-            .page { display: block !important; padding: 0 !important; }
-            .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; }
-            #ledger-body { display: table !important; width: 100% !important; border-collapse: collapse !important; }
-            .list-item { display: table-row !important; border: 1px solid #ddd !important; background: white !important; }
-            .list-item div { display: table-cell !important; padding: 10px !important; border-bottom: 1px solid #eee !important; }
-            .bill-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
-            .bill-title { font-size: 24px; font-weight: bold; text-transform: uppercase; }
-            #t-bal, #t-inc, #t-exp { color: black !important; font-weight: bold !important; }
+            .no-print, .bottom-nav, .top-bar, .app-bg-container { display: none !important; }
+            body { background: white; color: black; }
+            .page { display: block !important; }
         }
-        .bill-header { display: none; }
     </style>
 </head>
-<body>
+<body id="app-body">
 
-<div id="auth-screen" style="position:fixed; inset:0; background:#0b0f1a; z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px;">
-    <div class="card" style="width:100%; max-width:320px; text-align:center;">
-        <h2 style="color:var(--primary)">GharApp Mobile</h2>
+<div id="splash-screen"></div>
+
+<div class="app-bg-container"></div>
+
+<div id="auth-screen">
+    <div class="login-card">
+        <h2 style="color:var(--primary); margin-bottom:20px;">GharApp Pro</h2>
         <input type="text" id="l-id" placeholder="Username">
         <input type="password" id="l-pass" placeholder="Password">
         <button onclick="login()" class="btn-action">LOGIN</button>
     </div>
 </div>
 
-<div class="top-bar no-print">
-    <b id="user-display" style="color:var(--primary);">User</b>
-    <div style="display:flex; gap:10px;">
-        <select id="sel-month" onchange="renderData()" style="width:85px; margin:0; padding:5px;"></select>
-        <button onclick="logout()" style="background:none; border:none; color:var(--danger); font-size:18px;"><i class="fa fa-power-off"></i></button>
-    </div>
-</div>
-
-<div id="tab-dash" class="page active">
-    <div class="bill-header">
-        <div class="bill-title">GharApp - Transaction Bill</div>
-        <p>User: <span id="print-user"></span> | Report Month: <span id="print-month"></span></p>
-    </div>
-
-    <div class="card" style="text-align:center;">
-        <small style="color:#94a3b8">Balance</small>
-        <h1 id="t-bal" style="margin:5px 0;">0</h1>
-        <div style="display:flex; justify-content:space-around;">
-            <div style="color:var(--success);"><small>Income</small><br><b id="t-inc">0</b></div>
-            <div style="color:var(--danger);"><small>Expense</small><br><b id="t-exp">0</b></div>
+<div id="main-content" style="display:none;">
+    <div class="top-bar no-print">
+        <b id="user-display" style="color:var(--primary);">User</b>
+        <div style="display:flex; gap:10px;">
+            <select id="sel-month" onchange="renderData()" style="width:85px; margin:0; padding:5px;"></select>
+            <button onclick="logout()" style="background:none; border:none; color:var(--danger); font-size:18px;"><i class="fa fa-power-off"></i></button>
         </div>
     </div>
-    
-    <div class="card no-print">
-        <h4 style="margin:0 0 10px 0;">New Entry</h4>
-        <input type="date" id="i-date">
-        <input type="text" id="i-desc" placeholder="Detail">
-        <input type="number" id="i-amt" placeholder="Amount">
-        <select id="i-type">
-            <option value="exp">Expense (-)</option>
-            <option value="inc">Income (+)</option>
-        </select>
-        <button class="btn-action" onclick="addEntry()">SAVE</button>
-    </div>
-    <div id="ledger-body"></div>
-</div>
 
-<div id="tab-gall" class="page">
-    <div id="admin-upload-box" style="display:none;" class="card no-print">
-        <input type="file" id="g-files" multiple>
-        <button class="btn-action" onclick="uploadImages()" style="margin-top:10px;">UPLOAD</button>
+    <div id="tab-dash" class="page active">
+        <div class="card" style="text-align:center;">
+            <small style="color:#94a3b8">Balance</small>
+            <h1 id="t-bal" style="margin:5px 0;">0</h1>
+            <div style="display:flex; justify-content:space-around;">
+                <div style="color:var(--success);"><small>Income</small><br><b id="t-inc">0</b></div>
+                <div style="color:var(--danger);"><small>Expense</small><br><b id="t-exp">0</b></div>
+            </div>
+        </div>
+        
+        <div class="card no-print">
+            <h4 style="margin:0 0 10px 0;">New Entry</h4>
+            <input type="date" id="i-date">
+            <input type="text" id="i-desc" placeholder="Detail">
+            <input type="number" id="i-amt" placeholder="Amount">
+            <select id="i-type">
+                <option value="exp">Expense (-)</option>
+                <option value="inc">Income (+)</option>
+            </select>
+            <button class="btn-action" onclick="addEntry()">SAVE</button>
+        </div>
+        <div id="ledger-body"></div>
     </div>
-    <div id="gallery-body" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
-</div>
 
-<div id="tab-users" class="page">
-    <div class="card no-print">
-        <h3 id="u-form-title" style="margin-top:0;">User Editor</h3>
-        <input type="text" id="u-id" placeholder="User ID">
-        <input type="text" id="u-pass" placeholder="Password">
-        <select id="u-role">
-            <option value="viewer">Viewer</option>
-            <option value="editor">Editor</option>
-            <option value="admin">Admin</option>
-        </select>
-        <button class="btn-action" onclick="saveUser()">UPDATE USER</button>
+    <div id="tab-gall" class="page">
+        <div id="admin-upload-box" style="display:none;" class="card no-print">
+            <input type="file" id="g-files" multiple>
+            <button class="btn-action" onclick="uploadImages()" style="margin-top:10px;">UPLOAD</button>
+        </div>
+        <div id="gallery-body" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
     </div>
-    <div id="user-monitor-list"></div>
-</div>
 
-<nav class="bottom-nav no-print">
-    <button class="nav-btn active" onclick="switchTab('dash', this)"><i class="fa fa-chart-line"></i>Dash</button>
-    <button class="nav-btn" onclick="switchTab('gall', this)"><i class="fa fa-images"></i>Gallery</button>
-    <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab('users', this)"><i class="fa fa-users-cog"></i>Users</button>
-    <button class="nav-btn" onclick="preparePrint()"><i class="fa fa-print"></i>Bill</button>
-</nav>
+    <div id="tab-users" class="page">
+        <div class="card no-print">
+            <h3 id="u-form-title" style="margin-top:0;">User Editor</h3>
+            <input type="text" id="u-id" placeholder="User ID">
+            <input type="text" id="u-pass" placeholder="Password">
+            <select id="u-role">
+                <option value="viewer">Viewer</option>
+                <option value="editor">Editor</option>
+                <option value="admin">Admin</option>
+            </select>
+            <button class="btn-action" onclick="saveUser()">UPDATE USER</button>
+        </div>
+        <div id="user-monitor-list"></div>
+    </div>
+
+    <nav class="bottom-nav no-print">
+        <button class="nav-btn active" onclick="switchTab('dash', this)"><i class="fa fa-chart-line"></i>Dash</button>
+        <button class="nav-btn" onclick="switchTab('gall', this)"><i class="fa fa-images"></i>Gallery</button>
+        <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab('users', this)"><i class="fa fa-users-cog"></i>Users</button>
+        <button class="nav-btn" onclick="window.print()"><i class="fa fa-print"></i>Bill</button>
+    </nav>
+</div>
 
 <script>
-    // Service Worker Registration for PWA
-    if ('serviceWorker' in navigator) {
-        navigator.serviceWorker.register('sw.js')
-        .then(() => console.log("Service Worker Registered"));
-    }
-
+    // --- Firebase & App Logic ---
     const firebaseConfig = {
       apiKey: "AIzaSyD3mKQ8DIgMh6GEm3FV31BfBJ_UeYz6dz0",
       authDomain: "gharapp-c720a.firebaseapp.com",
@@ -146,6 +208,15 @@
 
     let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
 
+    // Splash Screen logic
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            const splash = document.getElementById('splash-screen');
+            splash.style.opacity = '0';
+            setTimeout(() => splash.style.display = 'none', 800);
+        }, 3000); // 3 Seconds
+    });
+
     function login() {
         const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value;
         if(id === "admin" && ps === "123") { authDone("admin", "admin"); return; }
@@ -154,10 +225,17 @@
             else alert("Invalid Details!");
         });
     }
-    function authDone(id, role) { localStorage.setItem('ghUser', id); localStorage.setItem('ghRole', role); location.reload(); }
+
+    function authDone(id, role) { 
+        localStorage.setItem('ghUser', id); 
+        localStorage.setItem('ghRole', role); 
+        location.reload(); 
+    }
 
     function startApp() {
         document.getElementById('auth-screen').style.display = 'none';
+        document.getElementById('main-content').style.display = 'block';
+        document.body.classList.add('logged-in'); // Background transparent karne ke liye
         document.getElementById('user-display').innerText = myID.toUpperCase();
         if(myRole === 'admin') { 
             document.getElementById('admin-nav-item').style.display = 'block';
@@ -167,6 +245,7 @@
         setupDates(); loadData(myID); loadGallery();
     }
 
+    // --- Purane Functions ---
     function switchTab(t, el) {
         document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
@@ -199,12 +278,6 @@
         document.getElementById('t-bal').innerText = (ti-te).toLocaleString();
     }
 
-    function preparePrint() {
-        document.getElementById('print-user').innerText = viewingID.toUpperCase();
-        document.getElementById('print-month').innerText = document.getElementById('sel-month').options[document.getElementById('sel-month').selectedIndex].text;
-        window.print();
-    }
-
     function loadMonitor() {
         db.ref('users').on('value', snap => {
             const list = document.getElementById('user-monitor-list'); list.innerHTML = "";
@@ -215,29 +288,12 @@
                     list.innerHTML += `<div class="card">
                         <div style="display:flex; justify-content:space-between; align-items:center;">
                             <b>${uid.toUpperCase()}</b>
-                            <div>
-                                <i class="fa fa-eye" style="color:var(--success); margin-right:15px;" onclick="loadData('${uid}'); switchTab('dash', document.querySelector('.nav-btn'))"></i>
-                                <i class="fa fa-edit" style="color:var(--secondary); margin-right:15px;" onclick="editUser('${uid}','${udata.pass}','${udata.role}')"></i>
-                                <i class="fa fa-trash" style="color:var(--danger)" onclick="if(confirm('Delete User?')) db.ref('users/${uid}').remove()"></i>
-                            </div>
+                            <div><i class="fa fa-eye" style="color:var(--success); margin-right:15px;" onclick="loadData('${uid}'); switchTab('dash', document.querySelector('.nav-btn'))"></i></div>
                         </div>
-                        <div style="font-size:12px; margin-top:8px; color:#94a3b8">Role: ${udata.role} | Bal: ${(ti-te).toLocaleString()}</div>
                     </div>`;
                 });
             });
         });
-    }
-
-    function editUser(id, pass, role) {
-        document.getElementById('u-id').value = id;
-        document.getElementById('u-pass').value = pass;
-        document.getElementById('u-role').value = role;
-        document.getElementById('u-form-title').innerText = "Edit: " + id.toUpperCase();
-    }
-
-    function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
-        if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); document.getElementById('u-form-title').innerText="User Control"; }); }
     }
 
     function addEntry() {
