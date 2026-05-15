@@ -2,329 +2,101 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Pro V2</title>
-    
-    <link rel="manifest" href="manifest.json">
-    <meta name="theme-color" content="#f97316">
-    <link rel="apple-touch-icon" href="logo.jpg">
-    
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sindhica Academy Gallery</title>
     <style>
-        :root { 
-            --primary: #f97316; 
-            --secondary: #a855f7; 
-            --success: #10b981; 
-            --danger: #ef4444; 
-            --bg-img: url('bg-image.jpg'); /* Aapki Background Picture */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
         }
 
-        * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        body { 
-            background: #0b0f1a; 
-            margin: 0; 
-            color: #f1f5f9; 
-            padding-bottom: 80px; 
-            overflow-x: hidden;
-            width: 100%;
-        }
-
-        /* --- Splash Screen --- */
-        #splash-screen {
-            position: fixed;
-            inset: 0;
-            background: #0b0f1a var(--bg-img) no-repeat center center;
+        body {
+            background: #2c3e50 url('https://img.freepik.com/free-vector/wave-liquid-background-abstract-vibrant-poster-web-element_41901-2696.jpg') no-repeat center center fixed;
             background-size: cover;
-            z-index: 10000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.8s ease;
-        }
-        #splash-screen::after {
-            content: "GharApp Loading...";
-            color: white;
-            background: rgba(0,0,0,0.6);
-            padding: 10px 20px;
-            border-radius: 20px;
-            font-weight: bold;
-        }
-
-        /* --- Background Overlay Control --- */
-        .app-bg-container {
-            position: fixed;
-            inset: 0;
-            background: var(--bg-img) no-repeat center center;
-            background-size: cover;
-            z-index: -1;
-        }
-        /* Login ke baad 50% transparency layer */
-        .logged-in .app-bg-container::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: rgba(11, 15, 26, 0.6); /* Overlay layer */
-        }
-
-        /* --- Auth Screen --- */
-        #auth-screen {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            min-height: 100vh;
             padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
         }
-        .login-card {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.2);
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
             width: 100%;
-            max-width: 320px;
-            text-align: center;
-            padding: 25px;
-            border-radius: 20px;
+            max-width: 800px;
         }
 
-        /* --- Rest of the UI (From your original) --- */
-        .top-bar { background: rgba(17, 24, 39, 0.8); backdrop-filter: blur(5px); padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.1); }
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111827; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
-        .nav-btn { color: #94a3b8; background: none; border: none; text-align: center; font-size: 11px; flex: 1; }
-        .nav-btn.active { color: var(--primary); }
-        .nav-btn i { font-size: 22px; display: block; margin-bottom: 4px; }
+        .image-frame {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 10px;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
 
-        .page { display: none; padding: 15px; position: relative; z-index: 1; }
-        .page.active { display: block; }
-        .card { background: rgba(255, 255, 255, 0.08); backdrop-filter: blur(5px); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
-        input, select { width: 100%; padding: 12px; background: rgba(30, 41, 59, 0.8); border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); color: white; margin-bottom: 12px; font-size: 16px; }
-        .btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-weight: bold; }
-        .list-item { background: rgba(255,255,255,0.05); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .img-wrapper {
+            width: 100%;
+            height: 120px;
+            border-radius: 10px;
+            overflow: hidden;
+            background: rgba(0,0,0,0.1);
+        }
 
-        @media print {
-            .no-print, .bottom-nav, .top-bar, .app-bg-container { display: none !important; }
-            body { background: white; color: black; }
-            .page { display: block !important; }
+        .img-wrapper img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .frame-label {
+            color: white;
+            margin-top: 8px;
+            font-size: 0.8rem;
+            font-weight: bold;
         }
     </style>
 </head>
-<body id="app-body">
+<body>
 
-<div id="splash-screen"></div>
+    <h2 style="color: white; margin-bottom: 20px;">Local Gallery</h2>
 
-<div class="app-bg-container"></div>
+    <div class="grid-container">
+        <div class="image-frame">
+            <div class="img-wrapper"><img src="./image-1.jpg"></div>
+            <div class="frame-label">IMAGE-1</div>
+        </div>
 
-<div id="auth-screen">
-    <div class="login-card">
-        <h2 style="color:var(--primary); margin-bottom:20px;">GharApp Pro</h2>
-        <input type="text" id="l-id" placeholder="Username">
-        <input type="password" id="l-pass" placeholder="Password">
-        <button onclick="login()" class="btn-action">LOGIN</button>
-    </div>
-</div>
+        <div class="image-frame">
+            <div class="img-wrapper"><img src="./image-4.jpg"></div>
+            <div class="frame-label">IMAGE-4</div>
+        </div>
 
-<div id="main-content" style="display:none;">
-    <div class="top-bar no-print">
-        <b id="user-display" style="color:var(--primary);">User</b>
-        <div style="display:flex; gap:10px;">
-            <select id="sel-month" onchange="renderData()" style="width:85px; margin:0; padding:5px;"></select>
-            <button onclick="logout()" style="background:none; border:none; color:var(--danger); font-size:18px;"><i class="fa fa-power-off"></i></button>
+        <div class="image-frame">
+            <div class="img-wrapper"><img src="./image-6.jpg"></div>
+            <div class="frame-label">IMAGE-6</div>
+        </div>
+
+        <div class="image-frame">
+            <div class="img-wrapper"><img src="./image-7.jpg"></div>
+            <div class="frame-label">IMAGE-7</div>
+        </div>
+
+        <div class="image-frame">
+            <div class="img-wrapper"><img src="./image-8.jpg"></div>
+            <div class="frame-label">IMAGE-8</div>
+        </div>
+
+        <div class="image-frame">
+            <div class="img-wrapper"><img src="./image-9.jpg"></div>
+            <div class="frame-label">IMAGE-9</div>
         </div>
     </div>
 
-    <div id="tab-dash" class="page active">
-        <div class="card" style="text-align:center;">
-            <small style="color:#94a3b8">Balance</small>
-            <h1 id="t-bal" style="margin:5px 0;">0</h1>
-            <div style="display:flex; justify-content:space-around;">
-                <div style="color:var(--success);"><small>Income</small><br><b id="t-inc">0</b></div>
-                <div style="color:var(--danger);"><small>Expense</small><br><b id="t-exp">0</b></div>
-            </div>
-        </div>
-        
-        <div class="card no-print">
-            <h4 style="margin:0 0 10px 0;">New Entry</h4>
-            <input type="date" id="i-date">
-            <input type="text" id="i-desc" placeholder="Detail">
-            <input type="number" id="i-amt" placeholder="Amount">
-            <select id="i-type">
-                <option value="exp">Expense (-)</option>
-                <option value="inc">Income (+)</option>
-            </select>
-            <button class="btn-action" onclick="addEntry()">SAVE</button>
-        </div>
-        <div id="ledger-body"></div>
-    </div>
-
-    <div id="tab-gall" class="page">
-        <div id="admin-upload-box" style="display:none;" class="card no-print">
-            <input type="file" id="g-files" multiple>
-            <button class="btn-action" onclick="uploadImages()" style="margin-top:10px;">UPLOAD</button>
-        </div>
-        <div id="gallery-body" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
-    </div>
-
-    <div id="tab-users" class="page">
-        <div class="card no-print">
-            <h3 id="u-form-title" style="margin-top:0;">User Editor</h3>
-            <input type="text" id="u-id" placeholder="User ID">
-            <input type="text" id="u-pass" placeholder="Password">
-            <select id="u-role">
-                <option value="viewer">Viewer</option>
-                <option value="editor">Editor</option>
-                <option value="admin">Admin</option>
-            </select>
-            <button class="btn-action" onclick="saveUser()">UPDATE USER</button>
-        </div>
-        <div id="user-monitor-list"></div>
-    </div>
-
-    <nav class="bottom-nav no-print">
-        <button class="nav-btn active" onclick="switchTab('dash', this)"><i class="fa fa-chart-line"></i>Dash</button>
-        <button class="nav-btn" onclick="switchTab('gall', this)"><i class="fa fa-images"></i>Gallery</button>
-        <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab('users', this)"><i class="fa fa-users-cog"></i>Users</button>
-        <button class="nav-btn" onclick="window.print()"><i class="fa fa-print"></i>Bill</button>
-    </nav>
-</div>
-
-<script>
-    // --- Firebase & App Logic ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyD3mKQ8DIgMh6GEm3FV31BfBJ_UeYz6dz0",
-      authDomain: "gharapp-c720a.firebaseapp.com",
-      databaseURL: "https://gharapp-c720a-default-rtdb.asia-southeast1.firebasedatabase.app",
-      projectId: "gharapp-c720a",
-      storageBucket: "gharapp-c720a.firebasestorage.app",
-      messagingSenderId: "900171410782",
-      appId: "1:900171410782:web:9d4de47b6cd5b00e3cf3cf"
-    };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database(), storage = firebase.storage();
-
-    let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
-
-    // Splash Screen logic
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            const splash = document.getElementById('splash-screen');
-            splash.style.opacity = '0';
-            setTimeout(() => splash.style.display = 'none', 800);
-        }, 3000); // 3 Seconds
-    });
-
-    function login() {
-        const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value;
-        if(id === "admin" && ps === "123") { authDone("admin", "admin"); return; }
-        db.ref('users/'+id).once('value', snap => {
-            if(snap.exists() && snap.val().pass === ps) authDone(id, snap.val().role);
-            else alert("Invalid Details!");
-        });
-    }
-
-    function authDone(id, role) { 
-        localStorage.setItem('ghUser', id); 
-        localStorage.setItem('ghRole', role); 
-        location.reload(); 
-    }
-
-    function startApp() {
-        document.getElementById('auth-screen').style.display = 'none';
-        document.getElementById('main-content').style.display = 'block';
-        document.body.classList.add('logged-in'); // Background transparent karne ke liye
-        document.getElementById('user-display').innerText = myID.toUpperCase();
-        if(myRole === 'admin') { 
-            document.getElementById('admin-nav-item').style.display = 'block';
-            document.getElementById('admin-upload-box').style.display = 'block';
-            loadMonitor();
-        }
-        setupDates(); loadData(myID); loadGallery();
-    }
-
-    // --- Purane Functions ---
-    function switchTab(t, el) {
-        document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
-        document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
-        document.getElementById('tab-'+t).classList.add('active');
-        if(el) el.classList.add('active');
-    }
-
-    function loadData(id) {
-        viewingID = id;
-        db.ref('data/'+id).on('value', snap => { window.currentData = snap.val() || {}; renderData(); });
-    }
-
-    function renderData() {
-        const m = parseInt(document.getElementById('sel-month').value);
-        const body = document.getElementById('ledger-body'); body.innerHTML = "";
-        let ti=0, te=0;
-        Object.entries(window.currentData).reverse().forEach(([k, r]) => {
-            if(new Date(r.d).getMonth() == m) {
-                const a = parseFloat(r.a)||0;
-                if(r.t === 'inc') ti += a; else te += a;
-                body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.t==='inc'?'var(--success)':'var(--danger)'}">
-                    <div><b>${r.n}</b><br><small>${r.d}</small></div>
-                    <div style="text-align:right"><b>${a.toLocaleString()}</b><br>
-                    <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete?')) db.ref('data/${viewingID}/${k}').remove()"></i></div>
-                </div>`;
-            }
-        });
-        document.getElementById('t-inc').innerText = ti.toLocaleString();
-        document.getElementById('t-exp').innerText = te.toLocaleString();
-        document.getElementById('t-bal').innerText = (ti-te).toLocaleString();
-    }
-
-    function loadMonitor() {
-        db.ref('users').on('value', snap => {
-            const list = document.getElementById('user-monitor-list'); list.innerHTML = "";
-            snap.forEach(c => {
-                const uid = c.key, udata = c.val();
-                db.ref('data/'+uid).once('value', dSnap => {
-                    let ti=0, te=0; dSnap.forEach(e => { const a = parseFloat(e.val().a)||0; if(e.val().t==='inc') ti+=a; else te+=a; });
-                    list.innerHTML += `<div class="card">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <b>${uid.toUpperCase()}</b>
-                            <div><i class="fa fa-eye" style="color:var(--success); margin-right:15px;" onclick="loadData('${uid}'); switchTab('dash', document.querySelector('.nav-btn'))"></i></div>
-                        </div>
-                    </div>`;
-                });
-            });
-        });
-    }
-
-    function addEntry() {
-        const d = document.getElementById('i-date').value, n = document.getElementById('i-desc').value, a = document.getElementById('i-amt').value, t = document.getElementById('i-type').value;
-        if(d && n && a) { db.ref('data/'+viewingID).push({d, n, a, t}); }
-    }
-
-    function setupDates() {
-        const n = new Date(); document.getElementById('i-date').valueAsDate = n;
-        const ms = document.getElementById('sel-month');
-        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
-    }
-
-    function uploadImages() {
-        const files = document.getElementById('g-files').files;
-        if(!files[0]) return;
-        Array.from(files).forEach(file => {
-            const ref = storage.ref('gallery/' + Date.now() + "_" + file.name);
-            ref.put(file).then(snap => snap.ref.getDownloadURL()).then(url => { db.ref('gallery').push({url: url}); });
-        });
-    }
-
-    function loadGallery() {
-        db.ref('gallery').on('value', snap => {
-            const b = document.getElementById('gallery-body'); b.innerHTML = "";
-            snap.forEach(c => { b.innerHTML += `<img src="${c.val().url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px;">`; });
-        });
-    }
-
-    function logout() { localStorage.clear(); location.reload(); }
-    if(myID) startApp();
-</script>
 </body>
 </html>
