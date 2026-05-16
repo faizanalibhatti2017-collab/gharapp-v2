@@ -7,7 +7,6 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
     
     <style>
         :root { --primary: #f97316; --secondary: #a855f7; --success: #10b981; --danger: #ef4444; --bg: #0b0f1a; --card-bg: rgba(255, 255, 255, 0.05); }
@@ -43,6 +42,94 @@
             #t-bal, #t-inc, #t-exp { color: black !important; font-weight: bold !important; }
         }
         .bill-header { display: none; }
+
+        /* FANCY MODERN GALLERY GRID */
+        #gallery-body {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+            padding: 10px 0;
+        }
+
+        .gallery-card {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+            aspect-ratio: 1;
+            background: #1e293b;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            cursor: pointer;
+        }
+
+        .gallery-card:active {
+            transform: scale(0.95);
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        @media (min-width: 768px) {
+            .gallery-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 25px rgba(249, 115, 22, 0.2);
+            }
+            .gallery-card:hover img {
+                transform: scale(1.08);
+            }
+        }
+
+        /* LIGHTBOX MODAL (Full Screen Image Viewer) */
+        .lightbox {
+            position: fixed;
+            inset: 0;
+            background: rgba(11, 15, 26, 0.95);
+            z-index: 10000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+            padding: 20px;
+        }
+
+        .lightbox.active {
+            display: flex;
+        }
+
+        .lightbox-img {
+            max-width: 100%;
+            max-height: 80vh;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox.active .lightbox-img {
+            transform: scale(1);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            border: none;
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
     </style>
 </head>
 <body>
@@ -98,7 +185,7 @@
         <input type="file" id="g-files" multiple>
         <button class="btn-action" onclick="uploadImages()" style="margin-top:10px;">UPLOAD</button>
     </div>
-    <div id="gallery-body" style="display:grid; grid-template-columns:1fr 1fr; gap:10px;"></div>
+    <div id="gallery-body"></div>
 </div>
 
 <div id="tab-users" class="page">
@@ -123,7 +210,13 @@
     <button class="nav-btn" onclick="preparePrint()"><i class="fa fa-print"></i>Bill</button>
 </nav>
 
+<div id="gallery-lightbox" class="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close"><i class="fa fa-times"></i></button>
+    <img id="lightbox-src" class="lightbox-img" src="" alt="Preview">
+</div>
+
 <script>
+    // Firebase Configurations
     const firebaseConfig = {
       apiKey: "AIzaSyD3mKQ8DIgMh6GEm3FV31BfBJ_UeYz6dz0",
       authDomain: "gharapp-c720a.firebaseapp.com",
@@ -134,7 +227,7 @@
       appId: "1:900171410782:web:9d4de47b6cd5b00e3cf3cf"
     };
     firebase.initializeApp(firebaseConfig);
-    const db = firebase.database(), storage = firebase.storage();
+    const db = firebase.database(); 
 
     let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
 
@@ -243,20 +336,92 @@
         ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
     }
 
+    // Imgbb Multi-Image Upload (Fixed API Key String Context)
     function uploadImages() {
+        const apiKey = "4bc93585f36c51bce856edf122795b78"; 
         const files = document.getElementById('g-files').files;
-        if(!files[0]) return;
+        
+        if(!files[0]) {
+            alert("Please select at least one image!");
+            return;
+        }
+        
+        const btn = document.querySelector('#admin-upload-box .btn-action');
+        const originalText = btn.innerText;
+        btn.innerText = "UPLOADING...";
+        btn.disabled = true;
+
+        let uploadCount = 0;
+
         Array.from(files).forEach(file => {
-            const ref = storage.ref('gallery/' + Date.now() + "_" + file.name);
-            ref.put(file).then(snap => snap.ref.getDownloadURL()).then(url => { db.ref('gallery').push({url: url}); });
+            const formData = new FormData();
+            formData.append("image", file);
+
+            fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
+                method: "POST",
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.success) {
+                    const url = data.data.url;
+                    db.ref('gallery').push({url: url});
+                    
+                    uploadCount++;
+                    if(uploadCount === files.length) {
+                        alert("Sabh images kamyabi se upload ho gayin!");
+                        document.getElementById('g-files').value = "";
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                    }
+                } else {
+                    alert("Upload failed: " + data.error.message);
+                    btn.innerText = originalText;
+                    btn.disabled = false;
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                alert("Network error: Upload nahi ho saka.");
+                btn.innerText = originalText;
+                btn.disabled = false;
+            });
         });
     }
 
+    // Modern Grid Gallery Renderer
     function loadGallery() {
         db.ref('gallery').on('value', snap => {
-            const b = document.getElementById('gallery-body'); b.innerHTML = "";
-            snap.forEach(c => { b.innerHTML += `<img src="${c.val().url}" style="width:100%; aspect-ratio:1; object-fit:cover; border-radius:10px;">`; });
+            const b = document.getElementById('gallery-body'); 
+            b.innerHTML = "";
+            
+            if (!snap.exists()) {
+                b.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 40px 0;">
+                    <i class="fa fa-images" style="font-size: 40px; margin-bottom: 10px; color: rgba(255,255,255,0.1);"></i>
+                    <br>No images uploaded yet.
+                </div>`;
+                return;
+            }
+
+            snap.forEach(c => { 
+                const imageUrl = c.val().url;
+                b.innerHTML += `
+                    <div class="gallery-card" onclick="openLightbox('${imageUrl}')">
+                        <img src="${imageUrl}" loading="lazy">
+                    </div>
+                `; 
+            });
         });
+    }
+
+    // Lightbox Modal UI Handling Functions
+    function openLightbox(url) {
+        document.getElementById('lightbox-src').src = url;
+        document.getElementById('gallery-lightbox').classList.add('active');
+    }
+
+    function closeLightbox() {
+        document.getElementById('gallery-lightbox').classList.remove('active');
     }
 
     function logout() { localStorage.clear(); location.reload(); }
