@@ -7,11 +7,26 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
     
     <style>
         :root { --primary: #f97316; --secondary: #a855f7; --success: #10b981; --danger: #ef4444; --bg: #0b0f1a; --card-bg: rgba(255, 255, 255, 0.05); }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        body { background: #0b0f1a; margin: 0; color: #f1f5f9; padding-bottom: 80px; }
+        
+        /* PREMIUM MODERN BACKGROUND TEXTURE */
+        body { 
+            background-color: #0b0f1a; 
+            /* Subtle dark grid structure texture */
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+                radial-gradient(circle at 50% 50%, #111827, #05070f);
+            background-size: 20px 20px, 20px 20px, 100% 100%;
+            background-attachment: fixed;
+            margin: 0; 
+            color: #f1f5f9; 
+            padding-bottom: 80px; 
+        }
 
         .top-bar { background: #111827; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111827; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
@@ -21,17 +36,27 @@
 
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
-        .card { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
+        
+        /* Glassmorphism Cards to sit perfectly on texture */
+        .card { 
+            background: rgba(30, 41, 59, 0.4); 
+            border-radius: 15px; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            border: 1px solid rgba(255,255,255,0.08); 
+            backdrop-filter: blur(8px);
+        }
+        
         input, select { width: 100%; padding: 12px; background: #1e293b; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); color: white; margin-bottom: 12px; font-size: 16px; }
         .btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-weight: bold; }
         .list-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
         /* BILL PRINT LAYOUT */
         @media print {
-            body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
+            body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; background-image: none !important; }
             .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash { display: none !important; }
             .page { display: block !important; padding: 0 !important; }
-            .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; }
+            .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; backdrop-filter: none !important; }
             
             #ledger-body { display: table !important; width: 100% !important; border-collapse: collapse !important; }
             .list-item { display: table-row !important; border: 1px solid #ddd !important; background: white !important; }
@@ -43,12 +68,12 @@
         }
         .bill-header { display: none; }
 
-        /* FANCY MODERN GALLERY GRID */
+        /* GALLERY GRID WITH 3D SHADE FRAMES */
         #gallery-body {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 15px;
-            padding: 10px 0;
+            gap: 18px;
+            padding: 12px 0;
         }
 
         .gallery-card {
@@ -56,15 +81,19 @@
             border-radius: 16px;
             overflow: hidden;
             aspect-ratio: 1;
-            background: #1e293b;
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            background: #111827;
+            /* Dynamic Frame Shade */
+            border: 3px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 
+                0 4px 6px rgba(0, 0, 0, 0.3), 
+                0 10px 20px rgba(0, 0, 0, 0.5), 
+                inset 0 0 15px rgba(0, 0, 0, 0.6);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
             cursor: pointer;
         }
 
         .gallery-card:active {
-            transform: scale(0.95);
+            transform: scale(0.94);
         }
 
         .gallery-card img {
@@ -74,61 +103,111 @@
             transition: transform 0.5s ease;
         }
 
+        /* Ambient Glow Effect on Hover */
         @media (min-width: 768px) {
             .gallery-card:hover {
-                transform: translateY(-5px);
-                box-shadow: 0 8px 25px rgba(249, 115, 22, 0.2);
+                transform: translateY(-6px);
+                border-color: rgba(249, 115, 22, 0.4);
+                box-shadow: 
+                    0 15px 30px rgba(249, 115, 22, 0.2), 
+                    0 0 20px rgba(168, 85, 247, 0.15);
             }
             .gallery-card:hover img {
                 transform: scale(1.08);
             }
         }
 
-        /* LIGHTBOX MODAL (Full Screen Image Viewer) */
+        /* LIGHTBOX MODAL WITH NAVIGATION OPTIONS */
         .lightbox {
             position: fixed;
             inset: 0;
-            background: rgba(11, 15, 26, 0.95);
+            background: rgba(7, 10, 18, 0.96);
             z-index: 10000;
             display: none;
             align-items: center;
             justify-content: center;
-            backdrop-filter: blur(10px);
+            backdrop-filter: blur(12px);
             padding: 20px;
+            user-select: none;
         }
 
         .lightbox.active {
             display: flex;
         }
 
+        .lightbox-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 90%;
+            max-height: 82vh;
+        }
+
         .lightbox-img {
             max-width: 100%;
             max-height: 80vh;
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
+            border-radius: 14px;
+            border: 2px solid rgba(255,255,255,0.15);
+            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 30px rgba(249, 115, 22, 0.1);
+            transform: scale(0.92);
+            transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .lightbox.active .lightbox-img {
             transform: scale(1);
         }
 
-        .lightbox-close {
+        /* Navigation Buttons */
+        .lightbox-btn {
             position: absolute;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.1);
-            color: white;
-            border: none;
-            width: 45px;
-            height: 45px;
+            background: rgba(255, 255, 255, 0.07);
+            color: #f1f5f9;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            width: 50px;
+            height: 50px;
             border-radius: 50%;
             font-size: 20px;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(5px);
+            transition: background 0.2s, color 0.2s, transform 0.2s;
+            z-index: 10010;
+        }
+
+        .lightbox-btn:hover {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.08);
+        }
+        
+        .lightbox-btn:active {
+            transform: scale(0.95);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: -60px;
+            right: 0;
+            background: rgba(239, 68, 68, 0.15);
+            border-color: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+        .lightbox-close:hover {
+            background: var(--danger);
+        }
+
+        .lightbox-prev { left: -70px; }
+        .lightbox-next { right: -70px; }
+
+        @media (max-width: 768px) {
+            .lightbox-wrapper { width: 100%; }
+            .lightbox-prev { left: 10px; top: 50%; transform: translateY(-50%); }
+            .lightbox-next { right: 10px; top: 50%; transform: translateY(-50%); }
+            .lightbox-prev:hover, .lightbox-next:hover { transform: translateY(-50%) scale(1.08); }
+            .lightbox-close { top: calc(-10vh - 10px); right: 10px; }
         }
     </style>
 </head>
@@ -210,9 +289,15 @@
     <button class="nav-btn" onclick="preparePrint()"><i class="fa fa-print"></i>Bill</button>
 </nav>
 
-<div id="gallery-lightbox" class="lightbox" onclick="closeLightbox()">
-    <button class="lightbox-close"><i class="fa fa-times"></i></button>
-    <img id="lightbox-src" class="lightbox-img" src="" alt="Preview">
+<div id="gallery-lightbox" class="lightbox" onclick="handleLightboxOverlayClick(event)">
+    <div class="lightbox-wrapper">
+        <button class="lightbox-btn lightbox-close" onclick="closeLightbox()"><i class="fa fa-times"></i></button>
+        <button class="lightbox-btn lightbox-prev" onclick="navigateGallery(-1)"><i class="fa fa-chevron-left"></i></button>
+        
+        <img id="lightbox-src" class="lightbox-img" src="" alt="Preview">
+        
+        <button class="lightbox-btn lightbox-next" onclick="navigateGallery(1)"><i class="fa fa-chevron-right"></i></button>
+    </div>
 </div>
 
 <script>
@@ -228,8 +313,11 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); 
+    const storage = firebase.storage(); 
 
     let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
+    let galleryImages = []; 
+    let currentImageIndex = -1;
 
     function login() {
         const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value;
@@ -250,6 +338,7 @@
             loadMonitor();
         }
         setupDates(); loadData(myID); loadGallery();
+        setupKeyboardControls();
     }
 
     function switchTab(t, el) {
@@ -336,16 +425,13 @@
         ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
     }
 
-    // Imgbb Multi-Image Upload (Fixed API Key String Context)
     function uploadImages() {
-        const apiKey = "4bc93585f36c51bce856edf122795b78"; 
         const files = document.getElementById('g-files').files;
-        
         if(!files[0]) {
             alert("Please select at least one image!");
             return;
         }
-        
+
         const btn = document.querySelector('#admin-upload-box .btn-action');
         const originalText = btn.innerText;
         btn.innerText = "UPLOADING...";
@@ -354,46 +440,33 @@
         let uploadCount = 0;
 
         Array.from(files).forEach(file => {
-            const formData = new FormData();
-            formData.append("image", file);
-
-            fetch(`https://api.imgbb.com/1/upload?key=${apiKey}`, {
-                method: "POST",
-                body: formData
-            })
-            .then(response => response.json())
-            .then(data => {
-                if(data.success) {
-                    const url = data.data.url;
-                    db.ref('gallery').push({url: url});
-                    
-                    uploadCount++;
-                    if(uploadCount === files.length) {
-                        alert("Sabh images kamyabi se upload ho gayin!");
-                        document.getElementById('g-files').value = "";
-                        btn.innerText = originalText;
-                        btn.disabled = false;
-                    }
-                } else {
-                    alert("Upload failed: " + data.error.message);
+            const ref = storage.ref('gallery/' + Date.now() + "_" + file.name);
+            ref.put(file)
+            .then(snap => snap.ref.getDownloadURL())
+            .then(url => { 
+                db.ref('gallery').push({url: url}); 
+                uploadCount++;
+                if(uploadCount === files.length) {
+                    alert("Sabh images kamyabi se upload ho gayin!");
+                    document.getElementById('g-files').value = "";
                     btn.innerText = originalText;
                     btn.disabled = false;
                 }
             })
             .catch(error => {
-                console.error("Error:", error);
-                alert("Network error: Upload nahi ho saka.");
+                console.error("Upload Error: ", error);
+                alert("Upload failed!");
                 btn.innerText = originalText;
                 btn.disabled = false;
             });
         });
     }
 
-    // Modern Grid Gallery Renderer
     function loadGallery() {
         db.ref('gallery').on('value', snap => {
             const b = document.getElementById('gallery-body'); 
             b.innerHTML = "";
+            galleryImages = []; 
             
             if (!snap.exists()) {
                 b.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 40px 0;">
@@ -403,25 +476,61 @@
                 return;
             }
 
+            let index = 0;
             snap.forEach(c => { 
                 const imageUrl = c.val().url;
+                galleryImages.push(imageUrl); 
+                
                 b.innerHTML += `
-                    <div class="gallery-card" onclick="openLightbox('${imageUrl}')">
+                    <div class="gallery-card" onclick="openLightbox(${index})">
                         <img src="${imageUrl}" loading="lazy">
                     </div>
                 `; 
+                index++;
             });
         });
     }
 
-    // Lightbox Modal UI Handling Functions
-    function openLightbox(url) {
-        document.getElementById('lightbox-src').src = url;
+    function openLightbox(index) {
+        currentImageIndex = index;
+        document.getElementById('lightbox-src').src = galleryImages[currentImageIndex];
         document.getElementById('gallery-lightbox').classList.add('active');
     }
 
     function closeLightbox() {
         document.getElementById('gallery-lightbox').classList.remove('active');
+    }
+
+    function navigateGallery(direction) {
+        if (galleryImages.length === 0) return;
+        currentImageIndex += direction;
+        if (currentImageIndex >= galleryImages.length) {
+            currentImageIndex = 0;
+        } else if (currentImageIndex < 0) {
+            currentImageIndex = galleryImages.length - 1;
+        }
+        document.getElementById('lightbox-src').src = galleryImages[currentImageIndex];
+    }
+
+    function handleLightboxOverlayClick(event) {
+        if (event.target.id === 'gallery-lightbox') {
+            closeLightbox();
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setupKeyboardControls();
+    });
+
+    function setupKeyboardControls() {
+        document.addEventListener('keydown', (e) => {
+            const lb = document.getElementById('gallery-lightbox');
+            if (lb && lb.classList.contains('active')) {
+                if (e.key === 'ArrowRight') navigateGallery(1);
+                if (e.key === 'ArrowLeft') navigateGallery(-1);
+                if (e.key === 'Escape') closeLightbox();
+            }
+        });
     }
 
     function logout() { localStorage.clear(); location.reload(); }
