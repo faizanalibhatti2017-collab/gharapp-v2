@@ -359,7 +359,7 @@
         }
     }
 
-    // ⚡ REAL-TIME SMART PARSER FOR BILLING CODES & DENSE RECEIVED DATA
+    // ⚡ ULTRA-POWERFUL DYNAMIC INTELLIGENT PARSER FOR EMAIL/TEXT
     function processBruteForceScanEntry(scannedCode) {
         stopCameraEngine();
         const today = new Date().toISOString().split('T')[0];
@@ -367,61 +367,74 @@
         let displayDetail = rawText;
         let finalAmt = null;
 
-        // Years strict blocklist
+        // Current contextual standard year lists block
         const blocklistYears = ["2024", "2025", "2026", "2027"];
 
-        // 1. Pure digit check
-        if (!isNaN(rawText) && parseFloat(rawText) > 0 && !blocklistYears.includes(rawText)) {
-            finalAmt = parseFloat(rawText);
+        // 1. Agar text direct akela floating dynamic positive digit number hai
+        if (!isNaN(rawText.replace(/,/g, "")) && parseFloat(rawText.replace(/,/g, "")) > 0 && !blocklistYears.includes(rawText.trim())) {
+            finalAmt = parseFloat(rawText.replace(/,/g, ""));
         } else {
-            // 🔥 STEP 1: Sab se pehle har kism ki Dates aur Times ko text se bilkul saaf kar do
-            // Yeh regex slash(/), dash(-), ya dots(.) wali sabhi dates aur colon(:) wale times ko ura dega
-            let cleanText = rawText.replace(/\d{2,4}[-\/\.]\d{2}[-\/\.]\d{2,4}/g, "");
-            cleanText = cleanText.replace(/\d{2}:\d{2}(:\d{2})?/g, "");
+            // 🔥 CRITICAL CLEANER STEP 1: Pehle Dates, Times aur bare numbers (Account No.) ura do
+            // Slash, dash ya dots wali dates saaf
+            let parsedStr = rawText.replace(/\d{2,4}[-\/\.]\d{2}[-\/\.]\d{2,4}/g, "");
+            // Times (14:32:00) saaf
+            parsedStr = parsedStr.replace(/\d{2}:\d{2}(:\d{2})?/g, "");
+            // Account / Card Numbers saaf (Bade digits jo amount nahi ho sakte e.g. 498476100)
+            parsedStr = parsedStr.replace(/\d{7,20}/g, "");
+
+            // 🔥 TARGETED KEYWORD EXTRACTION STEP 2: Rs., PKR, Amount, Total ko search karna
+            // Yeh regex Rs/PKR/Amount ke sath space, comma aur numbers (.00 tak) sab utha lega
+            const smartKeywordsRegex = /(?:rs|pkr|amount|payable|total|amt)\.?\s*[:=\-\s]*\s*([0-9,\s\.]+)/i;
+            const match = parsedStr.match(smartKeywordsRegex);
             
-            // 🔥 STEP 2: Line by line clean text ko parse karo
-            const lines = cleanText.split('\n');
-            for (let line of lines) {
-                if (/amount|payable|total|amt/i.test(line)) {
-                    // Kisi bhi comma ko nikal do taake float sahi se convert ho sake (e.g. 5,000 -> 5000)
-                    let cleanLine = line.replace(/,/g, "");
-                    const numberMatch = cleanLine.match(/\d+(?:\.\d{1,2})?/);
-                    if (numberMatch && !blocklistYears.includes(numberMatch[0])) {
-                        finalAmt = parseFloat(numberMatch[0]);
-                        break;
+            if (match && match[1]) {
+                // Comma, spaces aur spaces nikal kar clean number banao
+                let cleanNumStr = match[1].replace(/,/g, "").replace(/\s/g, "").trim();
+                // Sub-match handle karna agar continuous data mein aage text ho
+                const secondaryMatch = cleanNumStr.match(/^\d+(?:\.\d{1,2})?/);
+                if (secondaryMatch) {
+                    let calculatedValue = parseFloat(secondaryMatch[0]);
+                    if (!blocklistYears.includes(secondaryMatch[0]) && calculatedValue > 0) {
+                        finalAmt = calculatedValue;
                     }
                 }
             }
 
-            // 🔥 STEP 3: Fallback Context Regex (Agar plain string text ho line breaks ke baghair)
+            // 🔥 LINE BY LINE SCANNER STEP 3: Agar step 2 upar fail ho jaye
             if (!finalAmt) {
-                const strictRegex = /(?:amount|payable|total|amt)(?:\s*[:=\s\-]*\s*)(\d+(?:\.\d{1,2})?)/i;
-                let textNoComma = cleanText.replace(/,/g, "");
-                const match = textNoComma.match(strictRegex);
-                if (match && match[1] && !blocklistYears.includes(match[1])) {
-                    finalAmt = parseFloat(match[1]);
+                const lines = parsedStr.split('\n');
+                for (let line of lines) {
+                    if (/(?:rs|pkr|amount|payable|total|amt)/i.test(line)) {
+                        let parsedLine = line.replace(/,/g, "");
+                        const digitsFound = parsedLine.match(/\d+(?:\.\d{1,2})?/);
+                        if (digitsFound && !blocklistYears.includes(digitsFound[0])) {
+                            let val = parseFloat(digitsFound[0]);
+                            if (val > 0) { finalAmt = val; break; }
+                        }
+                    }
                 }
             }
 
-            // 🔥 STEP 4: Last resort scanner loop (Agar kuch bhi upar match nahi hua)
+            // 🔥 REVERSE SCAN FALLBACK STEP 4: Agar kuch bhi kaam na kare toh filter values checks
             if (!finalAmt) {
-                let textNoComma = cleanText.replace(/,/g, "");
-                const extractedNumbers = textNoComma.match(/\d+/g);
-                if (extractedNumbers) {
-                    for (let numStr of extractedNumbers) {
-                        if (blocklistYears.includes(numStr)) {
-                            continue;
-                        }
-                        if (numStr.length >= 3 && numStr.length <= 6) {
-                            finalAmt = parseFloat(numStr);
-                            break; 
+                let absoluteClean = parsedStr.replace(/,/g, "");
+                const remainingNumbers = absoluteClean.match(/\d+(?:\.\d{1,2})?/g);
+                if (remainingNumbers) {
+                    // Peeche se check karein taake total raqam aamtaur par aakhir mein milti hai
+                    for (let i = remainingNumbers.length - 1; i >= 0; i--) {
+                        let currentNum = remainingNumbers[i];
+                        if (blocklistYears.includes(currentNum)) continue;
+                        let val = parseFloat(currentNum);
+                        if (val >= 10 && val <= 999999) { 
+                            finalAmt = val;
+                            break;
                         }
                     }
                 }
             }
         }
 
-        // Title company filter config
+        // Title company automatic mapping filters
         if (rawText.toUpperCase().includes("SSGC")) {
             displayDetail = "SSGC Bill Paid";
         } else if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
@@ -432,7 +445,7 @@
             displayDetail = rawText.length > 30 ? "Scan: " + rawText.substring(0, 27) + "..." : "Scan: " + rawText;
         }
 
-        // Processing decision block
+        // Database insertion decision logic execution
         if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
             executeDatabasePush(today, displayDetail, finalAmt, rawText);
         } else {
@@ -514,7 +527,7 @@
     }
 
     function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
+        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value, rl = document.getElementById('u-role').value;
         if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
     }
 
