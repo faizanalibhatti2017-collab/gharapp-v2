@@ -280,7 +280,7 @@
                     <div><b>${r.c}</b> <small>(${r.s})</small><br><small>${r.d}</small></div>
                     <div><svg class="barcode-img" id="bc-${k}"></svg></div>
                     <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
-                    <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()}</i></div>
+                    <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()"></i></div>
                 </div>`;
 
                 setTimeout(() => {
@@ -359,7 +359,6 @@
         }
     }
 
-    // ⚡ NEW HIGHLY INTELLIGENT CLEANING PARSER FOR GMAIL TEXT
     function processBruteForceScanEntry(scannedCode) {
         stopCameraEngine();
         const today = new Date().toISOString().split('T')[0];
@@ -367,71 +366,58 @@
         let displayDetail = rawText;
         let finalAmt = null;
 
-        // 🔥 STEP 1: Gmail ke text mein se har kism ke Years aur Dates ko bilkul jharu maar kar saaf karlein
-        let parsedStr = rawText.replace(/\b(2024|2025|2026|2027|2028)\b/g, " "); 
-        parsedStr = parsedStr.replace(/\d{2,4}[-\/\.][a-zA-Z0-9]{2,3}[-\/\.]\d{2,4}/g, " "); 
-        parsedStr = parsedStr.replace(/\d{2,4}[-\/\.]\d{2}[-\/\.]\d{2,4}/g, " "); 
-        parsedStr = parsedStr.replace(/\d{2}:\d{2}(:\d{2})?/g, " "); 
+        // 1. Years, Dates aur Times ko string se remove karein taake confusion na ho
+        let cleanText = rawText.replace(/\b(2024|2025|2026|2027|2028|2029|2030)\b/g, " ");
+        cleanText = cleanText.replace(/\d{2,4}[-\/\.]\d{2}[-\/\.]\d{2,4}/g, " ");
+        cleanText = cleanText.replace(/\d{2,4}[-\/\.][a-zA-Z]{3}[-\/\.]\d{2,4}/g, " ");
+        cleanText = cleanText.replace(/\d{2}:\d{2}(:\d{2})?/g, " ");
 
-        // 🔥 STEP 2: Agar ab pure clean data mein se sirf single absolute digit bacha hai toh seedha uthao
-        let directNum = parsedStr.replace(/,/g, "").trim();
-        if (!isNaN(directNum) && parseFloat(directNum) > 0) {
-            finalAmt = parseFloat(directNum);
-        } else {
-            // 🔥 STEP 3: Line by line target pattern search (Gmail Layout structure matching)
-            const lines = parsedStr.split('\n');
-            for (let line of lines) {
-                // Agar line mein amount/pkr/rs ka lafz hai toh uska digits uthao
-                if (/(?:rs|pkr|amount|payable|total|amt)/i.test(line)) {
-                    let cleanLine = line.replace(/,/g, "");
-                    const matchDigit = cleanLine.match(/\b\d+(?:\.\d{1,2})?\b/);
-                    if (matchDigit) {
-                        let parsedVal = parseFloat(matchDigit[0]);
-                        if (parsedVal > 0 && parsedVal !== 2025 && parsedVal !== 2026) {
-                            finalAmt = parsedVal;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            // 🔥 STEP 4: Smart Global Regex extraction fallback
-            if (!finalAmt) {
-                const smartKeywordsRegex = /(?:rs|pkr|amount|payable|total|amt)\.?\s*[:=\-\s]*\s*([0-9,\s\.]+)/i;
-                const match = parsedStr.match(smartKeywordsRegex);
-                if (match && match[1]) {
-                    let cleanNumStr = match[1].replace(/,/g, "").replace(/\s/g, "").trim();
-                    const secondaryMatch = cleanNumStr.match(/^\d+(?:\.\d{1,2})?/);
-                    if (secondaryMatch) {
-                        let calculatedValue = parseFloat(secondaryMatch[0]);
-                        if (calculatedValue > 0) finalAmt = calculatedValue;
+        // 2. Sirf woh line uthayein jahan amount key-terms mojood hon
+        const lines = cleanText.split('\n');
+        for (let line of lines) {
+            if (/(?:amount|pkr|rs|payable|total|amt)/i.test(line)) {
+                let cleanLine = line.replace(/,/g, ""); 
+                const match = cleanLine.match(/\b\d+(?:\.\d{1,2})?\b/);
+                if (match) {
+                    let val = parseFloat(match[0]);
+                    if (val > 0 && val !== 2024 && val !== 2025 && val !== 2026 && val !== 2027) {
+                        finalAmt = val;
+                        break;
                     }
                 }
             }
         }
 
-        // Company Title Analysis for Display Layout
-        if (rawText.toUpperCase().includes("SSGC")) {
-            displayDetail = "SSGC Bill Paid";
-        } else if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
-            displayDetail = "K-Electric Bill Paid";
-        } else if (rawText.toLowerCase().includes("mobilink")) {
-            displayDetail = "Mobilink Bill Paid";
-        } else {
-            displayDetail = rawText.length > 30 ? "Scan: " + rawText.substring(0, 27) + "..." : "Scan: " + rawText;
+        // 3. Fallback logic agar target line match na ho
+        if (!finalAmt) {
+            let absoluteClean = cleanText.replace(/,/g, "");
+            const allNumbers = absoluteClean.match(/\b\d+(?:\.\d{1,2})?\b/g);
+            if (allNumbers) {
+                for (let i = allNumbers.length - 1; i >= 0; i--) {
+                    let val = parseFloat(allNumbers[i]);
+                    if (val > 0 && val !== 2024 && val !== 2025 && val !== 2026 && val !== 2027 && val < 999999) {
+                        finalAmt = val;
+                        break;
+                    }
+                }
+            }
         }
 
-        // Database Push Logic with fallback alert handling
+        if (rawText.toUpperCase().includes("SSGC")) displayDetail = "SSGC Bill Paid";
+        else if (rawText.toLowerCase().includes("kelectric") || rawText.toLowerCase().includes("ke.com.pk")) displayDetail = "K-Electric Bill Paid";
+        else if (rawText.toLowerCase().includes("mobilink")) displayDetail = "Mobilink Bill Paid";
+        else displayDetail = rawText.length > 30 ? "Scan: " + rawText.substring(0, 27) + "..." : "Scan: " + rawText;
+
         if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
             executeDatabasePush(today, displayDetail, finalAmt, rawText);
         } else {
             setTimeout(() => {
-                const userAmtInput = prompt(`Code Detected Successfully!\n\nData: "${rawText.substring(0,40)}"\n\nEnter Bill / Product Amount (RS):`, "0");
+                const userAmtInput = prompt(`Enter Bill / Product Amount (RS):`, "0");
                 finalAmt = parseFloat(userAmtInput);
                 if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
                     executeDatabasePush(today, displayDetail, finalAmt, rawText);
                 } else {
-                    alert("Operation cancelled or invalid amount entered.");
+                    alert("Operation cancelled.");
                     startCameraEngine();
                 }
             }, 150);
@@ -503,7 +489,7 @@
     }
 
     function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
+        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value, rl = document.getElementById('u-role').value;
         if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
     }
 
