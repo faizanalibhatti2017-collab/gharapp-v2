@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Professional Universal Scanner</title>
+    <title>GharApp Mobile - Superfast Universal Scanner</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -57,8 +57,7 @@
         
         #qr-view-box { width: 100%; max-width: 320px; margin: 20px auto; border-radius: 15px; overflow: hidden; border: 4px solid var(--success); box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); background: #000; position: relative; }
         
-        /* Laser scanning line effect for premium look */
-        .scan-laser { position: absolute; width: 100%; height: 3px; background: #10b981; top: 0; left: 0; animation: laserMove 2s linear infinite; box-shadow: 0 0 10px #10b981; z-index: 10; pointer-events: none; }
+        .scan-laser { position: absolute; width: 100%; height: 3px; background: #10b981; top: 0; left: 0; animation: laserMove 1.5s linear infinite; box-shadow: 0 0 10px #10b981; z-index: 10; pointer-events: none; }
         @keyframes laserMove { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
     </style>
 </head>
@@ -107,15 +106,20 @@
 
 <div id="tab-scan" class="page">
     <div class="card" style="text-align: center; background: rgba(16, 185, 129, 0.05);">
-        <h3 style="color: var(--success); margin-top: 0;"><i class="fa fa-expand"></i> Universal Smart Scanner</h3>
-        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 0;">Point at KE QR Code or App generated Barcode</p>
+        <h3 style="color: var(--success); margin-top: 0;"><i class="fa fa-bolt"></i> Lightning Fast Scanner</h3>
+        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 0;">Scan ANY Barcode, QR Code, Wifi or Bill for instant entry</p>
         
         <div id="qr-view-box">
             <div class="scan-laser"></div>
             <div id="reader" style="width: 100%;"></div>
         </div>
         
-        <p id="scan-status" style="color: #64748b; font-size: 12px; font-weight: bold;">Camera Ready...</p>
+        <p id="scan-status" style="color: #64748b; font-size: 12px; font-weight: bold;">Camera Initializing...</p>
+        
+        <div style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 10px;">
+            <small style="color: #94a3b8; display: block; margin-bottom: 5px;">Scan Entry Default Amount (RS):</small>
+            <input type="number" id="scan-default-amount" value="1000" style="margin:0; text-align:center; max-width: 150px; padding: 6px;">
+        </div>
     </div>
 </div>
 
@@ -308,21 +312,29 @@
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
     }
 
-    // UPDATED ENGINE: NOW EXPLICITLY SUPPORTS BOTH 1D BARCODES & 2D QR CODES
+    // ⚡ SUPER ENGINE: ISME HAR 1D/2D CODE ENGINE DETECTOR CONFIG SHAMIL HAI
     function startCameraEngine() {
         if(!html5QrCode) {
-            document.getElementById('scan-status').innerText = "Opening HD Camera Engine...";
+            document.getElementById('scan-status').innerText = "Starting Omni-Decoder Engine...";
             html5QrCode = new Html5Qrcode("reader");
             
-            // Explicitly pass all formats (QR_CODE + CODE_128 Barcodes)
+            // All-in-one format listener (QR, Barcodes, DataMatrix, ITF etc.)
             const formatsToSupport = [ 
                 Html5QrcodeSupportedFormats.QR_CODE,
-                Html5QrcodeSupportedFormats.CODE_128
+                Html5QrcodeSupportedFormats.CODE_128,
+                Html5QrcodeSupportedFormats.CODE_39,
+                Html5QrcodeSupportedFormats.EAN_13,
+                Html5QrcodeSupportedFormats.EAN_8,
+                Html5QrcodeSupportedFormats.UPC_A,
+                Html5QrcodeSupportedFormats.DATA_MATRIX
             ];
 
             const config = { 
-                fps: 35, // Faster frame decoding
-                qrbox: { width: 270, height: 200 }, // Perfect ratio box for both square QR and linear Barcodes
+                fps: 40, // Max decoding frames per second 
+                qrbox: (viewfinderWidth, viewfinderHeight) => {
+                    // Responsive box covering wider target space for linear barcodes too
+                    return { width: viewfinderWidth * 0.85, height: viewfinderHeight * 0.7 };
+                },
                 aspectRatio: 1.0,
                 formatsToSupport: formatsToSupport
             };
@@ -331,13 +343,13 @@
                 { facingMode: "environment" },
                 config,
                 (decodedText) => {
-                    processAutomaticScanEntry(decodedText);
+                    processBruteForceScanEntry(decodedText);
                 },
                 (err) => {}
             ).then(() => {
-                document.getElementById('scan-status').innerText = "SCANNER LIVE! Ready for App Barcode or KE QR.";
+                document.getElementById('scan-status').innerText = "🚀 ENGINE LIVE: Point at any code!";
             }).catch(err => {
-                document.getElementById('scan-status').innerText = "Camera Configuration Error!";
+                document.getElementById('scan-status').innerText = "Camera Error!";
                 alert("Camera error: " + err);
             });
         }
@@ -352,56 +364,37 @@
         }
     }
 
-    // 100% AUTOMATIC LEDGER INSERTER ENGINE
-    function processAutomaticScanEntry(scannedCode) {
-        let matched = false;
-        let isRealKEBill = false;
+    // 💥 BYPASS MODE: NO VALIDATION, JUST FORCE SAVE ANYTHING DETECTED!
+    function processBruteForceScanEntry(scannedCode) {
+        // Immediately halt camera to stop multi-triggers
+        stopCameraEngine();
         
-        const cleanScannedCode = scannedCode.trim();
-
-        // Check if scanned target is K-Electric's official QR link
-        if(cleanScannedCode.toLowerCase().includes("ke.com.pk") || cleanScannedCode.toLowerCase().includes("ke") || cleanScannedCode.length > 22) {
-            isRealKEBill = true;
+        const today = new Date().toISOString().split('T')[0];
+        
+        // Dynamic cleanup (Shorten description if text is a huge URL like wifi config or KE web links)
+        let displayDetail = scannedCode.trim();
+        if(displayDetail.length > 35) {
+            displayDetail = displayDetail.substring(0, 32) + "...";
         }
 
-        Object.entries(window.utilityData || {}).forEach(([k, r]) => {
-            const customAppBarcode = `BILL-${k.substring(1,9).toUpperCase()}`;
-            
-            // Match Case 1: Custom App Barcode matches (`BILL-XXXX`)
-            // Match Case 2: Asli KE QR matches with an Unpaid K-Electric record in DB
-            if(cleanScannedCode === customAppBarcode || (isRealKEBill && r.c === "K-Electric" && r.s === "Unpaid")) {
-                matched = true;
-                
-                if(r.s === 'Paid') {
-                    document.getElementById('scan-status').innerText = "Bill is already Paid.";
-                    return;
-                }
-                
-                // Immediately shut down camera to prevent multi-triggering
-                stopCameraEngine();
-                
-                const today = new Date().toISOString().split('T')[0];
-                
-                // Step 1: Update original entry to Paid status in Firebase
-                db.ref(`utilities/${viewingID}/${k}`).update({ s: 'Paid', d: today });
-                
-                // Step 2: Dynamically add transaction entry inside Main Cash Ledger
-                db.ref('data/'+viewingID).push({
-                    d: today,
-                    n: `${r.c} Auto-Paid via Smart Scan`,
-                    a: r.a,
-                    t: 'exp'
-                }).then(() => {
-                    alert(`✅ Target Scanned Successfully!\n\n${r.c} Bill worth RS. ${r.a} has been paid automatically and registered inside your ledger!`);
-                    // Smooth routing to dashboard
-                    switchTab('dash', document.querySelector('.nav-btn'));
-                });
-            }
+        // Get value from input screen, if empty fallbacks to 1000
+        const inputAmt = document.getElementById('scan-default-amount').value || 1000;
+        const finalAmt = parseFloat(inputAmt);
+
+        // Direct blind insert operation inside main dashboard ledger!
+        db.ref('data/' + viewingID).push({
+            d: today,
+            n: `Scan: ${displayDetail}`,
+            a: finalAmt,
+            t: 'exp'
+        }).then(() => {
+            alert(`✅ Code Processed instantly!\n\nData: "${scannedCode}"\nAdded to Ledger as Expense: RS. ${finalAmt}`);
+            // Smooth view transition back to layout dashboard
+            switchTab('dash', document.querySelector('.nav-btn'));
+        }).catch(err => {
+            alert("Database write failed: " + err);
+            startCameraEngine(); // Restart if failed
         });
-        
-        if(!matched) {
-            document.getElementById('scan-status').innerText = "Invalid Target or No 'Unpaid' matching record found.";
-        }
     }
 
     function saveUtilityBill(automatedData = null) {
