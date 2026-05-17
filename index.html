@@ -31,9 +31,9 @@
 
         @media print {
             body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
-            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, #reader, .scan-inline-btn, #scanner-placeholder { display: none !important; }
+            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .scan-inline-btn, #reader, #scanner-placeholder { display: none !important; }
             .page { display: block !important; padding: 0 !important; }
-            .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; padding: 15px !important; }
+            .card { background: white !important; border: 1px solid #ddd !important; color: black !important; box-shadow: none !important; margin-bottom: 15px !important; padding: 15px !important; }
             #ledger-body, #utility-body { display: block !important; width: 100% !important; }
             .list-item { display: flex !important; justify-content: space-between !important; align-items: center !important; border: 1px solid #ddd !important; background: white !important; padding: 12px !important; color: black !important; margin-bottom: 8px !important; border-radius: 8px !important; }
             .barcode-svg { display: block !important; background: white !important; }
@@ -53,10 +53,14 @@
         .status-paid { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
         .status-unpaid { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
         
-        /* Barcode container styling */
+        /* Barcode Engine View Elements */
         .barcode-svg { background: white; padding: 4px; border-radius: 6px; max-width: 120px; height: auto; display: block; }
         .scan-inline-btn { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: #f43f5e; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; float: right; margin-top: -4px; transition: 0.2s; }
         .scan-inline-btn:active { transform: scale(0.95); background: rgba(244,63,94,0.1); }
+        
+        /* PERFECTLY PROPORTIONED SQUARE SCANNER UI CONTAINER */
+        .scanner-square-container { width: 280px; height: 280px; margin: auto; border-radius: 15px; overflow: hidden; border: 3px dashed var(--primary); background: #111827; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        #reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
     </style>
 </head>
 <body>
@@ -155,13 +159,14 @@
 <div id="tab-scanner" class="page">
     <div class="card" style="text-align: center;">
         <h3 style="color:var(--primary); margin-top:0;"><i class="fa fa-barcode"></i> Barcode Camera Scanner</h3>
-        <p style="color:#94a3b8; font-size:14px; margin-bottom:20px;">Bill ka generated barcode camera ke samne layen, system automatic entry process kar dega.</p>
+        <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;">Bill ka barcode square target zone ke andar laayein, automatic entry process ho jayegi.</p>
         
-        <div id="reader" style="width: 100%; max-width: 300px; margin: auto; border-radius: 12px; overflow: hidden; border: 2px dashed var(--primary); background: #111827; min-height: 200px; display: flex; align-items: center; justify-content: center;">
-            <span id="scanner-placeholder" style="color:#64748b; font-size:14px; padding:20px;">Camera closed. Press start button below.</span>
+        <div class="scanner-square-container">
+            <div id="reader" style="width: 100%; height: 100%;"></div>
+            <span id="scanner-placeholder" style="position: absolute; color:#64748b; font-size:14px; padding:20px; text-align: center; pointer-events: none;">Camera closed.<br>Press start button below.</span>
         </div>
         
-        <div style="margin-top:20px; display:flex; gap:10px;">
+        <div style="margin-top:25px; display:flex; gap:10px;">
             <button class="btn-action" style="background: linear-gradient(135deg, #10b981, #059669); flex:1;" onclick="startLiveCamera()"><i class="fa fa-play"></i> Start Camera</button>
             <button class="btn-action" style="background: linear-gradient(135deg, #ef4444, #dc2626); flex:1;" onclick="stopLiveCamera()"><i class="fa fa-stop"></i> Stop Camera</button>
         </div>
@@ -233,8 +238,9 @@
         document.getElementById('tab-'+t).classList.add('active');
         if(el) el.classList.add('active');
         
+        // Tab routing behavior definitions
         if(t === 'scanner') {
-            startLiveCamera();
+            setTimeout(startLiveCamera, 100);
         } else {
             stopLiveCamera();
         }
@@ -281,6 +287,7 @@
                 if(r.c === 'SSGC') { ssgcStatus = r.s; ssgcAmt = a; }
                 if(r.c === 'Mobilink Bill') { mobStatus = r.s; mobAmt = a; }
 
+                // Dynamic vector linear barcode strings creation engine
                 const barcodeIdStr = `GAP-${k.substring(1,9).toUpperCase()}`;
 
                 body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.s==='Paid'?'var(--success)':'var(--danger)'}">
@@ -298,7 +305,7 @@
                         fontSize: 10,
                         displayValue: true
                     });
-                }, 40);
+                }, 50);
             }
         });
 
@@ -315,22 +322,31 @@
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
     }
 
-    // --- LIVE CAMERA CONTROLLER ---
+    // --- SEPARATE DEDICATED LIVE CAMERA CONTROLLER WITH TARGET ZONE FIX ---
     function startLiveCamera() {
         const placeholder = document.getElementById('scanner-placeholder');
         if(placeholder) placeholder.style.display = 'none';
 
         if(!html5QrCode) {
             html5QrCode = new Html5Qrcode("reader");
+            // Square bounds optimal scaling geometry configuration
             html5QrCode.start(
                 { facingMode: "environment" },
-                { fps: 20, qrbox: { width: 260, height: 130 } },
+                { 
+                    fps: 25, 
+                    qrbox: function(width, height) {
+                        return { width: 250, height: 250 }; // Perfect balanced 1:1 scan square bounding box
+                    }
+                },
                 (scannedDataText) => {
                     stopLiveCamera();
                     executeAutoScanWorkflow(scannedDataText);
                 },
                 (error) => {}
-            ).catch(err => alert("Camera permission error: " + err));
+            ).catch(err => {
+                console.error("Camera startup fail:", err);
+                if(placeholder) placeholder.style.display = 'block';
+            });
         }
     }
 
@@ -340,7 +356,7 @@
                 html5QrCode = null;
                 const placeholder = document.getElementById('scanner-placeholder');
                 if(placeholder) placeholder.style.display = 'block';
-            }).catch(err => {});
+            }).catch(err => console.log("Stop execution log handled."));
         }
     }
 
@@ -360,8 +376,10 @@
                 if(confirm(`Bill Detected via Barcode!\nCompany: ${record.c}\nAmount: RS. ${record.a}\n\nKya aap automatic payment expense entry ledger me save karna chahte hain?`)) {
                     const todayDateStr = new Date().toISOString().split('T')[0];
                     
+                    // 1. Set Status inside utilities to Paid
                     db.ref(`utilities/${viewingID}/${key}`).update({ s: 'Paid', d: todayDateStr });
                     
+                    // 2. Insert corresponding automatic expense row in main database ledger
                     db.ref('data/'+viewingID).push({
                         d: todayDateStr,
                         n: `${record.c} Paid (Auto-Scan)`,
@@ -375,7 +393,7 @@
             }
         });
         if(!isMatched) {
-            alert("Scan Error: Yeh Barcode systems records se match nahi ho saka!");
+            alert("Scan Error: Yeh Barcode system records se match nahi ho saka!");
             switchTab('dash', document.querySelector('.nav-btn'));
         }
     }
