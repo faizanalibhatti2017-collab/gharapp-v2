@@ -53,15 +53,15 @@
         .status-paid { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
         .status-unpaid { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
         
-        /* Barcode Render View Styles */
+        /* Barcode CSS Render */
         .barcode-svg { background: white; padding: 4px; border-radius: 6px; max-width: 120px; height: auto; display: block; }
         .scan-inline-btn { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: #f43f5e; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; float: right; margin-top: -4px; transition: 0.2s; }
         .scan-inline-btn:active { transform: scale(0.95); background: rgba(244,63,94,0.1); }
         
-        /* PERFECTLY PROPORTIONED SQUARE SCANNER CONTAINER UI */
-        .scanner-square-container { width: 300px; height: 300px; margin: auto; border-radius: 15px; overflow: hidden; border: 3px dashed var(--primary); background: #111827; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        #reader { width: 100% !important; height: 100% !important; }
-        #reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
+        /* RESPONSIVE SCANNER FRAMEWORK HOUSING WITH NO ASPECT DISTORTION */
+        .scanner-view-container { width: 100%; max-width: 340px; margin: auto; border-radius: 15px; overflow: hidden; border: 2px dashed var(--primary); background: #111827; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+        #reader { width: 100% !important; background: #111827; }
+        #reader video { width: 100% !important; height: auto !important; object-fit: contain !important; }
     </style>
 </head>
 <body>
@@ -160,11 +160,11 @@
 <div id="tab-scanner" class="page">
     <div class="card" style="text-align: center;">
         <h3 style="color:var(--primary); margin-top:0;"><i class="fa fa-barcode"></i> Barcode Camera Scanner</h3>
-        <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;">Bill ka barcode screen me laayein, system detect kar ke automatic entry save kar dega.</p>
+        <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;">Bill ka barcode frame ke darmiyan me laayein, camera khud hi kisi bhi jiga se auto-detect kar ke entry save kar dega.</p>
         
-        <div class="scanner-square-container">
+        <div class="scanner-view-container">
             <div id="reader"></div>
-            <span id="scanner-placeholder" style="position: absolute; color:#64748b; font-size:14px; padding:20px; text-align: center; pointer-events: none;">Camera closed.<br>Press start button below.</span>
+            <span id="scanner-placeholder" style="position: absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#64748b; font-size:14px; padding:20px; text-align: center; pointer-events: none;">Camera stopped.<br>Press start button below.</span>
         </div>
         
         <div style="margin-top:25px; display:flex; gap:10px;">
@@ -240,7 +240,7 @@
         if(el) el.classList.add('active');
         
         if(t === 'scanner') {
-            setTimeout(startLiveCamera, 120);
+            setTimeout(startLiveCamera, 150);
         } else {
             stopLiveCamera();
         }
@@ -293,7 +293,7 @@
                     <div><b>${r.c}</b> <small>(${r.s})</small><br><small>${r.d}</small></div>
                     <div><svg class="barcode-svg" id="barcode-node-${k}"></svg></div>
                     <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
-                    <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()}</i></div>
+                    <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()"></i></div>
                 </div>`;
 
                 setTimeout(() => {
@@ -323,18 +323,27 @@
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
     }
 
+    // --- FULL FRAME EXPLICIT FORMAT ENGINE CONTROLLER ---
     function startLiveCamera() {
         const placeholder = document.getElementById('scanner-placeholder');
         if(placeholder) placeholder.style.display = 'none';
 
         if(!html5QrCode) {
             html5QrCode = new Html5Qrcode("reader");
+            
             html5QrCode.start(
                 { facingMode: "environment" },
                 { 
-                    fps: 24,
-                    qrbox: function(width, height) {
-                        return { width: width * 0.8, height: height * 0.8 };
+                    fps: 25,
+                    // Sub formats declare kiye taake 1D utility codes easily decode hon
+                    formatsToSupport: [ 
+                        Html5QrcodeSupportedFormats.CODE_128,
+                        Html5QrcodeSupportedFormats.CODE_39,
+                        Html5QrcodeSupportedFormats.EAN_13,
+                        Html5QrcodeSupportedFormats.QR_CODE
+                    ],
+                    experimentalFeatures: {
+                        useBarCodeDetectorIfSupported: true
                     }
                 },
                 (scannedDataText) => {
@@ -343,8 +352,8 @@
                 },
                 (error) => {}
             ).catch(err => {
-                console.error("Camera open fail:", err);
-                if(placeholder) placeholder.style.display = 'block';
+                console.error("Camera fail:", err);
+                if(placeholder) placeholder.style.display = 'flex';
             });
         }
     }
@@ -354,60 +363,54 @@
             html5QrCode.stop().then(() => {
                 html5QrCode = null;
                 const placeholder = document.getElementById('scanner-placeholder');
-                if(placeholder) placeholder.style.display = 'block';
-            }).catch(err => console.log("Stopped."));
+                if(placeholder) placeholder.style.display = 'flex';
+            }).catch(err => console.log("Stopped smoothly."));
         }
     }
 
-    // --- NEW SMART AUTO-DETECTION ENTRY WORKFLOW ---
     function executeAutoScanWorkflow(barcodeText) {
         let isMatched = false;
         const cleanText = barcodeText.trim();
 
-        // 1. Pehle check karein agar system data me se kisi utility record ka code match ho jaye
+        // 1. Core data checks
         Object.entries(window.utilityData || {}).forEach(([key, record]) => {
             const systemGeneratedBarcode = `GAP-${key.substring(1,9).toUpperCase()}`;
-            
-            // Dono checks: Custom GAP code ya direct real consumer/ref number match ho jaye
             if(cleanText === systemGeneratedBarcode || cleanText.includes(record.c)) {
                 isMatched = true;
                 processMatchedBill(key, record);
             }
         });
 
-        // 2. SMART FALLBACK: Agar real bill ka consumer number scan hua hai jo pehle se saved nahi tha, 
-        // ya match nahi hua, to direct user se pooch kar fresh expense ledger entry insert kar dega!
+        // 2. Fresh Scan Fallback Insertion
         if(!isMatched) {
             let guessedCompany = "Utility Bill";
             if(cleanText.length === 13 || cleanText.startsWith("1")) guessedCompany = "K-Electric";
             else if(cleanText.length === 11) guessedCompany = "SSGC";
             else if(cleanText.includes("0320") || cleanText.length === 10) guessedCompany = "Mobilink Bill";
 
-            let userAmt = prompt(`Asli Bill Scan Huwa!\nDetected Barcode: ${cleanText}\n\nYeh kis company ka bill hai? Aap iska amount (RS) enter karein taake entry save ho jaye:`, "0");
+            let userAmt = prompt(`Asli Bill Scan Huwa!\nBarcode Text: ${cleanText}\n\nYeh kis company ka bill hai? Iska Bill Amount (RS) enter karein taake entry save ho jaye:`, "0");
             
             if(userAmt && parseFloat(userAmt) > 0) {
                 const todayDateStr = new Date().toISOString().split('T')[0];
                 
-                // Ledger Core me direct Expense item push kar do
                 db.ref('data/'+viewingID).push({
                     d: todayDateStr,
                     n: `${guessedCompany} Paid (Scanned: ${cleanText})`,
                     a: parseFloat(userAmt),
                     t: 'exp'
                 }).then(() => {
-                    // Utility tracking module me bhi entry insert kar do status: Paid ke sath
                     db.ref('utilities/'+viewingID).push({
                         d: todayDateStr,
                         c: guessedCompany,
                         a: parseFloat(userAmt),
                         s: 'Paid'
                     }).then(() => {
-                        alert("Success! Asli bill scan ho kar entry ledger aur utility history me automatic save ho chuki hai.");
+                        alert("Done! Entry ledger aur utility dono me automatic save ho chuki hai.");
                         switchTab('dash', document.querySelector('.nav-btn'));
                     });
                 });
             } else {
-                alert("Scan Cancelled! Amount sahi nahi tha.");
+                alert("Scan cancelled ya amount ghalt tha!");
                 switchTab('dash', document.querySelector('.nav-btn'));
             }
         }
@@ -420,9 +423,8 @@
             return;
         }
         
-        if(confirm(`Bill Found!\nCompany: ${record.c}\nAmount: RS. ${record.a}\n\nKya aap automatic payment expense entry ledger me save karna chahte hain?`)) {
+        if(confirm(`Bill Detected!\nCompany: ${record.c}\nAmount: RS. ${record.a}\n\nKya aap automatic payment expense entry ledger me save karna chahte hain?`)) {
             const todayDateStr = new Date().toISOString().split('T')[0];
-            
             db.ref(`utilities/${viewingID}/${key}`).update({ s: 'Paid', d: todayDateStr });
             
             db.ref('data/'+viewingID).push({
@@ -431,7 +433,7 @@
                 a: record.a,
                 t: 'exp'
             }).then(() => {
-                alert("Done! Bill status paid ho chuki hai aur main ledger me expense track ho gaya!");
+                alert("Done! Ledger updated successfully.");
                 switchTab('dash', document.querySelector('.nav-btn'));
             });
         }
