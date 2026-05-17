@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Intelligent Smart Scanner</title>
+    <title>GharApp Mobile - Auto Barcode Sync</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -20,25 +20,22 @@
         .nav-btn { color: #94a3b8; background: none; border: none; text-align: center; font-size: 11px; flex: 1; cursor: pointer; }
         .nav-btn.active { color: var(--primary); }
         .nav-btn i { font-size: 22px; display: block; margin-bottom: 4px; }
-        
-        .nav-btn.scan-btn { color: #fff; background: linear-gradient(135deg, #10b981, #059669); border-radius: 50px; margin: -15px 5px 0 5px; height: 60px; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.4); }
-        .nav-btn.scan-btn.active { background: linear-gradient(135deg, var(--primary), var(--secondary)); }
 
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
         .card { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
         input, select { width: 100%; padding: 12px; background: #1e293b; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); color: white; margin-bottom: 12px; font-size: 16px; }
         .btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-weight: bold; cursor: pointer; }
-        .btn-print { background: linear-gradient(135deg, #3b82f6, #1d4ed8); color: white; border: none; padding: 8px 15px; border-radius: 8px; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
         .list-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 
+        /* PRINT SETTINGS CRITICAL FOR BARCODE RENDERING */
         @media print {
             body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
-            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .btn-print, #qr-view-box, .scan-instruction-text { display: none !important; }
+            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, #scanner-section { display: none !important; }
             .page { display: block !important; padding: 0 !important; }
             .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; }
             .list-item { display: flex !important; justify-content: space-between !important; align-items: center !important; border: 1px solid #ddd !important; background: white !important; padding: 15px !important; color: black !important; }
-            .barcode-img { display: block !important; visibility: visible !important; background: white !important; }
+            .barcode-img { display: block !important; visibility: visible !important; background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
 
         .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 10px; margin-bottom: 20px; }
@@ -55,12 +52,6 @@
         .status-unpaid { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
         
         .barcode-img { background: white; padding: 5px; border-radius: 5px; max-width: 130px; height: auto; }
-        
-        #qr-view-box { width: 100%; max-width: 320px; margin: 15px auto; border-radius: 15px; overflow: hidden; border: 4px solid var(--success); box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); background: #000; position: relative; }
-        
-        .scan-laser { position: absolute; width: 100%; height: 3px; background: #10b981; top: 0; left: 0; animation: laserMove 1.2s linear infinite; box-shadow: 0 0 10px #10b981; z-index: 10; pointer-events: none; }
-        @keyframes laserMove { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
-        .scan-instruction-text { color: #f1f5f9; font-size: 16px; font-weight: 600; margin: 5px 0 15px 0; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -83,7 +74,6 @@
 </div>
 
 <div id="tab-dash" class="page active">
-    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> Print Ledger</button>
     <div class="card" style="text-align:center;">
         <small style="color:#94a3b8">Balance</small>
         <h1 id="t-bal" style="margin:5px 0;">0</h1>
@@ -107,19 +97,7 @@
     <div id="ledger-body"></div>
 </div>
 
-<div id="tab-scan" class="page">
-    <div class="card" style="text-align: center; background: transparent; border: none; padding: 0;">
-        <div class="scan-instruction-text">scan QRcode / Barcode</div>
-        
-        <div id="qr-view-box">
-            <div class="scan-laser"></div>
-            <div id="reader" style="width: 100%;"></div>
-        </div>
-    </div>
-</div>
-
 <div id="tab-util" class="page">
-    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> Print Bills History</button>
     <div class="utility-grid">
         <div class="utility-card ke-card">
             <div class="util-icon ke-icon"><i class="fa fa-bolt"></i></div>
@@ -142,6 +120,13 @@
             <div id="mob-status" class="status-badge status-unpaid">No Data</div>
             <div id="mob-amount" style="font-size:11px; margin-top:5px; color:#94a3b8;">RS. 0</div>
         </div>
+    </div>
+
+    <div id="scanner-section" class="card no-print" style="text-align: center;">
+        <button class="btn-action" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); margin-bottom: 10px;" onclick="toggleScanner()">
+            <i class="fa fa-camera"></i> SCAN BILL TO AUTO-PAY
+        </button>
+        <div id="reader" style="display: none; width: 100%; max-width: 280px; margin: auto; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary);"></div>
     </div>
 
     <div class="card no-print">
@@ -181,9 +166,9 @@
 
 <nav class="bottom-nav no-print">
     <button class="nav-btn active" onclick="switchTab('dash', this)"><i class="fa fa-chart-line"></i>Dash</button>
-    <button class="nav-btn scan-btn" onclick="switchTab('scan', this)"><i class="fa fa-qrcode"></i>SCAN</button>
-    <button class="nav-btn" onclick="switchTab('util', this)"><i class="fa fa-receipt"></i>Bills</button>
+    <button class="nav-btn" onclick="switchTab('util', this)"><i class="fa fa-receipt"></i>Bills Control</button>
     <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab('users', this)"><i class="fa fa-users-cog"></i>Users</button>
+    <button class="nav-btn" onclick="window.print()"><i class="fa fa-print"></i>Print</button>
 </nav>
 
 <script>
@@ -224,12 +209,7 @@
         document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
         document.getElementById('tab-'+t).classList.add('active');
         if(el) el.classList.add('active');
-        
-        if(t === 'scan') {
-            startCameraEngine();
-        } else {
-            stopCameraEngine();
-        }
+        if(t !== 'util' && html5QrCode) { stopScanner(); }
     }
 
     function loadData(id) {
@@ -274,6 +254,7 @@
                 if (r.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = r.s; ssgcAmt = a; }
                 if (r.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = r.s; mobAmt = a; }
 
+                // Unique Barcode Id Generation Rule
                 const barcodeValue = `BILL-${k.substring(1,9).toUpperCase()}`;
 
                 body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.s==='Paid'?'var(--success)':'var(--danger)'}">
@@ -283,6 +264,7 @@
                     <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()"></i></div>
                 </div>`;
 
+                // Render Graphic Barcode immediately for Screen & Printing
                 setTimeout(() => {
                     JsBarcode(`#bc-${k}`, barcodeValue, {
                         format: "CODE128",
@@ -308,129 +290,117 @@
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
     }
 
-    function startCameraEngine() {
-        if(!html5QrCode) {
+    // ---- AUTOMATED CAMERA SCANNER ENGINE ----
+    function toggleScanner() {
+        const readerDiv = document.getElementById('reader');
+        if(readerDiv.style.display === 'none') {
+            readerDiv.style.display = 'block';
             html5QrCode = new Html5Qrcode("reader");
-            
-            const formatsToSupport = [ 
-                Html5QrcodeSupportedFormats.QR_CODE,
-                Html5QrcodeSupportedFormats.PDF_417,
-                Html5QrcodeSupportedFormats.AZTEC,
-                Html5QrcodeSupportedFormats.CODE_128,
-                Html5QrcodeSupportedFormats.CODE_39,
-                Html5QrcodeSupportedFormats.EAN_13,
-                Html5QrcodeSupportedFormats.UPC_A,
-                Html5QrcodeSupportedFormats.DATA_MATRIX
-            ];
-
-            const config = { 
-                fps: 50, 
-                videoConstraints: {
-                    facingMode: "environment",
-                    width: { ideal: 1920 }, 
-                    height: { ideal: 1080 }
-                },
-                qrbox: (viewfinderWidth, viewfinderHeight) => {
-                    return { width: viewfinderWidth * 0.9, height: viewfinderHeight * 0.65 };
-                },
-                formatsToSupport: formatsToSupport
-            };
-
             html5QrCode.start(
                 { facingMode: "environment" },
-                config,
+                { fps: 15, qrbox: { width: 260, height: 130 } },
                 (decodedText) => {
-                    processBruteForceScanEntry(decodedText);
+                    stopScanner();
+                    processAutomaticScanEntry(decodedText);
                 },
                 (err) => {}
-            ).then(() => {
-                // Engine Live
-            }).catch(err => {
-                alert("Camera error: " + err);
+            ).catch(err => alert("Camera error: " + err));
+        } else {
+            stopScanner();
+        }
+    }
+
+    function stopScanner() {
+        if(html5QrCode) {
+            html5QrCode.stop().then(() => {
+                document.getElementById('reader').style.display = 'none';
+                html5QrCode = null;
             });
         }
     }
 
-    function stopCameraEngine() {
-        if(html5QrCode) {
-            html5QrCode.stop().then(() => {
-                html5QrCode = null;
-            }).catch(e => {});
-        }
-    }
-
-    // ⚡ REAL-TIME SMART PARSER FOR BILLING CODES & DENSE RECEIVED DATA
-    function processBruteForceScanEntry(scannedCode) {
-        stopCameraEngine();
-        const today = new Date().toISOString().split('T')[0];
+    // FULLY AUTOMATED WORKFLOW FOR ENTRY CREATION ON SCAN & GMAIL TEXT PARSING
+    function processAutomaticScanEntry(scannedCode) {
+        let matched = false;
         let rawText = scannedCode.trim();
-        let displayDetail = rawText;
-        let finalAmt = null;
+        const today = new Date().toISOString().split('T')[0];
 
-        // 1. Agar QR code mein sirf pure number ho (jaise product price tags)
-        if (!isNaN(rawText) && parseFloat(rawText) > 0) {
-            finalAmt = parseFloat(rawText);
-        } else {
-            // 2. High-Grade Regex Pattern: Jo rs, rs., pkr, amount, amt, payable, total sab dhoondhega
-            // Yeh keywords aur digits ke beech ke symbols/spaces ( جیسے :, =, space, /-) ko bakhubi handle karega
-            const intelligentRegex = /(?:rs\.?|pkr|amount|amt|payable|total)(?:\s*[:=\s\-]*\s*)(\d+(?:\.\d{1,2})?)/i;
-            const match = rawText.match(intelligentRegex);
+        // --- STAGE 1: Check if it's a standard GharApp Barcode (e.g., BILL-XXXX) ---
+        Object.entries(window.utilityData || {}).forEach(([k, r]) => {
+            const currentBillBarcodeId = `BILL-${k.substring(1,9).toUpperCase()}`;
+            
+            if(rawText === currentBillBarcodeId) {
+                matched = true;
+                if(r.s === 'Paid') {
+                    alert(`Yeh bill (${r.c}) pehle se hi PAID hai! Double entry nahi ho sakti.`);
+                    return;
+                }
+                
+                if(confirm(`Bill Detected!\nCompany: ${r.c}\nAmount: RS. ${r.a}\n\nKya aap automatic payment aur entry save karna chahte hain?`)) {
+                    db.ref(`utilities/${viewingID}/${k}`).update({ s: 'Paid', d: today });
+                    db.ref('data/'+viewingID).push({
+                        d: today,
+                        n: `${r.c} Paid (Auto-Scan)`,
+                        a: r.a,
+                        t: 'exp'
+                    }).then(() => {
+                        alert("Zabardast! Bill Paid update ho gaya aur automatic Ledger Expense entry add ho chuki hai! 👍");
+                    });
+                }
+            }
+        });
 
-            if (match && match[1]) {
-                finalAmt = parseFloat(match[1]);
-            } else {
-                // 3. Smart Fallback Tracker: Agar keywords bilkul na milen, to data string mein se 3 se 6 digits ka dynamic logical number uthayega
-                // Yeh filters consumer IDs ya dates ko galti se amount samajhne se roktay hain
-                const extractedNumbers = rawText.match(/\d+/g);
-                if (extractedNumbers) {
-                    for (let numStr of extractedNumbers) {
+        // --- STAGE 2: If NOT a standard barcode, Parse as Raw Email Text (Gmail Data / Screenshots Layout) ---
+        if (!matched) {
+            let finalAmt = null;
+            let companyName = "Utility Bill";
+
+            // 1. Company Name Identification from Gmail body string
+            if (rawText.toUpperCase().includes("SSGC")) {
+                companyName = "SSGC";
+            } else if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
+                companyName = "K-Electric";
+            } else if (rawText.toLowerCase().includes("mobilink")) {
+                companyName = "Mobilink Bill";
+            }
+
+            // 2. Strict Key Match: Pehle dhoundo ke 'Amount' keyword ke baad kya numeric text hai (Taake 2025/2026 skip ho)
+            const strictRegex = /(?:amount|payable|total|amt|rs\.?|pkr)(?:\s*[:=\s\-]*\s*)(\d+(?:\.\d{1,2})?)/i;
+            const strictMatch = rawText.match(strictRegex);
+
+            if (strictMatch && strictMatch[1]) {
+                finalAmt = parseFloat(strictMatch[1]);
+                matched = true;
+            } 
+            // 3. Fallback Loop: Agar strict structural key na mile to custom loop se bypass check lagao
+            else {
+                const generalNumbers = rawText.match(/\d+/g);
+                if (generalNumbers) {
+                    for (let numStr of generalNumbers) {
+                        // Current Date Year Protection Flag (2024 to 2026 matches bypass strings)
+                        if ((numStr === "2024" || numStr === "2025" || numStr === "2026") && (rawText.toLowerCase().includes("date") || rawText.toLowerCase().includes("time"))) {
+                            continue; 
+                        }
+                        // Consumer numbers aur dates limits ko block rakhne ke liye precise size checks
                         if (numStr.length >= 3 && numStr.length <= 6) {
                             finalAmt = parseFloat(numStr);
+                            matched = true;
                             break; 
                         }
                     }
                 }
             }
-        }
 
-        // Title intelligence filter config
-        if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
-            displayDetail = "K-Electric Bill Receipt Data";
-        } else {
-            displayDetail = rawText.length > 30 ? "Scan: " + rawText.substring(0, 27) + "..." : "Scan: " + rawText;
-        }
-
-        // Processing decision block
-        if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
-            executeDatabasePush(today, displayDetail, finalAmt, rawText);
-        } else {
-            // Safe fallback pop up window only if extraction draws a blank
-            setTimeout(() => {
-                const userAmtInput = prompt(`Code Detected Successfully!\n\nData: "${rawText.substring(0,40)}"\n\nEnter Bill / Product Amount (RS):`, "0");
-                finalAmt = parseFloat(userAmtInput);
-                if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
-                    executeDatabasePush(today, displayDetail, finalAmt, rawText);
-                } else {
-                    alert("Operation cancelled or invalid amount entered.");
-                    startCameraEngine();
+            // 4. Final Database Execution Strategy
+            if (matched && finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
+                if (confirm(`Email Record Detected!\nCompany: ${companyName}\nExtracted Amount: RS. ${finalAmt}\n\nKya aap ise save karna chahte hain?`)) {
+                    saveUtilityBill({ d: today, c: companyName, a: finalAmt, s: 'Paid' });
+                    alert(`Behtareen! ${companyName} ka Bill RS. ${finalAmt} kamyabi se record ho gaya.`);
                 }
-            }, 150);
+            } else {
+                alert("Scan Failure: Yeh data na to GharApp Barcode se match hua aur na hi isme se Bill Amount detect ho saki!");
+            }
         }
-    }
-
-    function executeDatabasePush(date, detail, amount, rawCode) {
-        db.ref('data/' + viewingID).push({
-            d: date,
-            n: detail,
-            a: amount,
-            t: 'exp'
-        }).then(() => {
-            alert(`✅ Record Saved Successfully!\n\nDetail: ${detail}\nAmount Added: RS. ${amount.toLocaleString()}`);
-            switchTab('dash', document.querySelector('.nav-btn'));
-        }).catch(err => {
-            alert("Database Error: " + err);
-            startCameraEngine();
-        });
     }
 
     function saveUtilityBill(automatedData = null) {
