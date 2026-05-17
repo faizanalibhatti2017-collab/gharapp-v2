@@ -367,50 +367,53 @@
         let displayDetail = rawText;
         let finalAmt = null;
 
-        const blocklistYears = ["2024", "2025", "2026", "2027"];
+        const blocklistYears = ["2024", "2025", "2026", "2027", "2028"];
 
+        // Agar poore text mein sirf single number hai toh as it is uthao
         if (!isNaN(rawText.replace(/,/g, "")) && parseFloat(rawText.replace(/,/g, "")) > 0 && !blocklistYears.includes(rawText.trim())) {
             finalAmt = parseFloat(rawText.replace(/,/g, ""));
         } else {
-            // 🔥 STEP 1: Dates, Times aur bare numbers (Account Numbers) saaf karein
-            let parsedStr = rawText.replace(/\d{2,4}[-\/\.]\d{2}[-\/\.]\d{2,4}/g, "");
-            parsedStr = parsedStr.replace(/\d{2}:\d{2}(:\d{2})?/g, "");
-            parsedStr = parsedStr.replace(/\d{7,20}/g, "");
+            // 🔥 STEP 1: Dates, Times aur bare account/consumer numbers ko pehle hi dhoond kar saaf (Wipe out) kar do!
+            let parsedStr = rawText.replace(/\d{2,4}[-\/\.]\d{2}[-\/\.]\d{2,4}/g, " "); // Dates gone
+            parsedStr = parsedStr.replace(/\d{2}:\d{2}(:\d{2})?/g, " "); // Times gone
+            parsedStr = parsedStr.replace(/\b\d{7,25}\b/g, " "); // Long Consumer IDs gone
 
-            // 🔥 STEP 2: Rs., PKR, Amount keywords ke sath target karein
-            const smartKeywordsRegex = /(?:rs|pkr|amount|payable|total|amt)\.?\s*[:=\-\s]*\s*([0-9,\s\.]+)/i;
-            const match = parsedStr.match(smartKeywordsRegex);
-            
-            if (match && match[1]) {
-                let cleanNumStr = match[1].replace(/,/g, "").replace(/\s/g, "").trim();
-                const secondaryMatch = cleanNumStr.match(/^\d+(?:\.\d{1,2})?/);
-                if (secondaryMatch) {
-                    let calculatedValue = parseFloat(secondaryMatch[0]);
-                    if (!blocklistYears.includes(secondaryMatch[0]) && calculatedValue > 0) {
-                        finalAmt = calculatedValue;
-                    }
-                }
-            }
-
-            // 🔥 STEP 3: Line by Line fallback scanner
-            if (!finalAmt) {
-                const lines = parsedStr.split('\n');
-                for (let line of lines) {
-                    if (/(?:rs|pkr|amount|payable|total|amt)/i.test(line)) {
-                        let parsedLine = line.replace(/,/g, "");
-                        const digitsFound = parsedLine.match(/\d+(?:\.\d{1,2})?/);
-                        if (digitsFound && !blocklistYears.includes(digitsFound[0])) {
-                            let val = parseFloat(digitsFound[0]);
-                            if (val > 0) { finalAmt = val; break; }
+            // 🔥 STEP 2: Pure Key-Value Based Check (Line-by-Line Match)
+            // HBL ke format mein "Amount          4260" jese hota hai, hum use exact pakreinge
+            const lines = parsedStr.split('\n');
+            for (let line of lines) {
+                if (/(?:rs|pkr|amount|payable|total|amt)/i.test(line)) {
+                    // Line mein se commas saaf karein aur target amount nikalien
+                    let cleanLine = line.replace(/,/g, "");
+                    const matchDigit = cleanLine.match(/\b\d+(?:\.\d{1,2})?\b/);
+                    if (matchDigit && !blocklistYears.includes(matchDigit[0])) {
+                        let parsedVal = parseFloat(matchDigit[0]);
+                        if (parsedVal > 0) {
+                            finalAmt = parsedVal;
+                            break;
                         }
                     }
                 }
             }
 
-            // 🔥 STEP 4: Reverse search fallback (Aakhir se check karein kyunki total raqam aakhir me hoti hai)
+            // 🔥 STEP 3: Fallback Regex Matcher (Agar line block fail ho jaye)
+            if (!finalAmt) {
+                const smartKeywordsRegex = /(?:rs|pkr|amount|payable|total|amt)\.?\s*[:=\-\s]*\s*([0-9,\s\.]+)/i;
+                const match = parsedStr.match(smartKeywordsRegex);
+                if (match && match[1]) {
+                    let cleanNumStr = match[1].replace(/,/g, "").replace(/\s/g, "").trim();
+                    const secondaryMatch = cleanNumStr.match(/^\d+(?:\.\d{1,2})?/);
+                    if (secondaryMatch && !blocklistYears.includes(secondaryMatch[0])) {
+                        let calculatedValue = parseFloat(secondaryMatch[0]);
+                        if (calculatedValue > 0) finalAmt = calculatedValue;
+                    }
+                }
+            }
+
+            // 🔥 STEP 4: Reverse logic check (Agar kuch bhi na bacha ho, toh end se valid logical amount uthayega)
             if (!finalAmt) {
                 let absoluteClean = parsedStr.replace(/,/g, "");
-                const remainingNumbers = absoluteClean.match(/\d+(?:\.\d{1,2})?/g);
+                const remainingNumbers = absoluteClean.match(/\b\d+(?:\.\d{1,2})?\b/g);
                 if (remainingNumbers) {
                     for (let i = remainingNumbers.length - 1; i >= 0; i--) {
                         let currentNum = remainingNumbers[i];
@@ -425,6 +428,7 @@
             }
         }
 
+        // Company title analysis filtering
         if (rawText.toUpperCase().includes("SSGC")) {
             displayDetail = "SSGC Bill Paid";
         } else if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
@@ -516,7 +520,6 @@
     }
 
     function saveUser() {
-        // 🔥 FIXED: u-pass ko correct ID assignment de di hai taake script crash na ho
         const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
         if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
     }
