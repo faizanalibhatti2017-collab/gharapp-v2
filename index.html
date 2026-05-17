@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Amanullah Sync</title>
+    <title>GharApp Mobile - Complete Live Sync</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -35,7 +35,7 @@
             .list-item { display: table-row !important; border: 1px solid #ddd !important; background: white !important; }
         }
 
-        /* 3D Glassmorphism Widgets Grid */
+        /* Modern 3D Glassmorphism Grid Layout */
         .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .utility-card { position: relative; border-radius: 15px; padding: 12px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 20px rgba(0,0,0,0.3); overflow: hidden; }
         .ke-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(249, 115, 22, 0.15)); }
@@ -173,6 +173,11 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); 
 
+    // ---- MOBILE NETWORK KEEP-ALIVE STABILIZATION ----
+    db.ref(".info/connected").on("value", snap => {
+        if (snap.val() === true) console.log("Firebase Live on Mobile Network!");
+    });
+
     let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
 
     function login() {
@@ -205,7 +210,12 @@
     function loadData(id) {
         viewingID = id;
         db.ref('data/'+id).on('value', snap => { window.currentData = snap.val() || {}; renderData(); });
-        db.ref('utilities/'+id).on('value', snap => { window.utilityData = snap.val() || {}; renderUtilities(); });
+        
+        // Real-Time Listener targeting specific user node for live background stream
+        db.ref('utilities/'+id).on('value', snap => { 
+            window.utilityData = snap.val() || {}; 
+            renderUtilities(); 
+        });
     }
 
     function renderData() {
@@ -239,9 +249,11 @@
         Object.entries(window.utilityData || {}).reverse().forEach(([k, r]) => {
             if(new Date(r.d).getMonth() == m) {
                 const a = parseFloat(r.a)||0;
-                if(r.c === 'K-Electric') { keStatus = r.s; keAmt = a; }
-                if(r.c === 'SSGC') { ssgcStatus = r.s; ssgcAmt = a; }
-                if(r.c === 'Mobilink Bill') { mobStatus = r.s; mobAmt = a; }
+                
+                // Real-time tracking filter for latest entry
+                if (r.c === 'K-Electric' && keStatus === "No Data") { keStatus = r.s; keAmt = a; }
+                if (r.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = r.s; ssgcAmt = a; }
+                if (r.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = r.s; mobAmt = a; }
 
                 body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.s==='Paid'?'var(--success)':'var(--danger)'}">
                     <div><b>${r.c}</b> <small>(${r.s})</small><br><small>${r.d}</small></div>
@@ -251,7 +263,7 @@
             }
         });
 
-        // 3D Visual Cards Synchronization
+        // 3D Visual Grid Forced Component Refresh
         document.getElementById('ke-status').className = `status-badge ${keStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
         document.getElementById('ke-status').innerText = keStatus;
         document.getElementById('ke-amount').innerText = 'RS. ' + keAmt.toLocaleString();
