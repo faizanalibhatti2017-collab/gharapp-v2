@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Professional Bulletproof Scanner</title>
+    <title>GharApp Mobile - Intelligent Smart Scanner</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -359,7 +359,7 @@
         }
     }
 
-    // 🔥 BULLETPROOF MULTI-KEYWORD AMOUNT DETECTOR & CLEANER
+    // ⚡ REAL-TIME SMART PARSER FOR BILLING CODES & DENSE RECEIVED DATA
     function processBruteForceScanEntry(scannedCode) {
         stopCameraEngine();
         const today = new Date().toISOString().split('T')[0];
@@ -367,52 +367,51 @@
         let displayDetail = rawText;
         let finalAmt = null;
 
-        // 1. Agar barcode mein sirf seedha seedha number ho (jaise price tags)
+        // 1. Agar QR code mein sirf pure number ho (jaise product price tags)
         if (!isNaN(rawText) && parseFloat(rawText) > 0) {
             finalAmt = parseFloat(rawText);
-            displayDetail = "Scanned Price Tag";
         } else {
-            // 2. Heavy Regex Pattern: Jo Rs, Rs., RS, Pkr, PKR, Amount, Payable, Total ko har haal mein scan karega
-            // Yeh keywords ke baad aane waale symbols (:, =, space, /-) ko ignore karke numbers pakadta hai
-            const strictRegex = /(?:rs\.?|pkr|amount|amt|payable|total)(?:\s*[:=\s\-]*\s*)(\d+(?:\.\d{1,2})?)/i;
-            const match = rawText.match(strictRegex);
+            // 2. High-Grade Regex Pattern: Jo rs, rs., pkr, amount, amt, payable, total sab dhoondhega
+            // Yeh keywords aur digits ke beech ke symbols/spaces ( جیسے :, =, space, /-) ko bakhubi handle karega
+            const intelligentRegex = /(?:rs\.?|pkr|amount|amt|payable|total)(?:\s*[:=\s\-]*\s*)(\d+(?:\.\d{1,2})?)/i;
+            const match = rawText.match(intelligentRegex);
 
             if (match && match[1]) {
                 finalAmt = parseFloat(match[1]);
             } else {
-                // 3. Smart Fallback Tracker: Agar keywords na milen, to text mein se aisi digits nikalo jo 3 se 6 aankrhon ki hon (e.g. 550, 4500, 24500)
-                // Yeh filters lagaye hain taake 11-digit ki Consumer ID ya long dates code ko amount na samajh le
-                const generalNumbers = rawText.match(/\d+/g);
-                if (generalNumbers) {
-                    for (let num Str of generalNumbers) {
+                // 3. Smart Fallback Tracker: Agar keywords bilkul na milen, to data string mein se 3 se 6 digits ka dynamic logical number uthayega
+                // Yeh filters consumer IDs ya dates ko galti se amount samajhne se roktay hain
+                const extractedNumbers = rawText.match(/\d+/g);
+                if (extractedNumbers) {
+                    for (let numStr of extractedNumbers) {
                         if (numStr.length >= 3 && numStr.length <= 6) {
                             finalAmt = parseFloat(numStr);
-                            break; // Pehla valid amount number milte hi stop
+                            break; 
                         }
                     }
                 }
             }
-
-            // Billing Title Beauty Config
-            if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
-                displayDetail = "K-Electric Bill Receipt Data";
-            } else {
-                displayDetail = rawText.length > 30 ? "Scan: " + rawText.substring(0, 27) + "..." : "Scan: " + rawText;
-            }
         }
 
-        // Automatic validation processing check
+        // Title intelligence filter config
+        if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
+            displayDetail = "K-Electric Bill Receipt Data";
+        } else {
+            displayDetail = rawText.length > 30 ? "Scan: " + rawText.substring(0, 27) + "..." : "Scan: " + rawText;
+        }
+
+        // Processing decision block
         if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
             executeDatabasePush(today, displayDetail, finalAmt, rawText);
         } else {
-            // Agar bilkul fail ho jaye to instant fallback prompt box
+            // Safe fallback pop up window only if extraction draws a blank
             setTimeout(() => {
-                const userAmtInput = prompt(`Code Scanned!\nRaw Text: "${rawText.substring(0,50)}"\n\nSystem Amount Auto-Detection Failed.\nPlease Enter Amount manually (RS):`, "0");
+                const userAmtInput = prompt(`Code Detected Successfully!\n\nData: "${rawText.substring(0,40)}"\n\nEnter Bill / Product Amount (RS):`, "0");
                 finalAmt = parseFloat(userAmtInput);
                 if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
                     executeDatabasePush(today, displayDetail, finalAmt, rawText);
                 } else {
-                    alert("Scan cancelled.");
+                    alert("Operation cancelled or invalid amount entered.");
                     startCameraEngine();
                 }
             }, 150);
@@ -426,7 +425,7 @@
             a: amount,
             t: 'exp'
         }).then(() => {
-            alert(`✅ Saved Instantly!\n\n${detail}\nAmount: RS. ${amount.toLocaleString()}`);
+            alert(`✅ Record Saved Successfully!\n\nDetail: ${detail}\nAmount Added: RS. ${amount.toLocaleString()}`);
             switchTab('dash', document.querySelector('.nav-btn'));
         }).catch(err => {
             alert("Database Error: " + err);
@@ -484,7 +483,7 @@
     }
 
     function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value, rl = document.getElementById('u-role').value;
+        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
         if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
     }
 
