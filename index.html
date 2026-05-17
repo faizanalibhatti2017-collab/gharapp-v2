@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Hybrid QR/Barcode Sync</title>
+    <title>GharApp Mobile - Super Scanner</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -123,9 +123,9 @@
 
     <div id="scanner-section" class="card no-print" style="text-align: center;">
         <button class="btn-action" style="background: linear-gradient(135deg, #10b981, #059669); margin-bottom: 10px;" onclick="toggleScanner()">
-            <i class="fa fa-qrcode"></i> SCAN KE BILL QR / BARCODE
+            <i class="fa fa-qrcode"></i> OPEN CAMERA TO SCAN
         </button>
-        <div id="reader" style="display: none; width: 100%; max-width: 290px; margin: auto; border-radius: 12px; overflow: hidden; border: 3px solid var(--success);"></div>
+        <div id="reader" style="display: none; width: 100%; max-width: 300px; margin: auto; border-radius: 12px; overflow: hidden; border: 3px solid var(--success);"></div>
     </div>
 
     <div class="card no-print">
@@ -292,9 +292,19 @@
         if(readerDiv.style.display === 'none') {
             readerDiv.style.display = 'block';
             html5QrCode = new Html5Qrcode("reader");
+            
+            // Advanced configurations for high-density QR reading
+            const config = { 
+                fps: 30, 
+                qrbox: function(viewfinderWidth, viewfinderHeight) {
+                    return { width: 260, height: 260 };
+                },
+                aspectRatio: 1.0
+            };
+
             html5QrCode.start(
                 { facingMode: "environment" },
-                { fps: 25, qrbox: { width: 250, height: 250 } }, // Enlarged box for high-density QR Codes
+                config,
                 (decodedText) => {
                     stopScanner();
                     processAutomaticScanEntry(decodedText);
@@ -315,21 +325,20 @@
         }
     }
 
-    // ADVANCED PARSER FOR REAL K-ELECTRIC QR CODE
     function processAutomaticScanEntry(scannedCode) {
+        // Core Test Alert: Pata chale mobile ne read kya kiya hai
+        alert("Scanned Code Raw Data:\n" + scannedCode);
+
         let matched = false;
         let isRealKEBill = false;
 
-        // Check if scanned value matches KE website link or custom QR structure
-        if(scannedCode.toLowerCase().includes("ke.com.pk") || scannedCode.toLowerCase().includes("ke") || scannedCode.length > 25) {
+        if(scannedCode.toLowerCase().includes("ke.com.pk") || scannedCode.toLowerCase().includes("ke") || scannedCode.length > 20) {
             isRealKEBill = true;
         }
 
         Object.entries(window.utilityData || {}).forEach(([k, r]) => {
             const customAppBarcode = `BILL-${k.substring(1,9).toUpperCase()}`;
             
-            // Match Case 1: App generated barcode link matches
-            // Match Case 2: Real K-Electric QR Code is scanned AND node in DB is 'K-Electric' AND it's 'Unpaid'
             if(scannedCode === customAppBarcode || (isRealKEBill && r.c === "K-Electric" && r.s === "Unpaid")) {
                 matched = true;
                 if(r.s === 'Paid') {
@@ -337,27 +346,23 @@
                     return;
                 }
                 
-                if(confirm(`Real K-Electric Bill Detected!\nAmount: RS. ${r.a}\n\nKya aap iski auto-payment aur expense entry add karna chahte hain?`)) {
+                if(confirm(`Real K-Electric Bill Detected!\nAmount: RS. ${r.a}\n\nKya aap iski auto-payment save karna chahte hain?`)) {
                     const today = new Date().toISOString().split('T')[0];
-                    
-                    // 1. Update utility node to Paid
                     db.ref(`utilities/${viewingID}/${k}`).update({ s: 'Paid', d: today });
-                    
-                    // 2. Add automatic entry inside Main Dashboard Ledger
                     db.ref('data/'+viewingID).push({
                         d: today,
                         n: `${r.c} Paid (Real QR Scan)`,
                         a: r.a,
                         t: 'exp'
                     }).then(() => {
-                        alert("Zabardast! Real K-Electric Bill entry auto-pay ho chuki hai! 👍");
+                        alert("Zabardast! Entry auto-pay ho chuki hai! 👍");
                     });
                 }
             }
         });
         
         if(matched === false) {
-            alert("Scan Failure: GharApp Database mein is mahine ka koi 'Unpaid' K-Electric record nahi mila jispar yeh entry apply ho sake!");
+            alert("Scan Error: GharApp ke 'Bills Control' mein is mahine ka koi bhi 'Unpaid' K-Electric bill save nahi mila!");
         }
     }
 
