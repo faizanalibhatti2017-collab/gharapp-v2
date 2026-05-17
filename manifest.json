@@ -3,8 +3,8 @@
   "short_name": "GharApp",
   "start_url": "index.html",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#007bff",
+  "background_color": "#0b0f1a",
+  "theme_color": "#f97316",
   "icons": [
     {
       "src": "logo.jpg",
@@ -16,5 +16,14 @@
       "sizes": "512x512",
       "type": "image/jpeg"
     }
-  ]
+  ],
+  "share_target": {
+    "action": "index.html",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
 }
