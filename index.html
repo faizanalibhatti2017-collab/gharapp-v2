@@ -280,7 +280,7 @@
                     <div><b>${r.c}</b> <small>(${r.s})</small><br><small>${r.d}</small></div>
                     <div><svg class="barcode-img" id="bc-${k}"></svg></div>
                     <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
-                    <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()"></i></div>
+                    <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()}</i></div>
                 </div>`;
 
                 setTimeout(() => {
@@ -366,37 +366,48 @@
         let displayDetail = rawText;
         let finalAmt = null;
 
-        // 1. Years, Dates aur Times ko string se remove karein taake confusion na ho
-        let cleanText = rawText.replace(/\b(2024|2025|2026|2027|2028|2029|2030)\b/g, " ");
-        cleanText = cleanText.replace(/\d{2,4}[-\/\.]\d{2}[-\/\.]\d{2,4}/g, " ");
-        cleanText = cleanText.replace(/\d{2,4}[-\/\.][a-zA-Z]{3}[-\/\.]\d{2,4}/g, " ");
-        cleanText = cleanText.replace(/\d{2}:\d{2}(:\d{2})?/g, " ");
-
-        // 2. Sirf woh line uthayein jahan amount key-terms mojood hon
-        const lines = cleanText.split('\n');
-        for (let line of lines) {
-            if (/(?:amount|pkr|rs|payable|total|amt)/i.test(line)) {
-                let cleanLine = line.replace(/,/g, ""); 
-                const match = cleanLine.match(/\b\d+(?:\.\d{1,2})?\b/);
-                if (match) {
-                    let val = parseFloat(match[0]);
-                    if (val > 0 && val !== 2024 && val !== 2025 && val !== 2026 && val !== 2027) {
-                        finalAmt = val;
-                        break;
+        // 1. Pure text lines mein filter aur safe parsing layout targets matching structure base setup
+        const lines = rawText.split('\n');
+        
+        // 2. Direct exact lines filter mapping layout for HBL Gmail structural hierarchy patterns
+        for (let i = 0; i < lines.length; i++) {
+            let currentLine = lines[i].toLowerCase();
+            
+            // Strong match pattern targeting HBL email body structural variations
+            if (currentLine.includes("amount") || currentLine.includes("pkr") || currentLine.includes("rs.") || currentLine.includes("paid")) {
+                let segmentText = lines[i];
+                
+                // If label doesn't contain digits, grab next line to handle multi-line block hierarchies
+                if (!/\d/.test(segmentText) && i + 1 < lines.length) {
+                    segmentText += " " + lines[i + 1];
+                }
+                
+                let cleanLineText = segmentText.replace(/,/g, ""); 
+                const matchNumbers = cleanLineText.match(/\b\d+(?:\.\d{1,2})?\b/g);
+                
+                if (matchNumbers) {
+                    for (let numStr of matchNumbers) {
+                        let parsedVal = parseFloat(numStr);
+                        // Strict validation filter ignoring transaction dates, years or time identifiers
+                        if (parsedVal > 0 && parsedVal !== 2024 && parsedVal !== 2025 && parsedVal !== 2026 && parsedVal !== 2027 && parsedVal !== 11) {
+                            finalAmt = parsedVal;
+                            break;
+                        }
                     }
                 }
             }
+            if (finalAmt) break;
         }
 
-        // 3. Fallback logic agar target line match na ho
+        // 3. Absolute direct safe global regex matching fallback block
         if (!finalAmt) {
-            let absoluteClean = cleanText.replace(/,/g, "");
-            const allNumbers = absoluteClean.match(/\b\d+(?:\.\d{1,2})?\b/g);
-            if (allNumbers) {
-                for (let i = allNumbers.length - 1; i >= 0; i--) {
-                    let val = parseFloat(allNumbers[i]);
-                    if (val > 0 && val !== 2024 && val !== 2025 && val !== 2026 && val !== 2027 && val < 999999) {
-                        finalAmt = val;
+            let structuralCleanText = rawText.replace(/,/g, "");
+            const allExtractedDigits = structuralCleanText.match(/\b\d+(?:\.\d{1,2})?\b/g);
+            if (allExtractedDigits) {
+                for (let num of allExtractedDigits) {
+                    let evaluationVal = parseFloat(num);
+                    if (evaluationVal > 0 && evaluationVal !== 2024 && evaluationVal !== 2025 && evaluationVal !== 2026 && evaluationVal !== 2027 && evaluationVal !== 11 && evaluationVal < 99999) {
+                        finalAmt = evaluationVal;
                         break;
                     }
                 }
