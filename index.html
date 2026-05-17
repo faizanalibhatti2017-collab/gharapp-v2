@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Live Bill Tracker</title>
+    <title>GharApp Mobile - Live Gmail Sync</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -26,7 +26,6 @@
         .btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-weight: bold; cursor: pointer; }
         .list-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* BILL PRINT LAYOUT */
         @media print {
             body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
             .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash { display: none !important; }
@@ -34,10 +33,9 @@
             .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; }
             #ledger-body, #utility-body { display: table !important; width: 100% !important; border-collapse: collapse !important; }
             .list-item { display: table-row !important; border: 1px solid #ddd !important; background: white !important; }
-            .list-item div { display: table-cell !important; padding: 10px !important; border-bottom: 1px solid #eee !important; }
         }
 
-        /* 3D Glassmorphism Widgets Grid */
+        /* Modern 3D Glassmorphism Grid Layout */
         .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .utility-card { position: relative; border-radius: 15px; padding: 12px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 20px rgba(0,0,0,0.3); overflow: hidden; }
         .ke-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(249, 115, 22, 0.15)); }
@@ -97,7 +95,7 @@
 
 <div id="tab-util" class="page">
     <div id="share-alert" class="card" style="display:none; background:rgba(16,185,129,0.15); border-color:var(--success); color:#f1f5f9;">
-        <i class="fa fa-check-circle" style="color:var(--success)"></i> <span id="share-alert-msg">Live data synced!</span>
+        <i class="fa fa-envelope" style="color:var(--primary)"></i> <span id="share-alert-msg">Gmail Sync Alive</span>
     </div>
 
     <div class="utility-grid">
@@ -125,7 +123,7 @@
     </div>
 
     <div class="card no-print">
-        <h4 style="margin:0 0 10px 0;">Add / Edit Bill Record</h4>
+        <h4 style="margin:0 0 10px 0;">Add / Edit Bill Record Manually</h4>
         <input type="date" id="u-date">
         <select id="u-company">
             <option value="K-Electric">K-Electric</option>
@@ -140,7 +138,7 @@
         <button class="btn-action" onclick="saveUtilityBill()">SAVE BILL RECORD</button>
     </div>
 
-    <h4 style="margin:15px 0 10px 0;">Billing History</h4>
+    <h4 style="margin:15px 0 10px 0;">Billing History (Live Sync)</h4>
     <div id="utility-body"></div>
 </div>
 
@@ -163,7 +161,7 @@
     <button class="nav-btn active" onclick="switchTab('dash', this)"><i class="fa fa-chart-line"></i>Dash</button>
     <button class="nav-btn" onclick="switchTab('util', this)"><i class="fa fa-receipt"></i>Bills Control</button>
     <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab('users', this)"><i class="fa fa-users-cog"></i>Users</button>
-    <button class="nav-btn" onclick="preparePrint()"><i class="fa fa-print"></i>Print</button>
+    <button class="nav-btn" onclick="window.print()"><i class="fa fa-print"></i>Print</button>
 </nav>
 
 <script>
@@ -198,7 +196,7 @@
             document.getElementById('admin-nav-item').style.display = 'block';
             loadMonitor();
         }
-        setupDates(); loadData(myID); listenToSharedData();
+        setupDates(); loadData(myID);
     }
 
     function switchTab(t, el) {
@@ -234,20 +232,16 @@
         document.getElementById('t-bal').innerText = (ti-te).toLocaleString();
     }
 
-    // REAL LIVE PENDING DATA PARSER Core Engine
     function renderUtilities() {
         const m = parseInt(document.getElementById('sel-month').value);
         const body = document.getElementById('utility-body'); 
-        if(!body) return;
-        body.innerHTML = "";
+        if(!body) return; body.innerHTML = "";
         
         let keStatus = "No Data", ssgcStatus = "No Data", mobStatus = "No Data";
         let keAmt = 0, ssgcAmt = 0, mobAmt = 0;
 
-        // Loop checks records for the selected month to map onto the 3D Widget layout
         Object.entries(window.utilityData || {}).reverse().forEach(([k, r]) => {
-            const billDate = new Date(r.d);
-            if(billDate.getMonth() == m) {
+            if(new Date(r.d).getMonth() == m) {
                 const a = parseFloat(r.a)||0;
                 if(r.c === 'K-Electric') { keStatus = r.s; keAmt = a; }
                 if(r.c === 'SSGC') { ssgcStatus = r.s; ssgcAmt = a; }
@@ -261,17 +255,15 @@
             }
         });
 
-        // K-Electric UI Sync
+        // 3D Widgets Text/Color Synchronization from Gmail Stream
         document.getElementById('ke-status').className = `status-badge ${keStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
         document.getElementById('ke-status').innerText = keStatus;
         document.getElementById('ke-amount').innerText = 'RS. ' + keAmt.toLocaleString();
 
-        // SSGC UI Sync
         document.getElementById('ssgc-status').className = `status-badge ${ssgcStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
         document.getElementById('ssgc-status').innerText = ssgcStatus;
         document.getElementById('ssgc-amount').innerText = 'RS. ' + ssgcAmt.toLocaleString();
 
-        // Mobilink Live Real-Time Pending Tracker Sync
         document.getElementById('mob-status').className = `status-badge ${mobStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
         document.getElementById('mob-status').innerText = mobStatus;
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
@@ -284,7 +276,6 @@
         const s = automatedData ? automatedData.s : document.getElementById('u-status').value;
         
         if(d && a) {
-            // Agar pehle se us month ka koi Unpaid record chal raha ho aur ab Paid SMS aaye, to purane unpaid ko replace karne ki logic:
             if(s === 'Paid') {
                 Object.entries(window.utilityData || {}).forEach(([k, r]) => {
                     if(r.c === c && new Date(r.d).getMonth() === new Date(d).getMonth() && r.s === 'Unpaid') {
@@ -293,60 +284,10 @@
                 });
                 db.ref('data/'+viewingID).push({d, n: c + " Paid", a, t: 'exp'});
             }
-
             db.ref('utilities/'+viewingID).push({d, c, a, s}).then(() => {
-                if(!automatedData) {
-                    alert("Bill record updated successfully!");
-                    document.getElementById('u-amt').value = "";
-                }
+                if(!automatedData) { alert("Record Saved!"); document.getElementById('u-amt').value = ""; }
             });
-        } else {
-            alert("Please fill data correctly!");
         }
-    }
-
-    // INTEL SMS WEBHOOK: AB YEH UNPAID LIVE PENDING BILLS BHI AUTOMATIC READ KAREGA
-    function listenToSharedData() {
-        const parsedUrl = new URL(window.location);
-        const sharedTitle = parsedUrl.searchParams.get('title');
-        const sharedText = parsedUrl.searchParams.get('text');
-        
-        if (sharedTitle || sharedText) {
-            switchTab('util', document.querySelectorAll('.nav-btn')[1]);
-            const fullContent = (sharedTitle + " " + sharedText).replace(/\s+/g, '').toUpperCase();
-            let detectedCompany = ""; 
-            let detectedAmount = 0;
-            let detectedStatus = "Unpaid"; // Default text parser setup as pending
-            const todayStr = new Date().toISOString().split('T')[0];
-
-            if(fullContent.includes("0400014984761")) { detectedCompany = "K-Electric"; }
-            else if(fullContent.includes("8927590000")) { detectedCompany = "SSGC"; }
-            else if(fullContent.includes("03202491025") || fullContent.includes("3202491025")) { detectedCompany = "Mobilink Bill"; }
-            else {
-                if(fullContent.includes("KE") || fullContent.includes("ELECTRIC")) { detectedCompany = "K-Electric"; }
-                else if(fullContent.includes("SSGC") || fullContent.includes("SUI")) { detectedCompany = "SSGC"; }
-                else if(fullContent.includes("MOBILINK") || fullContent.includes("JAZZ") || fullContent.includes("WARID")) { detectedCompany = "Mobilink Bill"; }
-            }
-            
-            // Checking whether SMS is a payment confirmation or an unpaid bill generation alert
-            if (fullContent.includes("PAID") || fullContent.includes("SUCCESSFUL") || fullContent.includes("THANKYOU") || fullContent.includes("RECEIVE")) {
-                detectedStatus = "Paid";
-            }
-
-            const originalText = (sharedTitle + " " + sharedText).toUpperCase();
-            const amountMatch = originalText.match(/(RS|PKR|AMT|AMOUNT)\.?\s*([0-9,]+)/i) || originalText.match(/\b([0-9]{3,6})\b/);
-            if(amountMatch) { detectedAmount = amountMatch[0].replace(/[^0-9]/g, ''); }
-
-            if(detectedCompany && detectedAmount > 0) {
-                saveUtilityBill({ d: todayStr, c: detectedCompany, a: detectedAmount, s: detectedStatus });
-                document.getElementById('share-alert').style.display = 'block';
-                document.getElementById('share-alert-msg').innerText = `Live Shared Sync: ${detectedCompany} - ${detectedStatus} Amount RS. ${parseFloat(detectedAmount).toLocaleString()} added!`;
-            }
-        }
-    }
-
-    function preparePrint() {
-        window.print();
     }
 
     function loadMonitor() {
@@ -373,15 +314,13 @@
     }
 
     function editUser(id, pass, role) {
-        document.getElementById('u-id').value = id;
-        document.getElementById('u-pass').value = pass;
-        document.getElementById('u-role').value = role;
+        document.getElementById('u-id').value = id; document.getElementById('u-pass').value = pass; document.getElementById('u-role').value = role;
         document.getElementById('u-form-title').innerText = "Edit: " + id.toUpperCase();
     }
 
     function saveUser() {
         const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
-        if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); document.getElementById('u-form-title').innerText="User Control"; }); }
+        if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
     }
 
     function addEntry() {
@@ -390,8 +329,7 @@
     }
 
     function setupDates() {
-        const n = new Date(); document.getElementById('i-date').valueAsDate = n;
-        document.getElementById('u-date').valueAsDate = n;
+        const n = new Date(); document.getElementById('i-date').valueAsDate = n; document.getElementById('u-date').valueAsDate = n;
         const ms = document.getElementById('sel-month');
         ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
     }
