@@ -53,12 +53,12 @@
         .status-paid { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
         .status-unpaid { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
         
-        /* Barcode Engine Elements */
+        /* Barcode Render View Styles */
         .barcode-svg { background: white; padding: 4px; border-radius: 6px; max-width: 120px; height: auto; display: block; }
         .scan-inline-btn { background: #1e293b; border: 1px solid rgba(255,255,255,0.1); color: #f43f5e; padding: 8px 12px; border-radius: 8px; font-size: 13px; font-weight: 500; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; float: right; margin-top: -4px; transition: 0.2s; }
         .scan-inline-btn:active { transform: scale(0.95); background: rgba(244,63,94,0.1); }
         
-        /* FIXED SQUARE FRAME CONTAINER FOR FULL SCANNER */
+        /* PERFECTLY PROPORTIONED SQUARE SCANNER CONTAINER UI */
         .scanner-square-container { width: 300px; height: 300px; margin: auto; border-radius: 15px; overflow: hidden; border: 3px dashed var(--primary); background: #111827; display: flex; align-items: center; justify-content: center; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
         #reader { width: 100% !important; height: 100% !important; }
         #reader video { width: 100% !important; height: 100% !important; object-fit: cover !important; }
@@ -160,7 +160,7 @@
 <div id="tab-scanner" class="page">
     <div class="card" style="text-align: center;">
         <h3 style="color:var(--primary); margin-top:0;"><i class="fa fa-barcode"></i> Barcode Camera Scanner</h3>
-        <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;">Bill ka barcode frame me kahin bhi laayein, camera khud hi poore page se scan kar lega.</p>
+        <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;">Bill ka barcode screen me kahin bhi laayein, camera poore frame se khud hi auto-detect kar lega.</p>
         
         <div class="scanner-square-container">
             <div id="reader"></div>
@@ -239,8 +239,9 @@
         document.getElementById('tab-'+t).classList.add('active');
         if(el) el.classList.add('active');
         
+        // Tab router automation triggers
         if(t === 'scanner') {
-            setTimeout(startLiveCamera, 100);
+            setTimeout(startLiveCamera, 120);
         } else {
             stopLiveCamera();
         }
@@ -287,6 +288,7 @@
                 if(r.c === 'SSGC') { ssgcStatus = r.s; ssgcAmt = a; }
                 if(r.c === 'Mobilink Bill') { mobStatus = r.s; mobAmt = a; }
 
+                // Unique Barcode Value mapping for vector engine tracking
                 const barcodeIdStr = `GAP-${k.substring(1,9).toUpperCase()}`;
 
                 body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.s==='Paid'?'var(--success)':'var(--danger)'}">
@@ -296,14 +298,17 @@
                     <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()"></i></div>
                 </div>`;
 
+                // Render barcodes dynamically using JSBarcode engine
                 setTimeout(() => {
-                    JsBarcode(`#barcode-node-${k}`, barcodeIdStr, {
-                        format: "CODE128",
-                        width: 1.3,
-                        height: 38,
-                        fontSize: 10,
-                        displayValue: true
-                    });
+                    if(document.getElementById(`barcode-node-${k}`)) {
+                        JsBarcode(`#barcode-node-${k}`, barcodeIdStr, {
+                            format: "CODE128",
+                            width: 1.3,
+                            height: 38,
+                            fontSize: 10,
+                            displayValue: true
+                        });
+                    }
                 }, 50);
             }
         });
@@ -321,7 +326,7 @@
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
     }
 
-    // --- FULL-FRAME INSTANT SCAN ENGINE CONTROLLER ---
+    // --- FULL-FRAME NATIVE AUTO-DETECTION CONTROLLER (KAHIN SE BHI AUTOMATIC DISCOVER KAREIN) ---
     function startLiveCamera() {
         const placeholder = document.getElementById('scanner-placeholder');
         if(placeholder) placeholder.style.display = 'none';
@@ -329,13 +334,13 @@
         if(!html5QrCode) {
             html5QrCode = new Html5Qrcode("reader");
             
-            // REMOVED ALL FIXED QRBOX BOUNDS FOR FULL-FRAME DISCOVERY
+            // Fixed aspect bounds / target limiters completely removed for total view scanning
             html5QrCode.start(
                 { facingMode: "environment" },
                 { 
-                    fps: 30, // Faster tracking frames
+                    fps: 30, // Ultra high-speed capture frames
                     experimentalFeatures: {
-                        useBarCodeDetectorIfSupported: true // Native high-speed acceleration
+                        useBarCodeDetectorIfSupported: true // Fast hardware integration
                     }
                 },
                 (scannedDataText) => {
@@ -344,7 +349,7 @@
                 },
                 (error) => {}
             ).catch(err => {
-                console.error("Camera fail:", err);
+                console.error("Camera open fail:", err);
                 if(placeholder) placeholder.style.display = 'block';
             });
         }
@@ -356,7 +361,7 @@
                 html5QrCode = null;
                 const placeholder = document.getElementById('scanner-placeholder');
                 if(placeholder) placeholder.style.display = 'block';
-            }).catch(err => console.log("Stopped smoothly."));
+            }).catch(err => console.log("Stopped."));
         }
     }
 
@@ -376,15 +381,17 @@
                 if(confirm(`Bill Detected via Barcode!\nCompany: ${record.c}\nAmount: RS. ${record.a}\n\nKya aap automatic payment expense entry ledger me save karna chahte hain?`)) {
                     const todayDateStr = new Date().toISOString().split('T')[0];
                     
+                    // Update bill status to Paid in utility module
                     db.ref(`utilities/${viewingID}/${key}`).update({ s: 'Paid', d: todayDateStr });
                     
+                    // Push structural expense item entry into finance ledger core database
                     db.ref('data/'+viewingID).push({
                         d: todayDateStr,
                         n: `${record.c} Paid (Auto-Scan)`,
                         a: record.a,
                         t: 'exp'
                     }).then(() => {
-                        alert("Done! Bill status paid ho chuki hai aur main entry ledger me save mojud hai!");
+                        alert("Done! Bill status paid ho chuki hai aur main ledger me expense track ho gaya!");
                         switchTab('dash', document.querySelector('.nav-btn'));
                     });
                 }
