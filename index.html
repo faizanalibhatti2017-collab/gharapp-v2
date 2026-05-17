@@ -359,87 +359,87 @@
         }
     }
 
-    function processBruteForceScanEntry(scannedCode) {
-        stopCameraEngine();
-        const today = new Date().toISOString().split('T')[0];
-        let rawText = scannedCode.trim();
-        let displayDetail = rawText;
-        let finalAmt = null;
+    // ⚡ ULTRA-POWERFUL DYNAMIC INTELLIGENT PARSER FOR EMAIL/TEXT
 
-        // 1. Agar text direct text patterns me nahi hai aur pure digits hain (Jaise raw numeric barcode values)
-        let numericTest = rawText.replace(/[\s,]/g, "");
-        if (/^\d+(\.\d{1,2})?$/.test(numericTest)) {
-            let parsedVal = parseFloat(numericTest);
-            if (parsedVal > 0 && parsedVal !== 2024 && parsedVal !== 2025 && parsedVal !== 2026 && parsedVal !== 2027) {
-                finalAmt = parsedVal;
+
+
+
+
+function processBruteForceScanEntry(scannedCode) {
+                    if (blocklistYears.includes(v)) return false;
+
+                    // Reject dates/day/month style numbers
+                    if (n <= 31) return false;
+
+                    // Reject impossible huge values
+                    if (n > 999999) return false;
+
+                    return true;
+                });
+
+            if (filtered.length > 0) {
+                finalAmt = parseFloat(filtered[filtered.length - 1]);
             }
-        }
-
-        // 2. Agar text block base structural format me hai
-        if (!finalAmt) {
-            const lines = rawText.split('\n');
-            for (let i = 0; i < lines.length; i++) {
-                let currentLine = lines[i].toLowerCase();
-                
-                if (currentLine.includes("amount") || currentLine.includes("pkr") || currentLine.includes("rs") || currentLine.includes("paid") || currentLine.includes("total")) {
-                    let segmentText = lines[i];
-                    
-                    if (!/\d/.test(segmentText) && i + 1 < lines.length) {
-                        segmentText += " " + lines[i + 1];
-                    }
-                    
-                    let cleanLineText = segmentText.replace(/,/g, ""); 
-                    const matchNumbers = cleanLineText.match(/\b\d+(?:\.\d{1,2})?\b/g);
-                    
-                    if (matchNumbers) {
-                        for (let numStr of matchNumbers) {
-                            let parsedVal = parseFloat(numStr);
-                            if (parsedVal > 0 && parsedVal !== 2024 && parsedVal !== 2025 && parsedVal !== 2026 && parsedVal !== 2027) {
-                                finalAmt = parsedVal;
-                                break;
-                            }
-                        }
-                    }
-                }
-                if (finalAmt) break;
-            }
-        }
-
-        // 3. Fallback: Har tarah ke generic floating points aur standalone numbers scan ke liye
-        if (!finalAmt) {
-            let structuralCleanText = rawText.replace(/,/g, "");
-            const allExtractedDigits = structuralCleanText.match(/\b\d+(?:\.\d{1,2})?\b/g);
-            if (allExtractedDigits) {
-                for (let num of allExtractedDigits) {
-                    let evaluationVal = parseFloat(num);
-                    if (evaluationVal > 0 && evaluationVal !== 2024 && evaluationVal !== 2025 && evaluationVal !== 2026 && evaluationVal !== 2027 && evaluationVal < 99999) {
-                        finalAmt = evaluationVal;
-                        break;
-                    }
-                }
-            }
-        }
-
-        if (rawText.toUpperCase().includes("SSGC")) displayDetail = "SSGC Bill Paid";
-        else if (rawText.toLowerCase().includes("kelectric") || rawText.toLowerCase().includes("ke.com.pk")) displayDetail = "K-Electric Bill Paid";
-        else if (rawText.toLowerCase().includes("mobilink")) displayDetail = "Mobilink Bill Paid";
-        else displayDetail = rawText.length > 30 ? "Scan: " + rawText.substring(0, 27) + "..." : "Scan: " + rawText;
-
-        if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
-            executeDatabasePush(today, displayDetail, finalAmt, rawText);
-        } else {
-            setTimeout(() => {
-                const userAmtInput = prompt(`Enter Bill / Product Amount (RS):`, "0");
-                finalAmt = parseFloat(userAmtInput);
-                if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
-                    executeDatabasePush(today, displayDetail, finalAmt, rawText);
-                } else {
-                    alert("Operation cancelled.");
-                    startCameraEngine();
-                }
-            }, 150);
         }
     }
+
+    // =============================
+    // AUTO TITLE
+    // =============================
+
+    if (rawText.toUpperCase().includes("SSGC")) {
+        displayDetail = "SSGC Bill Paid";
+
+    } else if (
+        rawText.toLowerCase().includes("ke.com.pk") ||
+        rawText.toLowerCase().includes("kelectric")
+    ) {
+        displayDetail = "K-Electric Bill Paid";
+
+    } else if (rawText.toLowerCase().includes("mobilink")) {
+        displayDetail = "Mobilink Bill Paid";
+
+    } else {
+        displayDetail = rawText.length > 30
+            ? "Scan: " + rawText.substring(0, 27) + "..."
+            : "Scan: " + rawText;
+    }
+
+    // =============================
+    // SAVE OR ASK USER
+    // =============================
+
+    if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
+
+        executeDatabasePush(today, displayDetail, finalAmt, rawText);
+
+    } else {
+
+        setTimeout(() => {
+
+            const userAmtInput = prompt(
+                `Code Detected Successfully!\n\nData: "${rawText.substring(0,40)}"\n\nEnter Bill / Product Amount (RS):`,
+                "0"
+            );
+
+            finalAmt = parseFloat(userAmtInput);
+
+            if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
+                executeDatabasePush(today, displayDetail, finalAmt, rawText);
+            } else {
+                alert("Operation cancelled or invalid amount entered.");
+                startCameraEngine();
+            }
+
+        }, 150);
+    }
+}
+
+
+
+
+
+
 
     function executeDatabasePush(date, detail, amount, rawCode) {
         db.ref('data/' + viewingID).push({
@@ -506,7 +506,7 @@
     }
 
     function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
+        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value, rl = document.getElementById('u-role').value;
         if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
     }
 
