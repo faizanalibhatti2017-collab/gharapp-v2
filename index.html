@@ -367,42 +367,45 @@
         let displayDetail = rawText;
         let finalAmt = null;
 
-        // 1. Agar QR code mein sirf pure number ho (jaise product price tags)
-        if (!isNaN(rawText) && parseFloat(rawText) > 0) {
+        // Years strict blocklist filter array (In numbers ko amount nahi banne dena)
+        const blocklistYears = ["2024", "2025", "2026", "2027"];
+
+        // 1. Agar QR code mein sirf pure ek number ho aur blocklist year na ho
+        if (!isNaN(rawText) && parseFloat(rawText) > 0 && !blocklistYears.includes(rawText)) {
             finalAmt = parseFloat(rawText);
         } else {
-            // 2. ULTRA-SMART GMAIL PARSER PATTERN: Strictly lines break down karke 'Amount' key dhoondna
-            // Taake 'Date-Time: 18-12-2025' ya subject lines block ho jayen aur strictly core value aaye.
+            // 2. ULTRA-SMART GMAIL PARSER PATTERN: Strictly line by line check karna
             const lines = rawText.split('\n');
             for (let line of lines) {
-                // Amount, Payable ya Total ko match karo jo ke Date line na ho
+                // Amount keywords match karein aur line mein date ya time ka word na ho
                 if (/amount|payable|total|amt/i.test(line) && !/date|time/i.test(line)) {
                     const numberMatch = line.match(/\d+(?:\.\d{1,2})?/);
-                    if (numberMatch) {
+                    if (numberMatch && !blocklistYears.includes(numberMatch[0])) {
                         finalAmt = parseFloat(numberMatch[0]);
                         break;
                     }
                 }
             }
 
-            // 3. Fallback Context Regex (Agar dynamic raw structured text baghair line breaks ke ho)
+            // 3. Fallback Context Regex (Agar plain structured key bina raw line breaks ke ho)
             if (!finalAmt) {
                 const strictRegex = /(?:amount|payable|total|amt)(?:\s*[:=\s\-]*\s*)(\d+(?:\.\d{1,2})?)/i;
                 const match = rawText.match(strictRegex);
-                if (match && match[1]) {
+                if (match && match[1] && !blocklistYears.includes(match[1])) {
                     finalAmt = parseFloat(match[1]);
                 }
             }
 
-            // 4. Logical Fallback Tracker: Agar kuch bhi kaam na kare, tabhi filtered digits check hon
+            // 4. Final Logical Match Filter: Loops through all found digits skipping explicitly 2024-2027
             if (!finalAmt) {
                 const extractedNumbers = rawText.match(/\d+/g);
                 if (extractedNumbers) {
                     for (let numStr of extractedNumbers) {
-                        // Bypass current context dates and years (2024, 2025, 2026)
-                        if (numStr === "2024" || numStr === "2025" || numStr === "2026") {
+                        // Strict Blocklist check execution
+                        if (blocklistYears.includes(numStr)) {
                             continue;
                         }
+                        // Valid range amount size filtering
                         if (numStr.length >= 3 && numStr.length <= 6) {
                             finalAmt = parseFloat(numStr);
                             break; 
@@ -412,7 +415,7 @@
             }
         }
 
-        // Title intelligence filter config
+        // Title company filter config
         if (rawText.toUpperCase().includes("SSGC")) {
             displayDetail = "SSGC Bill Paid";
         } else if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
@@ -427,7 +430,7 @@
         if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
             executeDatabasePush(today, displayDetail, finalAmt, rawText);
         } else {
-            // Safe fallback pop up window only if extraction draws a blank
+            // Manual Prompt Input fallback fallback if data extraction fails
             setTimeout(() => {
                 const userAmtInput = prompt(`Code Detected Successfully!\n\nData: "${rawText.substring(0,40)}"\n\nEnter Bill / Product Amount (RS):`, "0");
                 finalAmt = parseFloat(userAmtInput);
