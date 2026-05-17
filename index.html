@@ -367,30 +367,22 @@
         let displayDetail = rawText;
         let finalAmt = null;
 
-        // Current contextual standard year lists block
         const blocklistYears = ["2024", "2025", "2026", "2027"];
 
-        // 1. Agar text direct akela floating dynamic positive digit number hai
         if (!isNaN(rawText.replace(/,/g, "")) && parseFloat(rawText.replace(/,/g, "")) > 0 && !blocklistYears.includes(rawText.trim())) {
             finalAmt = parseFloat(rawText.replace(/,/g, ""));
         } else {
-            // 🔥 CRITICAL CLEANER STEP 1: Pehle Dates, Times aur bare numbers (Account No.) ura do
-            // Slash, dash ya dots wali dates saaf
+            // 🔥 STEP 1: Dates, Times aur bare numbers (Account Numbers) saaf karein
             let parsedStr = rawText.replace(/\d{2,4}[-\/\.]\d{2}[-\/\.]\d{2,4}/g, "");
-            // Times (14:32:00) saaf
             parsedStr = parsedStr.replace(/\d{2}:\d{2}(:\d{2})?/g, "");
-            // Account / Card Numbers saaf (Bade digits jo amount nahi ho sakte e.g. 498476100)
             parsedStr = parsedStr.replace(/\d{7,20}/g, "");
 
-            // 🔥 TARGETED KEYWORD EXTRACTION STEP 2: Rs., PKR, Amount, Total ko search karna
-            // Yeh regex Rs/PKR/Amount ke sath space, comma aur numbers (.00 tak) sab utha lega
+            // 🔥 STEP 2: Rs., PKR, Amount keywords ke sath target karein
             const smartKeywordsRegex = /(?:rs|pkr|amount|payable|total|amt)\.?\s*[:=\-\s]*\s*([0-9,\s\.]+)/i;
             const match = parsedStr.match(smartKeywordsRegex);
             
             if (match && match[1]) {
-                // Comma, spaces aur spaces nikal kar clean number banao
                 let cleanNumStr = match[1].replace(/,/g, "").replace(/\s/g, "").trim();
-                // Sub-match handle karna agar continuous data mein aage text ho
                 const secondaryMatch = cleanNumStr.match(/^\d+(?:\.\d{1,2})?/);
                 if (secondaryMatch) {
                     let calculatedValue = parseFloat(secondaryMatch[0]);
@@ -400,7 +392,7 @@
                 }
             }
 
-            // 🔥 LINE BY LINE SCANNER STEP 3: Agar step 2 upar fail ho jaye
+            // 🔥 STEP 3: Line by Line fallback scanner
             if (!finalAmt) {
                 const lines = parsedStr.split('\n');
                 for (let line of lines) {
@@ -415,12 +407,11 @@
                 }
             }
 
-            // 🔥 REVERSE SCAN FALLBACK STEP 4: Agar kuch bhi kaam na kare toh filter values checks
+            // 🔥 STEP 4: Reverse search fallback (Aakhir se check karein kyunki total raqam aakhir me hoti hai)
             if (!finalAmt) {
                 let absoluteClean = parsedStr.replace(/,/g, "");
                 const remainingNumbers = absoluteClean.match(/\d+(?:\.\d{1,2})?/g);
                 if (remainingNumbers) {
-                    // Peeche se check karein taake total raqam aamtaur par aakhir mein milti hai
                     for (let i = remainingNumbers.length - 1; i >= 0; i--) {
                         let currentNum = remainingNumbers[i];
                         if (blocklistYears.includes(currentNum)) continue;
@@ -434,7 +425,6 @@
             }
         }
 
-        // Title company automatic mapping filters
         if (rawText.toUpperCase().includes("SSGC")) {
             displayDetail = "SSGC Bill Paid";
         } else if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
@@ -445,7 +435,6 @@
             displayDetail = rawText.length > 30 ? "Scan: " + rawText.substring(0, 27) + "..." : "Scan: " + rawText;
         }
 
-        // Database insertion decision logic execution
         if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
             executeDatabasePush(today, displayDetail, finalAmt, rawText);
         } else {
@@ -527,7 +516,8 @@
     }
 
     function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value, rl = document.getElementById('u-role').value;
+        // 🔥 FIXED: u-pass ko correct ID assignment de di hai taake script crash na ho
+        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
         if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
     }
 
