@@ -3,212 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Bill Mode</title>
+    <title>GharApp Mobile - Live Bill Tracker</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-storage-compat.js"></script>
     
     <style>
         :root { --primary: #f97316; --secondary: #a855f7; --success: #10b981; --danger: #ef4444; --bg: #0b0f1a; --card-bg: rgba(255, 255, 255, 0.05); }
         * { box-sizing: border-box; font-family: 'Segoe UI', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
-        /* PREMIUM MODERN BACKGROUND TEXTURE */
-        body { 
-            background-color: #0b0f1a; 
-            /* Subtle dark grid structure texture */
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
-                radial-gradient(circle at 50% 50%, #111827, #05070f);
-            background-size: 20px 20px, 20px 20px, 100% 100%;
-            background-attachment: fixed;
-            margin: 0; 
-            color: #f1f5f9; 
-            padding-bottom: 80px; 
-        }
+        body { background: #0b0f1a; margin: 0; color: #f1f5f9; padding-bottom: 80px; }
 
         .top-bar { background: #111827; padding: 15px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid rgba(255,255,255,0.1); }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: #111827; display: flex; justify-content: space-around; padding: 12px 0; border-top: 1px solid rgba(255,255,255,0.1); z-index: 1000; }
-        .nav-btn { color: #94a3b8; background: none; border: none; text-align: center; font-size: 11px; flex: 1; }
+        .nav-btn { color: #94a3b8; background: none; border: none; text-align: center; font-size: 11px; flex: 1; cursor: pointer; }
         .nav-btn.active { color: var(--primary); }
         .nav-btn i { font-size: 22px; display: block; margin-bottom: 4px; }
 
         .page { display: none; padding: 15px; }
         .page.active { display: block; }
-        
-        /* Glassmorphism Cards to sit perfectly on texture */
-        .card { 
-            background: rgba(30, 41, 59, 0.4); 
-            border-radius: 15px; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            border: 1px solid rgba(255,255,255,0.08); 
-            backdrop-filter: blur(8px);
-        }
-        
+        .card { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
         input, select { width: 100%; padding: 12px; background: #1e293b; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); color: white; margin-bottom: 12px; font-size: 16px; }
-        .btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-weight: bold; }
+        .btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-weight: bold; cursor: pointer; }
         .list-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
         /* BILL PRINT LAYOUT */
         @media print {
-            body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; background-image: none !important; }
+            body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
             .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash { display: none !important; }
             .page { display: block !important; padding: 0 !important; }
-            .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; backdrop-filter: none !important; }
-            
-            #ledger-body { display: table !important; width: 100% !important; border-collapse: collapse !important; }
+            .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; }
+            #ledger-body, #utility-body { display: table !important; width: 100% !important; border-collapse: collapse !important; }
             .list-item { display: table-row !important; border: 1px solid #ddd !important; background: white !important; }
             .list-item div { display: table-cell !important; padding: 10px !important; border-bottom: 1px solid #eee !important; }
-            
-            .bill-header { display: block !important; text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
-            .bill-title { font-size: 24px; font-weight: bold; text-transform: uppercase; }
-            #t-bal, #t-inc, #t-exp { color: black !important; font-weight: bold !important; }
-        }
-        .bill-header { display: none; }
-
-        /* GALLERY GRID WITH 3D SHADE FRAMES */
-        #gallery-body {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-            gap: 18px;
-            padding: 12px 0;
         }
 
-        .gallery-card {
-            position: relative;
-            border-radius: 16px;
-            overflow: hidden;
-            aspect-ratio: 1;
-            background: #111827;
-            /* Dynamic Frame Shade */
-            border: 3px solid rgba(255, 255, 255, 0.08);
-            box-shadow: 
-                0 4px 6px rgba(0, 0, 0, 0.3), 
-                0 10px 20px rgba(0, 0, 0, 0.5), 
-                inset 0 0 15px rgba(0, 0, 0, 0.6);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease, border-color 0.3s ease;
-            cursor: pointer;
-        }
-
-        .gallery-card:active {
-            transform: scale(0.94);
-        }
-
-        .gallery-card img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-
-        /* Ambient Glow Effect on Hover */
-        @media (min-width: 768px) {
-            .gallery-card:hover {
-                transform: translateY(-6px);
-                border-color: rgba(249, 115, 22, 0.4);
-                box-shadow: 
-                    0 15px 30px rgba(249, 115, 22, 0.2), 
-                    0 0 20px rgba(168, 85, 247, 0.15);
-            }
-            .gallery-card:hover img {
-                transform: scale(1.08);
-            }
-        }
-
-        /* LIGHTBOX MODAL WITH NAVIGATION OPTIONS */
-        .lightbox {
-            position: fixed;
-            inset: 0;
-            background: rgba(7, 10, 18, 0.96);
-            z-index: 10000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(12px);
-            padding: 20px;
-            user-select: none;
-        }
-
-        .lightbox.active {
-            display: flex;
-        }
-
-        .lightbox-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            max-width: 90%;
-            max-height: 82vh;
-        }
-
-        .lightbox-img {
-            max-width: 100%;
-            max-height: 80vh;
-            border-radius: 14px;
-            border: 2px solid rgba(255,255,255,0.15);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.7), 0 0 30px rgba(249, 115, 22, 0.1);
-            transform: scale(0.92);
-            transition: transform 0.28s cubic-bezier(0.4, 0, 0.2, 1);
-        }
-
-        .lightbox.active .lightbox-img {
-            transform: scale(1);
-        }
-
-        /* Navigation Buttons */
-        .lightbox-btn {
-            position: absolute;
-            background: rgba(255, 255, 255, 0.07);
-            color: #f1f5f9;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            font-size: 20px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(5px);
-            transition: background 0.2s, color 0.2s, transform 0.2s;
-            z-index: 10010;
-        }
-
-        .lightbox-btn:hover {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.08);
-        }
-        
-        .lightbox-btn:active {
-            transform: scale(0.95);
-        }
-
-        .lightbox-close {
-            position: absolute;
-            top: -60px;
-            right: 0;
-            background: rgba(239, 68, 68, 0.15);
-            border-color: rgba(239, 68, 68, 0.2);
-            color: var(--danger);
-        }
-        .lightbox-close:hover {
-            background: var(--danger);
-        }
-
-        .lightbox-prev { left: -70px; }
-        .lightbox-next { right: -70px; }
-
-        @media (max-width: 768px) {
-            .lightbox-wrapper { width: 100%; }
-            .lightbox-prev { left: 10px; top: 50%; transform: translateY(-50%); }
-            .lightbox-next { right: 10px; top: 50%; transform: translateY(-50%); }
-            .lightbox-prev:hover, .lightbox-next:hover { transform: translateY(-50%) scale(1.08); }
-            .lightbox-close { top: calc(-10vh - 10px); right: 10px; }
-        }
+        /* 3D Glassmorphism Widgets Grid */
+        .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 10px; margin-bottom: 20px; }
+        .utility-card { position: relative; border-radius: 15px; padding: 12px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 20px rgba(0,0,0,0.3); overflow: hidden; }
+        .ke-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(249, 115, 22, 0.15)); }
+        .ssgc-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(168, 85, 247, 0.15)); }
+        .mob-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(239, 68, 68, 0.15)); }
+        .util-icon { font-size: 24px; margin-bottom: 6px; }
+        .ke-icon { color: #f59e0b; }
+        .ssgc-icon { color: #3b82f6; }
+        .mob-icon { color: #ef4444; }
+        .status-badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-top: 6px; }
+        .status-paid { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .status-unpaid { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
     </style>
 </head>
 <body>
@@ -225,17 +66,12 @@
 <div class="top-bar no-print">
     <b id="user-display" style="color:var(--primary);">User</b>
     <div style="display:flex; gap:10px;">
-        <select id="sel-month" onchange="renderData()" style="width:85px; margin:0; padding:5px;"></select>
+        <select id="sel-month" onchange="renderData(); renderUtilities();" style="width:85px; margin:0; padding:5px;"></select>
         <button onclick="logout()" style="background:none; border:none; color:var(--danger); font-size:18px;"><i class="fa fa-power-off"></i></button>
     </div>
 </div>
 
 <div id="tab-dash" class="page active">
-    <div class="bill-header">
-        <div class="bill-title">GharApp - Transaction Bill</div>
-        <p>User: <span id="print-user"></span> | Report Month: <span id="print-month"></span></p>
-    </div>
-
     <div class="card" style="text-align:center;">
         <small style="color:#94a3b8">Balance</small>
         <h1 id="t-bal" style="margin:5px 0;">0</h1>
@@ -259,12 +95,53 @@
     <div id="ledger-body"></div>
 </div>
 
-<div id="tab-gall" class="page">
-    <div id="admin-upload-box" style="display:none;" class="card no-print">
-        <input type="file" id="g-files" multiple>
-        <button class="btn-action" onclick="uploadImages()" style="margin-top:10px;">UPLOAD</button>
+<div id="tab-util" class="page">
+    <div id="share-alert" class="card" style="display:none; background:rgba(16,185,129,0.15); border-color:var(--success); color:#f1f5f9;">
+        <i class="fa fa-check-circle" style="color:var(--success)"></i> <span id="share-alert-msg">Live data synced!</span>
     </div>
-    <div id="gallery-body"></div>
+
+    <div class="utility-grid">
+        <div class="utility-card ke-card">
+            <div class="util-icon ke-icon"><i class="fa fa-bolt"></i></div>
+            <div style="font-weight:bold; font-size:13px;">K-Electric</div>
+            <div style="font-size:9px; color:#94a3b8; margin-top:2px; white-space:nowrap;">A/C: ...4984761</div>
+            <div id="ke-status" class="status-badge status-unpaid">No Data</div>
+            <div id="ke-amount" style="font-size:11px; margin-top:5px; color:#94a3b8;">RS. 0</div>
+        </div>
+        <div class="utility-card ssgc-card">
+            <div class="util-icon ssgc-icon"><i class="fa fa-fire-flame-simple"></i></div>
+            <div style="font-weight:bold; font-size:13px;">SSGC</div>
+            <div style="font-size:9px; color:#94a3b8; margin-top:2px; white-space:nowrap;">Cust: ...7590000</div>
+            <div id="ssgc-status" class="status-badge status-unpaid">No Data</div>
+            <div id="ssgc-amount" style="font-size:11px; margin-top:5px; color:#94a3b8;">RS. 0</div>
+        </div>
+        <div class="utility-card mob-card">
+            <div class="util-icon mob-icon"><i class="fa fa-mobile-screen-button"></i></div>
+            <div style="font-weight:bold; font-size:13px;">Mobilink Bill</div>
+            <div style="font-size:9px; color:#94a3b8; margin-top:2px; white-space:nowrap;">03202491025</div>
+            <div id="mob-status" class="status-badge status-unpaid">No Data</div>
+            <div id="mob-amount" style="font-size:11px; margin-top:5px; color:#94a3b8;">RS. 0</div>
+        </div>
+    </div>
+
+    <div class="card no-print">
+        <h4 style="margin:0 0 10px 0;">Add / Edit Bill Record</h4>
+        <input type="date" id="u-date">
+        <select id="u-company">
+            <option value="K-Electric">K-Electric</option>
+            <option value="SSGC">SSGC</option>
+            <option value="Mobilink Bill">Mobilink Postpaid (03202491025)</option>
+        </select>
+        <input type="number" id="u-amt" placeholder="Bill Amount (RS)">
+        <select id="u-status">
+            <option value="Unpaid">Unpaid (Live Pending)</option>
+            <option value="Paid">Paid</option>
+        </select>
+        <button class="btn-action" onclick="saveUtilityBill()">SAVE BILL RECORD</button>
+    </div>
+
+    <h4 style="margin:15px 0 10px 0;">Billing History</h4>
+    <div id="utility-body"></div>
 </div>
 
 <div id="tab-users" class="page">
@@ -284,24 +161,12 @@
 
 <nav class="bottom-nav no-print">
     <button class="nav-btn active" onclick="switchTab('dash', this)"><i class="fa fa-chart-line"></i>Dash</button>
-    <button class="nav-btn" onclick="switchTab('gall', this)"><i class="fa fa-images"></i>Gallery</button>
+    <button class="nav-btn" onclick="switchTab('util', this)"><i class="fa fa-receipt"></i>Bills Control</button>
     <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab('users', this)"><i class="fa fa-users-cog"></i>Users</button>
-    <button class="nav-btn" onclick="preparePrint()"><i class="fa fa-print"></i>Bill</button>
+    <button class="nav-btn" onclick="preparePrint()"><i class="fa fa-print"></i>Print</button>
 </nav>
 
-<div id="gallery-lightbox" class="lightbox" onclick="handleLightboxOverlayClick(event)">
-    <div class="lightbox-wrapper">
-        <button class="lightbox-btn lightbox-close" onclick="closeLightbox()"><i class="fa fa-times"></i></button>
-        <button class="lightbox-btn lightbox-prev" onclick="navigateGallery(-1)"><i class="fa fa-chevron-left"></i></button>
-        
-        <img id="lightbox-src" class="lightbox-img" src="" alt="Preview">
-        
-        <button class="lightbox-btn lightbox-next" onclick="navigateGallery(1)"><i class="fa fa-chevron-right"></i></button>
-    </div>
-</div>
-
 <script>
-    // Firebase Configurations
     const firebaseConfig = {
       apiKey: "AIzaSyD3mKQ8DIgMh6GEm3FV31BfBJ_UeYz6dz0",
       authDomain: "gharapp-c720a.firebaseapp.com",
@@ -313,11 +178,8 @@
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); 
-    const storage = firebase.storage(); 
 
     let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
-    let galleryImages = []; 
-    let currentImageIndex = -1;
 
     function login() {
         const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value;
@@ -334,11 +196,9 @@
         document.getElementById('user-display').innerText = myID.toUpperCase();
         if(myRole === 'admin') { 
             document.getElementById('admin-nav-item').style.display = 'block';
-            document.getElementById('admin-upload-box').style.display = 'block';
             loadMonitor();
         }
-        setupDates(); loadData(myID); loadGallery();
-        setupKeyboardControls();
+        setupDates(); loadData(myID); listenToSharedData();
     }
 
     function switchTab(t, el) {
@@ -351,6 +211,7 @@
     function loadData(id) {
         viewingID = id;
         db.ref('data/'+id).on('value', snap => { window.currentData = snap.val() || {}; renderData(); });
+        db.ref('utilities/'+id).on('value', snap => { window.utilityData = snap.val() || {}; renderUtilities(); });
     }
 
     function renderData() {
@@ -363,7 +224,7 @@
                 if(r.t === 'inc') ti += a; else te += a;
                 body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.t==='inc'?'var(--success)':'var(--danger)'}">
                     <div><b>${r.n}</b><br><small>${r.d}</small></div>
-                    <div style="text-align:right"><b>${a.toLocaleString()}</b><br>
+                    <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
                     <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete?')) db.ref('data/${viewingID}/${k}').remove()"></i></div>
                 </div>`;
             }
@@ -373,9 +234,118 @@
         document.getElementById('t-bal').innerText = (ti-te).toLocaleString();
     }
 
+    // REAL LIVE PENDING DATA PARSER Core Engine
+    function renderUtilities() {
+        const m = parseInt(document.getElementById('sel-month').value);
+        const body = document.getElementById('utility-body'); 
+        if(!body) return;
+        body.innerHTML = "";
+        
+        let keStatus = "No Data", ssgcStatus = "No Data", mobStatus = "No Data";
+        let keAmt = 0, ssgcAmt = 0, mobAmt = 0;
+
+        // Loop checks records for the selected month to map onto the 3D Widget layout
+        Object.entries(window.utilityData || {}).reverse().forEach(([k, r]) => {
+            const billDate = new Date(r.d);
+            if(billDate.getMonth() == m) {
+                const a = parseFloat(r.a)||0;
+                if(r.c === 'K-Electric') { keStatus = r.s; keAmt = a; }
+                if(r.c === 'SSGC') { ssgcStatus = r.s; ssgcAmt = a; }
+                if(r.c === 'Mobilink Bill') { mobStatus = r.s; mobAmt = a; }
+
+                body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.s==='Paid'?'var(--success)':'var(--danger)'}">
+                    <div><b>${r.c}</b> <small>(${r.s})</small><br><small>${r.d}</small></div>
+                    <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
+                    <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()"></i></div>
+                </div>`;
+            }
+        });
+
+        // K-Electric UI Sync
+        document.getElementById('ke-status').className = `status-badge ${keStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
+        document.getElementById('ke-status').innerText = keStatus;
+        document.getElementById('ke-amount').innerText = 'RS. ' + keAmt.toLocaleString();
+
+        // SSGC UI Sync
+        document.getElementById('ssgc-status').className = `status-badge ${ssgcStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
+        document.getElementById('ssgc-status').innerText = ssgcStatus;
+        document.getElementById('ssgc-amount').innerText = 'RS. ' + ssgcAmt.toLocaleString();
+
+        // Mobilink Live Real-Time Pending Tracker Sync
+        document.getElementById('mob-status').className = `status-badge ${mobStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
+        document.getElementById('mob-status').innerText = mobStatus;
+        document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
+    }
+
+    function saveUtilityBill(automatedData = null) {
+        const d = automatedData ? automatedData.d : document.getElementById('u-date').value;
+        const c = automatedData ? automatedData.c : document.getElementById('u-company').value;
+        const a = automatedData ? automatedData.a : document.getElementById('u-amt').value;
+        const s = automatedData ? automatedData.s : document.getElementById('u-status').value;
+        
+        if(d && a) {
+            // Agar pehle se us month ka koi Unpaid record chal raha ho aur ab Paid SMS aaye, to purane unpaid ko replace karne ki logic:
+            if(s === 'Paid') {
+                Object.entries(window.utilityData || {}).forEach(([k, r]) => {
+                    if(r.c === c && new Date(r.d).getMonth() === new Date(d).getMonth() && r.s === 'Unpaid') {
+                        db.ref(`utilities/${viewingID}/${k}`).remove();
+                    }
+                });
+                db.ref('data/'+viewingID).push({d, n: c + " Paid", a, t: 'exp'});
+            }
+
+            db.ref('utilities/'+viewingID).push({d, c, a, s}).then(() => {
+                if(!automatedData) {
+                    alert("Bill record updated successfully!");
+                    document.getElementById('u-amt').value = "";
+                }
+            });
+        } else {
+            alert("Please fill data correctly!");
+        }
+    }
+
+    // INTEL SMS WEBHOOK: AB YEH UNPAID LIVE PENDING BILLS BHI AUTOMATIC READ KAREGA
+    function listenToSharedData() {
+        const parsedUrl = new URL(window.location);
+        const sharedTitle = parsedUrl.searchParams.get('title');
+        const sharedText = parsedUrl.searchParams.get('text');
+        
+        if (sharedTitle || sharedText) {
+            switchTab('util', document.querySelectorAll('.nav-btn')[1]);
+            const fullContent = (sharedTitle + " " + sharedText).replace(/\s+/g, '').toUpperCase();
+            let detectedCompany = ""; 
+            let detectedAmount = 0;
+            let detectedStatus = "Unpaid"; // Default text parser setup as pending
+            const todayStr = new Date().toISOString().split('T')[0];
+
+            if(fullContent.includes("0400014984761")) { detectedCompany = "K-Electric"; }
+            else if(fullContent.includes("8927590000")) { detectedCompany = "SSGC"; }
+            else if(fullContent.includes("03202491025") || fullContent.includes("3202491025")) { detectedCompany = "Mobilink Bill"; }
+            else {
+                if(fullContent.includes("KE") || fullContent.includes("ELECTRIC")) { detectedCompany = "K-Electric"; }
+                else if(fullContent.includes("SSGC") || fullContent.includes("SUI")) { detectedCompany = "SSGC"; }
+                else if(fullContent.includes("MOBILINK") || fullContent.includes("JAZZ") || fullContent.includes("WARID")) { detectedCompany = "Mobilink Bill"; }
+            }
+            
+            // Checking whether SMS is a payment confirmation or an unpaid bill generation alert
+            if (fullContent.includes("PAID") || fullContent.includes("SUCCESSFUL") || fullContent.includes("THANKYOU") || fullContent.includes("RECEIVE")) {
+                detectedStatus = "Paid";
+            }
+
+            const originalText = (sharedTitle + " " + sharedText).toUpperCase();
+            const amountMatch = originalText.match(/(RS|PKR|AMT|AMOUNT)\.?\s*([0-9,]+)/i) || originalText.match(/\b([0-9]{3,6})\b/);
+            if(amountMatch) { detectedAmount = amountMatch[0].replace(/[^0-9]/g, ''); }
+
+            if(detectedCompany && detectedAmount > 0) {
+                saveUtilityBill({ d: todayStr, c: detectedCompany, a: detectedAmount, s: detectedStatus });
+                document.getElementById('share-alert').style.display = 'block';
+                document.getElementById('share-alert-msg').innerText = `Live Shared Sync: ${detectedCompany} - ${detectedStatus} Amount RS. ${parseFloat(detectedAmount).toLocaleString()} added!`;
+            }
+        }
+    }
+
     function preparePrint() {
-        document.getElementById('print-user').innerText = viewingID.toUpperCase();
-        document.getElementById('print-month').innerText = document.getElementById('sel-month').options[document.getElementById('sel-month').selectedIndex].text;
         window.print();
     }
 
@@ -395,7 +365,7 @@
                                 <i class="fa fa-trash" style="color:var(--danger)" onclick="if(confirm('Delete User?')) db.ref('users/${uid}').remove()"></i>
                             </div>
                         </div>
-                        <div style="font-size:12px; margin-top:8px; color:#94a3b8">Role: ${udata.role} | Bal: ${(ti-te).toLocaleString()}</div>
+                        <div style="font-size:12px; margin-top:8px; color:#94a3b8">Role: ${udata.role} | Bal: RS. ${(ti-te).toLocaleString()}</div>
                     </div>`;
                 });
             });
@@ -421,116 +391,9 @@
 
     function setupDates() {
         const n = new Date(); document.getElementById('i-date').valueAsDate = n;
+        document.getElementById('u-date').valueAsDate = n;
         const ms = document.getElementById('sel-month');
         ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
-    }
-
-    function uploadImages() {
-        const files = document.getElementById('g-files').files;
-        if(!files[0]) {
-            alert("Please select at least one image!");
-            return;
-        }
-
-        const btn = document.querySelector('#admin-upload-box .btn-action');
-        const originalText = btn.innerText;
-        btn.innerText = "UPLOADING...";
-        btn.disabled = true;
-
-        let uploadCount = 0;
-
-        Array.from(files).forEach(file => {
-            const ref = storage.ref('gallery/' + Date.now() + "_" + file.name);
-            ref.put(file)
-            .then(snap => snap.ref.getDownloadURL())
-            .then(url => { 
-                db.ref('gallery').push({url: url}); 
-                uploadCount++;
-                if(uploadCount === files.length) {
-                    alert("Sabh images kamyabi se upload ho gayin!");
-                    document.getElementById('g-files').value = "";
-                    btn.innerText = originalText;
-                    btn.disabled = false;
-                }
-            })
-            .catch(error => {
-                console.error("Upload Error: ", error);
-                alert("Upload failed!");
-                btn.innerText = originalText;
-                btn.disabled = false;
-            });
-        });
-    }
-
-    function loadGallery() {
-        db.ref('gallery').on('value', snap => {
-            const b = document.getElementById('gallery-body'); 
-            b.innerHTML = "";
-            galleryImages = []; 
-            
-            if (!snap.exists()) {
-                b.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: #94a3b8; padding: 40px 0;">
-                    <i class="fa fa-images" style="font-size: 40px; margin-bottom: 10px; color: rgba(255,255,255,0.1);"></i>
-                    <br>No images uploaded yet.
-                </div>`;
-                return;
-            }
-
-            let index = 0;
-            snap.forEach(c => { 
-                const imageUrl = c.val().url;
-                galleryImages.push(imageUrl); 
-                
-                b.innerHTML += `
-                    <div class="gallery-card" onclick="openLightbox(${index})">
-                        <img src="${imageUrl}" loading="lazy">
-                    </div>
-                `; 
-                index++;
-            });
-        });
-    }
-
-    function openLightbox(index) {
-        currentImageIndex = index;
-        document.getElementById('lightbox-src').src = galleryImages[currentImageIndex];
-        document.getElementById('gallery-lightbox').classList.add('active');
-    }
-
-    function closeLightbox() {
-        document.getElementById('gallery-lightbox').classList.remove('active');
-    }
-
-    function navigateGallery(direction) {
-        if (galleryImages.length === 0) return;
-        currentImageIndex += direction;
-        if (currentImageIndex >= galleryImages.length) {
-            currentImageIndex = 0;
-        } else if (currentImageIndex < 0) {
-            currentImageIndex = galleryImages.length - 1;
-        }
-        document.getElementById('lightbox-src').src = galleryImages[currentImageIndex];
-    }
-
-    function handleLightboxOverlayClick(event) {
-        if (event.target.id === 'gallery-lightbox') {
-            closeLightbox();
-        }
-    }
-
-    document.addEventListener('DOMContentLoaded', () => {
-        setupKeyboardControls();
-    });
-
-    function setupKeyboardControls() {
-        document.addEventListener('keydown', (e) => {
-            const lb = document.getElementById('gallery-lightbox');
-            if (lb && lb.classList.contains('active')) {
-                if (e.key === 'ArrowRight') navigateGallery(1);
-                if (e.key === 'ArrowLeft') navigateGallery(-1);
-                if (e.key === 'Escape') closeLightbox();
-            }
-        });
     }
 
     function logout() { localStorage.clear(); location.reload(); }
