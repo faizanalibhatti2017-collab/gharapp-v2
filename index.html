@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Complete Edition with Super Scanner</title>
+    <title>GharApp Mobile - Intelligent Smart Scanner</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -34,7 +34,7 @@
 
         @media print {
             body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
-            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .btn-print, #qr-view-box, #scan-default-amount-box { display: none !important; }
+            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .btn-print, #qr-view-box, .scan-instruction-text { display: none !important; }
             .page { display: block !important; padding: 0 !important; }
             .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; }
             .list-item { display: flex !important; justify-content: space-between !important; align-items: center !important; border: 1px solid #ddd !important; background: white !important; padding: 15px !important; color: black !important; }
@@ -56,10 +56,11 @@
         
         .barcode-img { background: white; padding: 5px; border-radius: 5px; max-width: 130px; height: auto; }
         
-        #qr-view-box { width: 100%; max-width: 320px; margin: 20px auto; border-radius: 15px; overflow: hidden; border: 4px solid var(--success); box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); background: #000; position: relative; }
+        #qr-view-box { width: 100%; max-width: 320px; margin: 15px auto; border-radius: 15px; overflow: hidden; border: 4px solid var(--success); box-shadow: 0 0 25px rgba(16, 185, 129, 0.3); background: #000; position: relative; }
         
-        .scan-laser { position: absolute; width: 100%; height: 3px; background: #10b981; top: 0; left: 0; animation: laserMove 1.5s linear infinite; box-shadow: 0 0 10px #10b981; z-index: 10; pointer-events: none; }
+        .scan-laser { position: absolute; width: 100%; height: 3px; background: #10b981; top: 0; left: 0; animation: laserMove 1.2s linear infinite; box-shadow: 0 0 10px #10b981; z-index: 10; pointer-events: none; }
         @keyframes laserMove { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
+        .scan-instruction-text { color: #f1f5f9; font-size: 16px; font-weight: 600; margin: 5px 0 15px 0; text-transform: uppercase; letter-spacing: 0.5px; }
     </style>
 </head>
 <body>
@@ -107,20 +108,12 @@
 </div>
 
 <div id="tab-scan" class="page">
-    <div class="card" style="text-align: center; background: rgba(16, 185, 129, 0.05);">
-        <h3 style="color: var(--success); margin-top: 0;"><i class="fa fa-bolt"></i> Lightning Fast Scanner</h3>
-        <p style="color: #94a3b8; font-size: 13px; margin-bottom: 0;">Scan ANY Barcode, QR Code, Wifi or Bill for instant entry</p>
+    <div class="card" style="text-align: center; background: transparent; border: none; padding: 0;">
+        <div class="scan-instruction-text">scan QRcode / Barcode</div>
         
         <div id="qr-view-box">
             <div class="scan-laser"></div>
             <div id="reader" style="width: 100%;"></div>
-        </div>
-        
-        <p id="scan-status" style="color: #64748b; font-size: 12px; font-weight: bold;">Camera Initializing...</p>
-        
-        <div id="scan-default-amount-box" style="margin-top: 10px; padding: 10px; background: rgba(255,255,255,0.02); border-radius: 10px;">
-            <small style="color: #94a3b8; display: block; margin-bottom: 5px;">Scan Entry Default Amount (RS):</small>
-            <input type="number" id="scan-default-amount" value="1000" style="margin:0; text-align:center; max-width: 150px; padding: 6px;">
         </div>
     </div>
 </div>
@@ -317,25 +310,29 @@
 
     function startCameraEngine() {
         if(!html5QrCode) {
-            document.getElementById('scan-status').innerText = "Starting Omni-Decoder Engine...";
             html5QrCode = new Html5Qrcode("reader");
             
             const formatsToSupport = [ 
                 Html5QrcodeSupportedFormats.QR_CODE,
+                Html5QrcodeSupportedFormats.PDF_417,
+                Html5QrcodeSupportedFormats.AZTEC,
                 Html5QrcodeSupportedFormats.CODE_128,
                 Html5QrcodeSupportedFormats.CODE_39,
                 Html5QrcodeSupportedFormats.EAN_13,
-                Html5QrcodeSupportedFormats.EAN_8,
                 Html5QrcodeSupportedFormats.UPC_A,
                 Html5QrcodeSupportedFormats.DATA_MATRIX
             ];
 
             const config = { 
-                fps: 40, 
-                qrbox: (viewfinderWidth, viewfinderHeight) => {
-                    return { width: viewfinderWidth * 0.85, height: viewfinderHeight * 0.7 };
+                fps: 50, 
+                videoConstraints: {
+                    facingMode: "environment",
+                    width: { ideal: 1920 }, 
+                    height: { ideal: 1080 }
                 },
-                aspectRatio: 1.0,
+                qrbox: (viewfinderWidth, viewfinderHeight) => {
+                    return { width: viewfinderWidth * 0.9, height: viewfinderHeight * 0.65 };
+                },
                 formatsToSupport: formatsToSupport
             };
 
@@ -347,9 +344,8 @@
                 },
                 (err) => {}
             ).then(() => {
-                document.getElementById('scan-status').innerText = "🚀 ENGINE LIVE: Point at any code!";
+                // Engine Live
             }).catch(err => {
-                document.getElementById('scan-status').innerText = "Camera Error!";
                 alert("Camera error: " + err);
             });
         }
@@ -359,33 +355,69 @@
         if(html5QrCode) {
             html5QrCode.stop().then(() => {
                 html5QrCode = null;
-                document.getElementById('scan-status').innerText = "Camera Standby.";
             }).catch(e => {});
         }
     }
 
+    // ⚡ REAL-TIME SMART PARSER FOR BILLING CODES & DENSE RECEIVED DATA
     function processBruteForceScanEntry(scannedCode) {
         stopCameraEngine();
         const today = new Date().toISOString().split('T')[0];
-        
         let displayDetail = scannedCode.trim();
-        if(displayDetail.length > 35) {
-            displayDetail = displayDetail.substring(0, 32) + "...";
+        let finalAmt = null;
+        let isKE = false;
+
+        // K-Electric URL / Text intelligence filter
+        if(displayDetail.includes("ke.com.pk") || displayDetail.toLowerCase().includes("kelectric")) {
+            isKE = true;
+            displayDetail = "K-Electric Bill Receipt Data";
+            
+            // Regex patterns to match Net Amount / Payable Amount inside the QR data string
+            // Matches formats like amnt=25400, amount:3410, net_amount=15000 etc.
+            const amtMatch = scannedCode.match(/(?:amt|amount|net|payable)(?:=||:)\s*(\d+)/i);
+            if(amtMatch && amtMatch[1]) {
+                finalAmt = parseFloat(amtMatch[1]);
+            }
+        } else {
+            // General standard barcodes check for explicit amount strings (e.g. RS500, total:1200)
+            const generalAmtMatch = scannedCode.match(/(?:rs|val|price|tot|total)(?:=||:)\s*(\d+)/i);
+            if(generalAmtMatch && generalAmtMatch[1]) {
+                finalAmt = parseFloat(generalAmtMatch[1]);
+            }
+            if(!isKE) {
+                displayDetail = displayDetail.length > 30 ? "Scan: " + displayDetail.substring(0, 27) + "..." : "Scan: " + displayDetail;
+            }
         }
 
-        const inputAmt = document.getElementById('scan-default-amount').value || 1000;
-        const finalAmt = parseFloat(inputAmt);
+        // Agar code ke andar se amount mil gayi to chup-chap save, warna user se real-time prompt box mein poochenge
+        if (finalAmt && !isNaN(finalAmt)) {
+            executeDatabasePush(today, displayDetail, finalAmt, scannedCode);
+        } else {
+            // Fallback user validation prompt if numerical data is missing in raw barcode string
+            setTimeout(() => {
+                const userAmtInput = prompt(`Code Detected Successfully!\n\nData: "${scannedCode.substring(0,40)}"\n\nEnter Bill / Product Amount (RS):`, "0");
+                finalAmt = parseFloat(userAmtInput);
+                if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
+                    executeDatabasePush(today, displayDetail, finalAmt, scannedCode);
+                } else {
+                    alert("Operation cancelled or invalid amount entered.");
+                    startCameraEngine();
+                }
+            }, 150);
+        }
+    }
 
+    function executeDatabasePush(date, detail, amount, rawCode) {
         db.ref('data/' + viewingID).push({
-            d: today,
-            n: `Scan: ${displayDetail}`,
-            a: finalAmt,
+            d: date,
+            n: detail,
+            a: amount,
             t: 'exp'
         }).then(() => {
-            alert(`✅ Code Processed instantly!\n\nData: "${scannedCode}"\nAdded to Ledger as Expense: RS. ${finalAmt}`);
+            alert(`✅ Record Saved Successfully!\n\nDetail: ${detail}\nAmount Added: RS. ${amount.toLocaleString()}`);
             switchTab('dash', document.querySelector('.nav-btn'));
         }).catch(err => {
-            alert("Database write failed: " + err);
+            alert("Database Error: " + err);
             startCameraEngine();
         });
     }
