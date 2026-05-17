@@ -367,19 +367,25 @@
         let displayDetail = rawText;
         let finalAmt = null;
 
-        // Years strict blocklist filter array (In numbers ko amount nahi banne dena)
+        // Years strict blocklist
         const blocklistYears = ["2024", "2025", "2026", "2027"];
 
-        // 1. Agar QR code mein sirf pure ek number ho aur blocklist year na ho
+        // 1. Pure digit check
         if (!isNaN(rawText) && parseFloat(rawText) > 0 && !blocklistYears.includes(rawText)) {
             finalAmt = parseFloat(rawText);
         } else {
-            // 2. ULTRA-SMART GMAIL PARSER PATTERN: Strictly line by line check karna
-            const lines = rawText.split('\n');
+            // 🔥 STEP 1: Sab se pehle har kism ki Dates aur Times ko text se bilkul saaf kar do
+            // Yeh regex slash(/), dash(-), ya dots(.) wali sabhi dates aur colon(:) wale times ko ura dega
+            let cleanText = rawText.replace(/\d{2,4}[-\/\.]\d{2}[-\/\.]\d{2,4}/g, "");
+            cleanText = cleanText.replace(/\d{2}:\d{2}(:\d{2})?/g, "");
+            
+            // 🔥 STEP 2: Line by line clean text ko parse karo
+            const lines = cleanText.split('\n');
             for (let line of lines) {
-                // Amount keywords match karein aur line mein date ya time ka word na ho
-                if (/amount|payable|total|amt/i.test(line) && !/date|time/i.test(line)) {
-                    const numberMatch = line.match(/\d+(?:\.\d{1,2})?/);
+                if (/amount|payable|total|amt/i.test(line)) {
+                    // Kisi bhi comma ko nikal do taake float sahi se convert ho sake (e.g. 5,000 -> 5000)
+                    let cleanLine = line.replace(/,/g, "");
+                    const numberMatch = cleanLine.match(/\d+(?:\.\d{1,2})?/);
                     if (numberMatch && !blocklistYears.includes(numberMatch[0])) {
                         finalAmt = parseFloat(numberMatch[0]);
                         break;
@@ -387,25 +393,25 @@
                 }
             }
 
-            // 3. Fallback Context Regex (Agar plain structured key bina raw line breaks ke ho)
+            // 🔥 STEP 3: Fallback Context Regex (Agar plain string text ho line breaks ke baghair)
             if (!finalAmt) {
                 const strictRegex = /(?:amount|payable|total|amt)(?:\s*[:=\s\-]*\s*)(\d+(?:\.\d{1,2})?)/i;
-                const match = rawText.match(strictRegex);
+                let textNoComma = cleanText.replace(/,/g, "");
+                const match = textNoComma.match(strictRegex);
                 if (match && match[1] && !blocklistYears.includes(match[1])) {
                     finalAmt = parseFloat(match[1]);
                 }
             }
 
-            // 4. Final Logical Match Filter: Loops through all found digits skipping explicitly 2024-2027
+            // 🔥 STEP 4: Last resort scanner loop (Agar kuch bhi upar match nahi hua)
             if (!finalAmt) {
-                const extractedNumbers = rawText.match(/\d+/g);
+                let textNoComma = cleanText.replace(/,/g, "");
+                const extractedNumbers = textNoComma.match(/\d+/g);
                 if (extractedNumbers) {
                     for (let numStr of extractedNumbers) {
-                        // Strict Blocklist check execution
                         if (blocklistYears.includes(numStr)) {
                             continue;
                         }
-                        // Valid range amount size filtering
                         if (numStr.length >= 3 && numStr.length <= 6) {
                             finalAmt = parseFloat(numStr);
                             break; 
@@ -430,7 +436,6 @@
         if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
             executeDatabasePush(today, displayDetail, finalAmt, rawText);
         } else {
-            // Manual Prompt Input fallback fallback if data extraction fails
             setTimeout(() => {
                 const userAmtInput = prompt(`Code Detected Successfully!\n\nData: "${rawText.substring(0,40)}"\n\nEnter Bill / Product Amount (RS):`, "0");
                 finalAmt = parseFloat(userAmtInput);
@@ -509,7 +514,7 @@
     }
 
     function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value, rl = document.getElementById('u-role').value;
+        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
         if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
     }
 
