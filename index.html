@@ -160,7 +160,7 @@
 <div id="tab-scanner" class="page">
     <div class="card" style="text-align: center;">
         <h3 style="color:var(--primary); margin-top:0;"><i class="fa fa-barcode"></i> Barcode Camera Scanner</h3>
-        <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;">Bill ka barcode screen me kahin bhi laayein, camera poore frame se khud hi auto-detect kar lega.</p>
+        <p style="color:#94a3b8; font-size:13px; margin-bottom:20px;">Bill ka barcode screen me laayein, system detect kar ke automatic entry save kar dega.</p>
         
         <div class="scanner-square-container">
             <div id="reader"></div>
@@ -239,7 +239,6 @@
         document.getElementById('tab-'+t).classList.add('active');
         if(el) el.classList.add('active');
         
-        // Tab router automation triggers
         if(t === 'scanner') {
             setTimeout(startLiveCamera, 120);
         } else {
@@ -288,17 +287,15 @@
                 if(r.c === 'SSGC') { ssgcStatus = r.s; ssgcAmt = a; }
                 if(r.c === 'Mobilink Bill') { mobStatus = r.s; mobAmt = a; }
 
-                // Unique Barcode Value mapping for vector engine tracking
                 const barcodeIdStr = `GAP-${k.substring(1,9).toUpperCase()}`;
 
                 body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.s==='Paid'?'var(--success)':'var(--danger)'}">
                     <div><b>${r.c}</b> <small>(${r.s})</small><br><small>${r.d}</small></div>
                     <div><svg class="barcode-svg" id="barcode-node-${k}"></svg></div>
                     <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
-                    <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()"></i></div>
+                    <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()}</i></div>
                 </div>`;
 
-                // Render barcodes dynamically using JSBarcode engine
                 setTimeout(() => {
                     if(document.getElementById(`barcode-node-${k}`)) {
                         JsBarcode(`#barcode-node-${k}`, barcodeIdStr, {
@@ -326,21 +323,18 @@
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
     }
 
-    // --- FULL-FRAME NATIVE AUTO-DETECTION CONTROLLER (KAHIN SE BHI AUTOMATIC DISCOVER KAREIN) ---
     function startLiveCamera() {
         const placeholder = document.getElementById('scanner-placeholder');
         if(placeholder) placeholder.style.display = 'none';
 
         if(!html5QrCode) {
             html5QrCode = new Html5Qrcode("reader");
-            
-            // Fixed aspect bounds / target limiters completely removed for total view scanning
             html5QrCode.start(
                 { facingMode: "environment" },
                 { 
-                    fps: 30, // Ultra high-speed capture frames
-                    experimentalFeatures: {
-                        useBarCodeDetectorIfSupported: true // Fast hardware integration
+                    fps: 24,
+                    qrbox: function(width, height) {
+                        return { width: width * 0.8, height: height * 0.8 };
                     }
                 },
                 (scannedDataText) => {
@@ -365,41 +359,81 @@
         }
     }
 
+    // --- NEW SMART AUTO-DETECTION ENTRY WORKFLOW ---
     function executeAutoScanWorkflow(barcodeText) {
         let isMatched = false;
+        const cleanText = barcodeText.trim();
+
+        // 1. Pehle check karein agar system data me se kisi utility record ka code match ho jaye
         Object.entries(window.utilityData || {}).forEach(([key, record]) => {
-            const expectedBarcode = `GAP-${key.substring(1,9).toUpperCase()}`;
+            const systemGeneratedBarcode = `GAP-${key.substring(1,9).toUpperCase()}`;
             
-            if(barcodeText === expectedBarcode) {
+            // Dono checks: Custom GAP code ya direct real consumer/ref number match ho jaye
+            if(cleanText === systemGeneratedBarcode || cleanText.includes(record.c)) {
                 isMatched = true;
-                if(record.s === 'Paid') {
-                    alert(`Yeh bill (${record.c}) pehle se hi PAID marked hai!`);
-                    switchTab('dash', document.querySelector('.nav-btn'));
-                    return;
-                }
-                
-                if(confirm(`Bill Detected via Barcode!\nCompany: ${record.c}\nAmount: RS. ${record.a}\n\nKya aap automatic payment expense entry ledger me save karna chahte hain?`)) {
-                    const todayDateStr = new Date().toISOString().split('T')[0];
-                    
-                    // Update bill status to Paid in utility module
-                    db.ref(`utilities/${viewingID}/${key}`).update({ s: 'Paid', d: todayDateStr });
-                    
-                    // Push structural expense item entry into finance ledger core database
-                    db.ref('data/'+viewingID).push({
-                        d: todayDateStr,
-                        n: `${record.c} Paid (Auto-Scan)`,
-                        a: record.a,
-                        t: 'exp'
-                    }).then(() => {
-                        alert("Done! Bill status paid ho chuki hai aur main ledger me expense track ho gaya!");
-                        switchTab('dash', document.querySelector('.nav-btn'));
-                    });
-                }
+                processMatchedBill(key, record);
             }
         });
+
+        // 2. SMART FALLBACK: Agar real bill ka consumer number scan hua hai jo pehle se saved nahi tha, 
+        // ya match nahi hua, to direct user se pooch kar fresh expense ledger entry insert kar dega!
         if(!isMatched) {
-            alert("Scan Error: Yeh Barcode system records se match nahi ho saka!");
+            let guessedCompany = "Utility Bill";
+            if(cleanText.length === 13 || cleanText.startsWith("1")) guessedCompany = "K-Electric";
+            else if(cleanText.length === 11) guessedCompany = "SSGC";
+            else if(cleanText.includes("0320") || cleanText.length === 10) guessedCompany = "Mobilink Bill";
+
+            let userAmt = prompt(`Asli Bill Scan Huwa!\nDetected Barcode: ${cleanText}\n\nYeh kis company ka bill hai? Aap iska amount (RS) enter karein taake entry save ho jaye:`, "0");
+            
+            if(userAmt && parseFloat(userAmt) > 0) {
+                const todayDateStr = new Date().toISOString().split('T')[0];
+                
+                // Ledger Core me direct Expense item push kar do
+                db.ref('data/'+viewingID).push({
+                    d: todayDateStr,
+                    n: `${guessedCompany} Paid (Scanned: ${cleanText})`,
+                    a: parseFloat(userAmt),
+                    t: 'exp'
+                }).then(() => {
+                    // Utility tracking module me bhi entry insert kar do status: Paid ke sath
+                    db.ref('utilities/'+viewingID).push({
+                        d: todayDateStr,
+                        c: guessedCompany,
+                        a: parseFloat(userAmt),
+                        s: 'Paid'
+                    }).then(() => {
+                        alert("Success! Asli bill scan ho kar entry ledger aur utility history me automatic save ho chuki hai.");
+                        switchTab('dash', document.querySelector('.nav-btn'));
+                    });
+                });
+            } else {
+                alert("Scan Cancelled! Amount sahi nahi tha.");
+                switchTab('dash', document.querySelector('.nav-btn'));
+            }
+        }
+    }
+
+    function processMatchedBill(key, record) {
+        if(record.s === 'Paid') {
+            alert(`Yeh bill (${record.c}) pehle se hi PAID marked hai!`);
             switchTab('dash', document.querySelector('.nav-btn'));
+            return;
+        }
+        
+        if(confirm(`Bill Found!\nCompany: ${record.c}\nAmount: RS. ${record.a}\n\nKya aap automatic payment expense entry ledger me save karna chahte hain?`)) {
+            const todayDateStr = new Date().toISOString().split('T')[0];
+            
+            db.ref(`utilities/${viewingID}/${key}`).update({ s: 'Paid', d: todayDateStr });
+            
+            db.ref('data/'+viewingID).push({
+                d: todayDateStr,
+                n: `${record.c} Paid (Auto-Scan)`,
+                a: record.a,
+                t: 'exp'
+            }).then(() => {
+                alert("Done! Bill status paid ho chuki hai aur main ledger me expense track ho gaya!");
+                switchTab('dash', document.querySelector('.nav-btn'));
+            });
         }
     }
 
