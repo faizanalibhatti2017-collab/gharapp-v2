@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Intelligent Smart Scanner</title>
+    <title>GharApp Mobile - Professional Bulletproof Scanner</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -359,48 +359,60 @@
         }
     }
 
-    // ⚡ REAL-TIME SMART PARSER FOR BILLING CODES & DENSE RECEIVED DATA
+    // 🔥 BULLETPROOF MULTI-KEYWORD AMOUNT DETECTOR & CLEANER
     function processBruteForceScanEntry(scannedCode) {
         stopCameraEngine();
         const today = new Date().toISOString().split('T')[0];
-        let displayDetail = scannedCode.trim();
+        let rawText = scannedCode.trim();
+        let displayDetail = rawText;
         let finalAmt = null;
-        let isKE = false;
 
-        // K-Electric URL / Text intelligence filter
-        if(displayDetail.includes("ke.com.pk") || displayDetail.toLowerCase().includes("kelectric")) {
-            isKE = true;
-            displayDetail = "K-Electric Bill Receipt Data";
-            
-            // Regex patterns to match Net Amount / Payable Amount inside the QR data string
-            // Matches formats like amnt=25400, amount:3410, net_amount=15000 etc.
-            const amtMatch = scannedCode.match(/(?:amt|amount|net|payable)(?:=||:)\s*(\d+)/i);
-            if(amtMatch && amtMatch[1]) {
-                finalAmt = parseFloat(amtMatch[1]);
-            }
+        // 1. Agar barcode mein sirf seedha seedha number ho (jaise price tags)
+        if (!isNaN(rawText) && parseFloat(rawText) > 0) {
+            finalAmt = parseFloat(rawText);
+            displayDetail = "Scanned Price Tag";
         } else {
-            // General standard barcodes check for explicit amount strings (e.g. RS500, total:1200)
-            const generalAmtMatch = scannedCode.match(/(?:rs|val|price|tot|total)(?:=||:)\s*(\d+)/i);
-            if(generalAmtMatch && generalAmtMatch[1]) {
-                finalAmt = parseFloat(generalAmtMatch[1]);
+            // 2. Heavy Regex Pattern: Jo Rs, Rs., RS, Pkr, PKR, Amount, Payable, Total ko har haal mein scan karega
+            // Yeh keywords ke baad aane waale symbols (:, =, space, /-) ko ignore karke numbers pakadta hai
+            const strictRegex = /(?:rs\.?|pkr|amount|amt|payable|total)(?:\s*[:=\s\-]*\s*)(\d+(?:\.\d{1,2})?)/i;
+            const match = rawText.match(strictRegex);
+
+            if (match && match[1]) {
+                finalAmt = parseFloat(match[1]);
+            } else {
+                // 3. Smart Fallback Tracker: Agar keywords na milen, to text mein se aisi digits nikalo jo 3 se 6 aankrhon ki hon (e.g. 550, 4500, 24500)
+                // Yeh filters lagaye hain taake 11-digit ki Consumer ID ya long dates code ko amount na samajh le
+                const generalNumbers = rawText.match(/\d+/g);
+                if (generalNumbers) {
+                    for (let num Str of generalNumbers) {
+                        if (numStr.length >= 3 && numStr.length <= 6) {
+                            finalAmt = parseFloat(numStr);
+                            break; // Pehla valid amount number milte hi stop
+                        }
+                    }
+                }
             }
-            if(!isKE) {
-                displayDetail = displayDetail.length > 30 ? "Scan: " + displayDetail.substring(0, 27) + "..." : "Scan: " + displayDetail;
+
+            // Billing Title Beauty Config
+            if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
+                displayDetail = "K-Electric Bill Receipt Data";
+            } else {
+                displayDetail = rawText.length > 30 ? "Scan: " + rawText.substring(0, 27) + "..." : "Scan: " + rawText;
             }
         }
 
-        // Agar code ke andar se amount mil gayi to chup-chap save, warna user se real-time prompt box mein poochenge
-        if (finalAmt && !isNaN(finalAmt)) {
-            executeDatabasePush(today, displayDetail, finalAmt, scannedCode);
+        // Automatic validation processing check
+        if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
+            executeDatabasePush(today, displayDetail, finalAmt, rawText);
         } else {
-            // Fallback user validation prompt if numerical data is missing in raw barcode string
+            // Agar bilkul fail ho jaye to instant fallback prompt box
             setTimeout(() => {
-                const userAmtInput = prompt(`Code Detected Successfully!\n\nData: "${scannedCode.substring(0,40)}"\n\nEnter Bill / Product Amount (RS):`, "0");
+                const userAmtInput = prompt(`Code Scanned!\nRaw Text: "${rawText.substring(0,50)}"\n\nSystem Amount Auto-Detection Failed.\nPlease Enter Amount manually (RS):`, "0");
                 finalAmt = parseFloat(userAmtInput);
                 if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
-                    executeDatabasePush(today, displayDetail, finalAmt, scannedCode);
+                    executeDatabasePush(today, displayDetail, finalAmt, rawText);
                 } else {
-                    alert("Operation cancelled or invalid amount entered.");
+                    alert("Scan cancelled.");
                     startCameraEngine();
                 }
             }, 150);
@@ -414,7 +426,7 @@
             a: amount,
             t: 'exp'
         }).then(() => {
-            alert(`✅ Record Saved Successfully!\n\nDetail: ${detail}\nAmount Added: RS. ${amount.toLocaleString()}`);
+            alert(`✅ Saved Instantly!\n\n${detail}\nAmount: RS. ${amount.toLocaleString()}`);
             switchTab('dash', document.querySelector('.nav-btn'));
         }).catch(err => {
             alert("Database Error: " + err);
@@ -472,7 +484,7 @@
     }
 
     function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
+        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value, rl = document.getElementById('u-role').value;
         if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
     }
 
