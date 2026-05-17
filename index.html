@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>GharApp Mobile - Intelligent Smart Scanner</title>
+    <link rel="manifest" href="manifest.json">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
@@ -202,6 +203,23 @@
     let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
     let html5QrCode = null;
 
+    // SHARE INTENT RECEIVER LOGIC FOR PWAs
+    window.addEventListener('DOMContentLoaded', () => {
+        const parsedUrl = new URL(window.location.href);
+        const sharedText = parsedUrl.searchParams.get('text') || parsedUrl.searchParams.get('title') || parsedUrl.searchParams.get('url');
+        
+        if (sharedText) {
+            // Check if user is logged in, else defer parsing until login
+            if (myID) {
+                setTimeout(() => {
+                    processBruteForceScanEntry(sharedText);
+                }, 1000);
+            } else {
+                localStorage.setItem('pendingSharedText', sharedText);
+            }
+        }
+    });
+
     function login() {
         const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value;
         if(id === "admin" && ps === "123") { authDone("admin", "admin"); return; }
@@ -210,13 +228,26 @@
             else alert("Invalid Details!");
         });
     }
-    function authDone(id, role) { localStorage.setItem('ghUser', id); localStorage.setItem('ghRole', role); location.reload(); }
+    function authDone(id, role) { 
+        localStorage.setItem('ghUser', id); 
+        localStorage.setItem('ghRole', role); 
+        location.reload(); 
+    }
 
     function startApp() {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('user-display').innerText = myID.toUpperCase();
         if(myRole === 'admin') { document.getElementById('admin-nav-item').style.display = 'block'; loadMonitor(); }
         setupDates(); loadData(myID);
+
+        // Process any deferred shared text after successful authorization
+        const pendingText = localStorage.getItem('pendingSharedText');
+        if (pendingText) {
+            localStorage.removeItem('pendingSharedText');
+            setTimeout(() => {
+                processBruteForceScanEntry(pendingText);
+            }, 1000);
+        }
     }
 
     function switchTab(t, el) {
@@ -359,6 +390,7 @@
         }
     }
 
+    // ⚡ ULTRA-POWERFUL DYNAMIC INTELLIGENT PARSER FOR EMAIL/TEXT / SHARE INTENTS
     function processBruteForceScanEntry(scannedCode) {
         stopCameraEngine();
         const today = new Date().toISOString().split('T')[0];
@@ -408,7 +440,7 @@
                 }
             }
 
-            // 🔥 REVERSE SCAN FALLBACK STEP 4 (UPDATED LOGIC)
+            // 🔥 REVERSE SCAN FALLBACK STEP 4
             if (!finalAmt) {
                 let absoluteClean = parsedStr.replace(/,/g, "");
                 const remainingNumbers = absoluteClean.match(/\d+(?:\.\d{1,2})?/g) || [];
@@ -432,54 +464,30 @@
             }
         }
 
-        // =============================
-        // AUTO TITLE
-        // =============================
-
+        // Title company automatic mapping filters
         if (rawText.toUpperCase().includes("SSGC")) {
             displayDetail = "SSGC Bill Paid";
-
-        } else if (
-            rawText.toLowerCase().includes("ke.com.pk") ||
-            rawText.toLowerCase().includes("kelectric")
-        ) {
+        } else if (rawText.toLowerCase().includes("ke.com.pk") || rawText.toLowerCase().includes("kelectric")) {
             displayDetail = "K-Electric Bill Paid";
-
         } else if (rawText.toLowerCase().includes("mobilink")) {
             displayDetail = "Mobilink Bill Paid";
-
         } else {
-            displayDetail = rawText.length > 30
-                ? "Scan: " + rawText.substring(0, 27) + "..."
-                : "Scan: " + rawText;
+            displayDetail = rawText.length > 30 ? "Scan: " + rawText.substring(0, 27) + "..." : "Scan: " + rawText;
         }
 
-        // =============================
-        // SAVE OR ASK USER
-        // =============================
-
+        // Database insertion decision logic execution
         if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
-
             executeDatabasePush(today, displayDetail, finalAmt, rawText);
-
         } else {
-
             setTimeout(() => {
-
-                const userAmtInput = prompt(
-                    `Code Detected Successfully!\n\nData: "${rawText.substring(0,40)}"\n\nEnter Bill / Product Amount (RS):`,
-                    "0"
-                );
-
+                const userAmtInput = prompt(`Code Detected Successfully!\n\nData: "${rawText.substring(0,40)}"\n\nEnter Bill / Product Amount (RS):`, "0");
                 finalAmt = parseFloat(userAmtInput);
-
                 if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
                     executeDatabasePush(today, displayDetail, finalAmt, rawText);
                 } else {
                     alert("Operation cancelled or invalid amount entered.");
-                    startCameraEngine();
+                    if(html5QrCode) startCameraEngine();
                 }
-
             }, 150);
         }
     }
@@ -495,7 +503,7 @@
             switchTab('dash', document.querySelector('.nav-btn'));
         }).catch(err => {
             alert("Database Error: " + err);
-            startCameraEngine();
+            if(html5QrCode) startCameraEngine();
         });
     }
 
