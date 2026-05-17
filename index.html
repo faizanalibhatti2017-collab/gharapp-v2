@@ -3,10 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Complete Live Sync</title>
+    <title>GharApp Mobile - Auto Barcode Sync</title>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode"></script>
     
     <style>
         :root { --primary: #f97316; --secondary: #a855f7; --success: #10b981; --danger: #ef4444; --bg: #0b0f1a; --card-bg: rgba(255, 255, 255, 0.05); }
@@ -24,18 +26,18 @@
         .card { background: var(--card-bg); border-radius: 15px; padding: 15px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1); }
         input, select { width: 100%; padding: 12px; background: #1e293b; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); color: white; margin-bottom: 12px; font-size: 16px; }
         .btn-action { width: 100%; padding: 14px; border-radius: 10px; border: none; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; font-weight: bold; cursor: pointer; }
-        .list-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .list-item { background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
 
+        /* PRINT SETTINGS CRITICAL FOR BARCODE RENDERING */
         @media print {
             body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
-            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash { display: none !important; }
+            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, #scanner-section { display: none !important; }
             .page { display: block !important; padding: 0 !important; }
             .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; }
-            #ledger-body, #utility-body { display: table !important; width: 100% !important; border-collapse: collapse !important; }
-            .list-item { display: table-row !important; border: 1px solid #ddd !important; background: white !important; }
+            .list-item { display: flex !important; justify-content: space-between !important; align-items: center !important; border: 1px solid #ddd !important; background: white !important; padding: 15px !important; color: black !important; }
+            .barcode-img { display: block !important; visibility: visible !important; background: white !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
         }
 
-        /* Modern 3D Glassmorphism Grid Layout */
         .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 10px; margin-bottom: 20px; }
         .utility-card { position: relative; border-radius: 15px; padding: 12px 8px; text-align: center; border: 1px solid rgba(255,255,255,0.1); box-shadow: 0 8px 20px rgba(0,0,0,0.3); overflow: hidden; }
         .ke-card { background: linear-gradient(135deg, rgba(30, 41, 59, 0.7), rgba(249, 115, 22, 0.15)); }
@@ -48,6 +50,8 @@
         .status-badge { display: inline-block; padding: 3px 8px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-top: 6px; }
         .status-paid { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 1px solid var(--success); }
         .status-unpaid { background: rgba(239, 68, 68, 0.2); color: var(--danger); border: 1px solid var(--danger); }
+        
+        .barcode-img { background: white; padding: 5px; border-radius: 5px; max-width: 130px; height: auto; }
     </style>
 </head>
 <body>
@@ -98,24 +102,31 @@
         <div class="utility-card ke-card">
             <div class="util-icon ke-icon"><i class="fa fa-bolt"></i></div>
             <div style="font-weight:bold; font-size:13px;">K-Electric</div>
-            <div style="font-size:9px; color:#94a3b8; margin-top:2px; white-space:nowrap;">A/C: ...4984761</div>
+            <div style="font-size:9px; color:#94a3b8; margin-top:2px;">A/C: ...4984761</div>
             <div id="ke-status" class="status-badge status-unpaid">No Data</div>
             <div id="ke-amount" style="font-size:11px; margin-top:5px; color:#94a3b8;">RS. 0</div>
         </div>
         <div class="utility-card ssgc-card">
             <div class="util-icon ssgc-icon"><i class="fa fa-fire-flame-simple"></i></div>
             <div style="font-weight:bold; font-size:13px;">SSGC</div>
-            <div style="font-size:9px; color:#94a3b8; margin-top:2px; white-space:nowrap;">Cust: ...7590000</div>
+            <div style="font-size:9px; color:#94a3b8; margin-top:2px;">Cust: ...7590000</div>
             <div id="ssgc-status" class="status-badge status-unpaid">No Data</div>
             <div id="ssgc-amount" style="font-size:11px; margin-top:5px; color:#94a3b8;">RS. 0</div>
         </div>
         <div class="utility-card mob-card">
             <div class="util-icon mob-icon"><i class="fa fa-mobile-screen-button"></i></div>
             <div style="font-weight:bold; font-size:13px;">Mobilink Bill</div>
-            <div style="font-size:9px; color:#94a3b8; margin-top:2px; white-space:nowrap;">03202491025</div>
+            <div style="font-size:9px; color:#94a3b8; margin-top:2px;">03202491025</div>
             <div id="mob-status" class="status-badge status-unpaid">No Data</div>
             <div id="mob-amount" style="font-size:11px; margin-top:5px; color:#94a3b8;">RS. 0</div>
         </div>
+    </div>
+
+    <div id="scanner-section" class="card no-print" style="text-align: center;">
+        <button class="btn-action" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); margin-bottom: 10px;" onclick="toggleScanner()">
+            <i class="fa fa-camera"></i> SCAN BILL TO AUTO-PAY
+        </button>
+        <div id="reader" style="display: none; width: 100%; max-width: 280px; margin: auto; border-radius: 12px; overflow: hidden; border: 2px solid var(--primary);"></div>
     </div>
 
     <div class="card no-print">
@@ -134,7 +145,7 @@
         <button class="btn-action" onclick="saveUtilityBill()">SAVE BILL RECORD</button>
     </div>
 
-    <h4 style="margin:15px 0 10px 0;">Billing History (Live Gmail Stream)</h4>
+    <h4 style="margin:15px 0 10px 0;">Billing History & Printable Barcodes</h4>
     <div id="utility-body"></div>
 </div>
 
@@ -173,12 +184,8 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); 
 
-    // ---- MOBILE NETWORK KEEP-ALIVE STABILIZATION ----
-    db.ref(".info/connected").on("value", snap => {
-        if (snap.val() === true) console.log("Firebase Live on Mobile Network!");
-    });
-
     let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
+    let html5QrCode = null;
 
     function login() {
         const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value;
@@ -193,10 +200,7 @@
     function startApp() {
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('user-display').innerText = myID.toUpperCase();
-        if(myRole === 'admin') { 
-            document.getElementById('admin-nav-item').style.display = 'block';
-            loadMonitor();
-        }
+        if(myRole === 'admin') { document.getElementById('admin-nav-item').style.display = 'block'; loadMonitor(); }
         setupDates(); loadData(myID);
     }
 
@@ -205,17 +209,13 @@
         document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
         document.getElementById('tab-'+t).classList.add('active');
         if(el) el.classList.add('active');
+        if(t !== 'util' && html5QrCode) { stopScanner(); }
     }
 
     function loadData(id) {
         viewingID = id;
         db.ref('data/'+id).on('value', snap => { window.currentData = snap.val() || {}; renderData(); });
-        
-        // Real-Time Listener targeting specific user node for live background stream
-        db.ref('utilities/'+id).on('value', snap => { 
-            window.utilityData = snap.val() || {}; 
-            renderUtilities(); 
-        });
+        db.ref('utilities/'+id).on('value', snap => { window.utilityData = snap.val() || {}; renderUtilities(); });
     }
 
     function renderData() {
@@ -250,20 +250,33 @@
             if(new Date(r.d).getMonth() == m) {
                 const a = parseFloat(r.a)||0;
                 
-                // Real-time tracking filter for latest entry
                 if (r.c === 'K-Electric' && keStatus === "No Data") { keStatus = r.s; keAmt = a; }
                 if (r.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = r.s; ssgcAmt = a; }
                 if (r.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = r.s; mobAmt = a; }
 
+                // Unique Barcode Id Generation Rule
+                const barcodeValue = `BILL-${k.substring(1,9).toUpperCase()}`;
+
                 body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.s==='Paid'?'var(--success)':'var(--danger)'}">
                     <div><b>${r.c}</b> <small>(${r.s})</small><br><small>${r.d}</small></div>
+                    <div><svg class="barcode-img" id="bc-${k}"></svg></div>
                     <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
                     <i class="fa fa-trash no-print" style="color:red; font-size:12px;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()"></i></div>
                 </div>`;
+
+                // Render Graphic Barcode immediately for Screen & Printing
+                setTimeout(() => {
+                    JsBarcode(`#bc-${k}`, barcodeValue, {
+                        format: "CODE128",
+                        width: 1.3,
+                        height: 35,
+                        fontSize: 10,
+                        displayValue: true
+                    });
+                }, 50);
             }
         });
 
-        // 3D Visual Grid Forced Component Refresh
         document.getElementById('ke-status').className = `status-badge ${keStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
         document.getElementById('ke-status').innerText = keStatus;
         document.getElementById('ke-amount').innerText = 'RS. ' + keAmt.toLocaleString();
@@ -277,73 +290,68 @@
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
     }
 
-    function saveUtilityBill(automatedData = null) {
-        const d = automatedData ? automatedData.d : document.getElementById('u-date').value;
-        const c = automatedData ? automatedData.c : document.getElementById('u-company').value;
-        const a = automatedData ? automatedData.a : document.getElementById('u-amt').value;
-        const s = automatedData ? automatedData.s : document.getElementById('u-status').value;
-        
-        if(d && a) {
-            if(s === 'Paid') {
-                Object.entries(window.utilityData || {}).forEach(([k, r]) => {
-                    if(r.c === c && new Date(r.d).getMonth() === new Date(d).getMonth() && r.s === 'Unpaid') {
-                        db.ref(`utilities/${viewingID}/${k}`).remove();
-                    }
-                });
-                db.ref('data/'+viewingID).push({d, n: c + " Paid", a, t: 'exp'});
-            }
-            db.ref('utilities/'+viewingID).push({d, c, a, s}).then(() => {
-                if(!automatedData) { alert("Record Saved!"); document.getElementById('u-amt').value = ""; }
+    // ---- AUTOMATED CAMERA SCANNER ENGINE ----
+    function toggleScanner() {
+        const readerDiv = document.getElementById('reader');
+        if(readerDiv.style.display === 'none') {
+            readerDiv.style.display = 'block';
+            html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start(
+                { facingMode: "environment" },
+                { fps: 15, qrbox: { width: 260, height: 130 } },
+                (decodedText) => {
+                    stopScanner();
+                    processAutomaticScanEntry(decodedText);
+                },
+                (err) => {}
+            ).catch(err => alert("Camera error: " + err));
+        } else {
+            stopScanner();
+        }
+    }
+
+    function stopScanner() {
+        if(html5QrCode) {
+            html5QrCode.stop().then(() => {
+                document.getElementById('reader').style.display = 'none';
+                html5QrCode = null;
             });
         }
     }
 
-    function loadMonitor() {
-        db.ref('users').on('value', snap => {
-            const list = document.getElementById('user-monitor-list'); list.innerHTML = "";
-            snap.forEach(c => {
-                const uid = c.key, udata = c.val();
-                db.ref('data/'+uid).once('value', dSnap => {
-                    let ti=0, te=0; dSnap.forEach(e => { const a = parseFloat(e.val().a)||0; if(e.val().t==='inc') ti+=a; else te+=a; });
-                    list.innerHTML += `<div class="card">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
-                            <b>${uid.toUpperCase()}</b>
-                            <div>
-                                <i class="fa fa-eye" style="color:var(--success); margin-right:15px;" onclick="loadData('${uid}'); switchTab('dash', document.querySelector('.nav-btn'))"></i>
-                                <i class="fa fa-edit" style="color:var(--secondary); margin-right:15px;" onclick="editUser('${uid}','${udata.pass}','${udata.role}')"></i>
-                                <i class="fa fa-trash" style="color:var(--danger)" onclick="if(confirm('Delete User?')) db.ref('users/${uid}').remove()"></i>
-                            </div>
-                        </div>
-                        <div style="font-size:12px; margin-top:8px; color:#94a3b8">Role: ${udata.role} | Bal: RS. ${(ti-te).toLocaleString()}</div>
-                    </div>`;
-                });
-            });
+    // FULLY AUTOMATED WORKFLOW FOR ENTRY CREATION ON SCAN
+    function processAutomaticScanEntry(scannedCode) {
+        let matched = false;
+        Object.entries(window.utilityData || {}).forEach(([k, r]) => {
+            const currentBillBarcodeId = `BILL-${k.substring(1,9).toUpperCase()}`;
+            
+            if(scannedCode === currentBillBarcodeId) {
+                matched = true;
+                if(r.s === 'Paid') {
+                    alert(`Yeh bill (${r.c}) pehle se hi PAID hai! Double entry nahi ho sakti.`);
+                    return;
+                }
+                
+                // Automatic Action confirmation prompt
+                if(confirm(`Bill Detected!\nCompany: ${r.c}\nAmount: RS. ${r.a}\n\nKya aap automatic payment aur entry save karna chahte hain?`)) {
+                    const today = new Date().toISOString().split('T')[0];
+                    
+                    // 1. Bill node ko automatic database mein PAID update karna
+                    db.ref(`utilities/${viewingID}/${k}`).update({ s: 'Paid', d: today });
+                    
+                    // 2. Main Ledger History Dashboard mein automatic EXPENSE (Kharcha) entry record karna
+                    db.ref('data/'+viewingID).push({
+                        d: today,
+                        n: `${r.c} Paid (Auto-Scan)`,
+                        a: r.a,
+                        t: 'exp'
+                    }).then(() => {
+                        alert("Zabardast! Bill Paid update ho gaya aur automatic Ledger Expense entry add ho chuki hai! 👍");
+                    });
+                }
+            }
         });
+        if(!found && matched === false) alert("Scan Failure: Yeh Barcode GharApp database record se match nahi karta!");
     }
 
-    function editUser(id, pass, role) {
-        document.getElementById('u-id').value = id; document.getElementById('u-pass').value = pass; document.getElementById('u-role').value = role;
-        document.getElementById('u-form-title').innerText = "Edit: " + id.toUpperCase();
-    }
-
-    function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
-        if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
-    }
-
-    function addEntry() {
-        const d = document.getElementById('i-date').value, n = document.getElementById('i-desc').value, a = document.getElementById('i-amt').value, t = document.getElementById('i-type').value;
-        if(d && n && a) { db.ref('data/'+viewingID).push({d, n, a, t}); }
-    }
-
-    function setupDates() {
-        const n = new Date(); document.getElementById('i-date').valueAsDate = n; document.getElementById('u-date').valueAsDate = n;
-        const ms = document.getElementById('sel-month');
-        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
-    }
-
-    function logout() { localStorage.clear(); location.reload(); }
-    if(myID) startApp();
-</script>
-</body>
-</html>
+    function saveUtility
