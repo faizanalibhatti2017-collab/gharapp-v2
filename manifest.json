@@ -2,21 +2,21 @@
   "name": "GharApp",
   "short_name": "GharApp",
   "description": "GharApp Mobile Intelligent Smart Shopping App",
-  "start_url": "/index.html",
-  "scope": "/",
+  "start_url": "index.html",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#000000",
   "theme_color": "#000000",
   "icons": [
     {
-      "src": "/logo.png",
+      "src": "logo.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any maskable"
     },
     {
-      "src": "/logo.png",
+      "src": "logo.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any maskable"
