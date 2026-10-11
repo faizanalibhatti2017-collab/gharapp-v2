@@ -32,7 +32,13 @@
         * { box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         
         body { 
-            background: var(--bg-main); 
+            background-color: var(--bg-main); 
+            /* Yahan logo image ka link ya path dein, 30% transparency ke sath background watermarked lagega */
+            background-image: linear-gradient(rgba(3, 7, 18, 0.85), rgba(3, 7, 18, 0.85)), url('logo.png');
+            background-repeat: no-repeat;
+            background-position: center;
+            background-size: 60% auto;
+            background-attachment: fixed;
             color: var(--text-main); 
             min-height: 100vh;
             padding-bottom: 90px; 
@@ -54,7 +60,7 @@
             position: absolute;
             border-radius: 50%;
             filter: blur(110px);
-            opacity: 0.6;
+            opacity: 0.45;
             animation: cyberFloat 10s infinite alternate ease-in-out;
         }
 
@@ -75,17 +81,6 @@
             background: radial-gradient(circle, #7928ca 0%, #ff0080 100%);
             animation-duration: 12s;
             animation-delay: -2s;
-        }
-
-        .orb-cyber-3 {
-            top: 35%;
-            left: 25%;
-            width: 350px;
-            height: 350px;
-            background: radial-gradient(circle, #10b981 0%, #059669 100%);
-            animation-duration: 15s;
-            animation-delay: -5s;
-            opacity: 0.35;
         }
 
         @keyframes cyberFloat {
@@ -450,26 +445,21 @@
 </head>
 <body>
 
-<!-- Animated Glowing Background Orbs -->
 <div class="cyber-bg-container">
     <div class="cyber-orb orb-cyber-1"></div>
     <div class="cyber-orb orb-cyber-2"></div>
-    <div class="cyber-orb orb-cyber-3"></div>
 </div>
 
 <canvas id="canvas-bg"></canvas>
 
-<!-- Sidebar Overlay -->
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
-<!-- Slide-out Sidebar Drawer -->
 <div id="sidebar-drawer" class="sidebar-drawer">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:12px;">
         <h3 style="color:var(--primary); font-weight:800; text-shadow:0 0 10px var(--primary-glow);"><i class="fa fa-fingerprint" style="margin-right:8px;"></i> GharApp Menu</h3>
         <button onclick="toggleSidebar()" class="btn-icon">&times;</button>
     </div>
     
-    <!-- Sidebar Balance Summary Card -->
     <div class="card" style="margin-top:5px; background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(121, 40, 202, 0.15)); border-color: rgba(0, 242, 254, 0.4);">
         <small style="color:var(--text-muted); text-transform:uppercase; font-size:11px; letter-spacing:1.5px; font-weight:700;"><i class="fa fa-wallet" style="color:var(--primary);"></i> Net Balance</small>
         <h2 id="side-bal-val" style="color:#ffffff; margin:8px 0; font-size:1.9rem; text-shadow:0 0 20px var(--primary-glow);">0</h2>
@@ -477,7 +467,6 @@
         <div style="font-size:12px; color:var(--danger); margin-top:4px;"><i class="fa fa-arrow-up"></i> Expense: RS. <span id="side-exp-val">0</span></div>
     </div>
 
-    <!-- Sidebar Navigation Links -->
     <ul class="sidebar-menu-list">
         <li class="sidebar-item active" onclick="switchTab('dash'); setFilterMode('all'); toggleSidebar();">
             <i class="fa fa-chart-line"></i> Dashboard / All
@@ -500,7 +489,6 @@
     </ul>
 </div>
 
-<!-- Auth Screen -->
 <div id="auth-screen" style="position:fixed; inset:0; background:rgba(3, 7, 18, 0.96); backdrop-filter:blur(35px); z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px;">
     <div class="card" style="width:100%; max-width:350px; text-align:center;">
         <div style="width:70px; height:70px; background:linear-gradient(135deg, var(--primary), var(--secondary)); border-radius:22px; margin:0 auto 18px; display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px var(--primary-glow);">
@@ -513,7 +501,6 @@
     </div>
 </div>
 
-<!-- Top Navigation Bar -->
 <div class="top-bar no-print">
     <div style="display:flex; align-items:center; gap:12px;">
         <button onclick="toggleSidebar()" class="btn-icon"><i class="fa fa-bars"></i></button>
@@ -525,11 +512,9 @@
     </div>
 </div>
 
-<!-- Dashboard Tab (Front Page) -->
 <div id="tab-dash" class="page active">
     <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> Print Ledger</button>
     
-    <!-- Balance Card -->
     <div class="card" style="text-align:center; background: linear-gradient(135deg, rgba(0, 242, 254, 0.18), rgba(121, 40, 202, 0.12)); border-color: rgba(0, 242, 254, 0.4);">
         <small style="color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; font-weight:700;"><i class="fa fa-scale-balanced" style="margin-right:6px;"></i> Front Net Balance</small>
         <h1 id="t-bal" style="margin:10px 0; font-size: 2.8rem; text-shadow:0 0 30px var(--primary-glow); color:#ffffff;">0</h1>
@@ -551,7 +536,6 @@
         <button class="btn-action" onclick="addEntry()">SAVE ENTRY</button>
     </div>
 
-    <!-- Filter Buttons -->
     <div class="filter-tab-bar no-print">
         <button id="ft-all" class="filter-tab-btn active" onclick="setFilterMode('all')">All Records</button>
         <button id="ft-inc" class="filter-tab-btn" onclick="setFilterMode('inc')">Income Only (+)</button>
@@ -561,7 +545,6 @@
     <div id="ledger-body"></div>
 </div>
 
-<!-- Scanner Tab -->
 <div id="tab-scan" class="page">
     <div class="card" style="text-align: center; background: transparent; border: none; padding: 0;">
         <div class="scan-instruction-text">Scan QR Code / Barcode</div>
@@ -573,7 +556,6 @@
     </div>
 </div>
 
-<!-- Utilities Tab -->
 <div id="tab-util" class="page">
     <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> Print Bills History</button>
     <div class="utility-grid">
@@ -620,7 +602,6 @@
     <div id="utility-body"></div>
 </div>
 
-<!-- Users Tab -->
 <div id="tab-users" class="page">
     <div class="card no-print">
         <h3 id="u-form-title" style="margin-top:0; color:var(--primary); text-shadow:0 0 10px var(--primary-glow);">User Editor</h3>
@@ -636,7 +617,6 @@
     <div id="user-monitor-list"></div>
 </div>
 
-<!-- Bottom Navigation Bar -->
 <nav class="bottom-nav no-print">
     <button class="nav-btn active" id="nb-dash" onclick="switchTab('dash')"><i class="fa fa-chart-line"></i>Dash</button>
     <button class="nav-btn scan-btn" id="nb-scan" onclick="switchTab('scan')"><i class="fa fa-qrcode"></i>SCAN</button>
@@ -1104,7 +1084,6 @@
     function logout() { localStorage.clear(); location.reload(); }
     if(myID) startApp();
 
-    /* 3D Canvas Dynamic Glowing Particles */
     const canvas = document.getElementById('canvas-bg');
     const ctx = canvas.getContext('2d');
     let particles = [];
