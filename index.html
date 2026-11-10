@@ -64,18 +64,18 @@ url('logo.png');
             position: relative;
         }
 
-        /* Startup Splash Screen - Fits Screen Width Proportionally */
+        /* Startup Splash Screen - Guaranteed Fix for Loading Workspace */
         #app-splash {
             position: fixed;
             inset: 0;
             background: #030712;
-            z-index: 99999;
+            z-index: 999999;
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            transition: opacity 0.35 ease;
+            transition: opacity 0.3s ease;
         }
         #app-splash img {
             width: 85vw;
@@ -94,7 +94,6 @@ url('logo.png');
 0.8)); }
         }
 
-        /* Animated Cyberpunk Background Orbs */
         .cyber-bg-container {
             position: fixed;
             inset: 0;
@@ -143,7 +142,6 @@ url('logo.png');
             pointer-events: none;
         }
 
-        /* Top Bar Header */
         .top-bar { 
             background: rgba(13, 20, 38, 0.8); 
             backdrop-filter: blur(25px);
@@ -181,7 +179,6 @@ url('logo.png');
             box-shadow: 0 0 20px var(--primary-glow);
         }
 
-        /* Slide-out Sidebar Drawer */
         .sidebar-drawer {
             position: fixed;
             top: 0;
@@ -249,7 +246,6 @@ url('logo.png');
             font-size: 17px;
         }
 
-        /* Bottom Nav Bar */
         .bottom-nav { 
             position: fixed; 
             bottom: 0; 
@@ -314,7 +310,6 @@ animation: fadeInPage 0.4s ease; }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* 3D Neon Glass Cards */
         .card { 
             background: var(--card-bg); 
             backdrop-filter: blur(30px);
@@ -535,7 +530,7 @@ font-size: 10px; font-weight: bold; margin-top: 8px; }
 </head>
 <body>
 
-<!-- Animated Startup Splash Screen with Responsive Logo -->
+<!-- Startup Splash Screen -->
 <div id="app-splash">
     <img src="logo.png" alt="GharApp Logo">
     <h2 style="color: #00f2fe; font-weight: 800; font-size: 1.4rem; text-shadow:0 0 15px 
@@ -826,6 +821,17 @@ receipt"></i>Bills</button>
 </nav>
 
 <script>
+    // HARDCODED GUARANTEED SPLASH EXITS (Run immediately before anything else)
+    function killSplash() {
+        var s = document.getElementById('app-splash');
+        if (s) {
+            s.style.opacity = '0';
+            setTimeout(function(){ s.remove(); }, 300);
+        }
+    }
+    // 0.8 sec main har haal main splash khatam ho jaye ga taake app na atke
+    setTimeout(killSplash, 800);
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js');
     }
@@ -850,19 +856,6 @@ viewingID = myID;
     let html5QrCode = null;
     let currentFilterMode = 'all';
 
-    function hideSplash() {
-        const splash = document.getElementById('app-splash');
-        if (splash) {
-            splash.style.opacity = '0';
-            setTimeout(() => splash.remove(), 350);
-        }
-    }
-
-    // Fail-safe Emergency Timer: 1.2 seconds max timeout for splash screen
-    setTimeout(() => {
-        hideSplash();
-    }, 1200);
-
     function toggleSidebar() {
         const drawer = document.getElementById('sidebar-drawer');
         const overlay = document.getElementById('sidebar-overlay');
@@ -882,10 +875,11 @@ viewingID = myID;
 
     window.addEventListener('DOMContentLoaded', () => {
         setupDates();
+        killSplash();
+
         if (myID) {
             startApp();
         } else {
-            hideSplash();
             document.getElementById('auth-screen').style.display = 'flex';
         }
 
@@ -921,15 +915,15 @@ document.getElementById('l-pass').value;
     }
 
     function startApp() {
-        hideSplash();
+        killSplash();
         document.getElementById('auth-screen').style.display = 'none';
-        if(myID) document.getElementById('user-display').innerText = myID.toUpperCase();
+        document.getElementById('user-display').innerText = myID.toUpperCase();
         if(myRole === 'admin') { 
             document.getElementById('admin-nav-item').style.display = 'block'; 
             document.getElementById('sidebar-admin-link').style.display = 'flex'; 
             loadMonitor(); 
         }
-        loadData(myID || 'admin');
+        loadData(myID);
 
         const pendingText = localStorage.getItem('pendingSharedText');
         if (pendingText) {
@@ -967,9 +961,7 @@ renderData(); });
 
     function renderData() {
         const m = parseInt(document.getElementById('sel-month').value);
-        const body = document.getElementById('ledger-body'); 
-        if(!body) return;
-        body.innerHTML = "";
+        const body = document.getElementById('ledger-body'); body.innerHTML = "";
         let ti=0, te=0;
 
         Object.entries(window.currentData || {}).reverse().forEach(([k, r]) => {
