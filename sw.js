@@ -1,11 +1,17 @@
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
+    self.skipWaiting();
 });
 
 self.addEventListener('activate', (event) => {
-  event.waitUntil(clients.claim());
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cache) => caches.delete(cache)) // Purana cache foran delete kar dega
+            );
+        })
+    );
 });
 
 self.addEventListener('fetch', (event) => {
-  event.respondWith(fetch(event.request));
+    event.respondWith(fetch(event.request)); // Har dafa live server se file uthaye ga
 });
