@@ -2,28 +2,18 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-
-
-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#f1f5f9">
     <title>GharApp Mobile - Light Finance Manager</title>
     <link rel="manifest" href="manifest.json">
     <link rel="icon" type="image/png" href="logo.png">
     <link rel="apple-touch-icon" href="logo.png">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
-
-rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-
-
-compat.js"></script>
-    <script 
-
-src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script 
-
-src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
     <style>
         :root { 
@@ -42,11 +32,7 @@ src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script
             --input-bg: #f1f5f9;
         }
 
-        * { box-sizing: border-box; font-family: 'Inter', -apple-system, 
-
-BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: 
-
-transparent; margin: 0; padding: 0; }
+        * { box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
         
         body { 
             background-color: var(--bg-main); 
@@ -57,7 +43,7 @@ transparent; margin: 0; padding: 0; }
             position: relative;
         }
 
-        /* Startup Splash Screen */
+        /* Startup Splash Screen - Responsive Width Fit Logo */
         #app-splash {
             position: fixed;
             inset: 0;
@@ -67,18 +53,20 @@ transparent; margin: 0; padding: 0; }
             flex-direction: column;
             align-items: center;
             justify-content: center;
+            padding: 20px;
             transition: opacity 0.4s ease;
         }
         #app-splash img {
-            width: 100px;
-            height: 100px;
-            margin-bottom: 16px;
+            width: 85vw; /* Mobile screen ki width par fit hoga */
+            max-width: 420px;
+            height: auto; /* Aspect ratio barqaraar rahega */
+            margin-bottom: 24px;
             object-fit: contain;
-            animation: pulseLogo 1.5s infinite alternate;
+            animation: pulseLogo 1.5s infinite alternate ease-in-out;
         }
         @keyframes pulseLogo {
-            0% { transform: scale(1); opacity: 0.8; }
-            100% { transform: scale(1.08); opacity: 1; }
+            0% { transform: scale(0.98); opacity: 0.9; }
+            100% { transform: scale(1.02); opacity: 1; }
         }
 
         /* Top Bar Header */
@@ -314,30 +302,16 @@ transparent; margin: 0; padding: 0; }
         }
 
         @media print {
-            body { background: white !important; color: black !important; padding: 0 !
-
-important; margin: 0 !important; }
-            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .btn-print, #qr-
-
-view-box, .scan-instruction-text, .sidebar-drawer, .sidebar-overlay, .filter-tab-bar { 
-
-display: none !important; }
+            body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
+            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .btn-print, #qr-view-box, .scan-instruction-text, .sidebar-drawer, .sidebar-overlay, .filter-tab-bar { display: none !important; }
             .page { display: block !important; padding: 0 !important; }
-            .card { background: white !important; border: 1px solid #ddd !important; color: 
-
-black !important; box-shadow: none !important; }
-            .list-item { display: flex !important; justify-content: space-between !
-
-important; align-items: center !important; border: 1px solid #ddd !important; background: 
-
-white !important; padding: 15px !important; color: black !important; }
+            .card { background: white !important; border: 1px solid #ddd !important; color: black !important; box-shadow: none !important; }
+            .list-item { display: flex !important; justify-content: space-between !important; align-items: center !important; border: 1px solid #ddd !important; background: white !important; padding: 15px !important; color: black !important; }
             .barcode-img { display: block !important; background: white !important; }
         }
 
         /* Utility Cards Grid */
-        .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax
-
-(105px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 12px; margin-bottom: 20px; }
         .utility-card { 
             position: relative; 
             border-radius: 18px; 
@@ -354,19 +328,11 @@ white !important; padding: 15px !important; color: black !important; }
         .ke-icon { color: #f59e0b; }
         .ssgc-icon { color: #3b82f6; }
         .mob-icon { color: #e11d48; }
-        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; 
-
-font-size: 10px; font-weight: bold; margin-top: 8px; }
-        .status-paid { background: rgba(5, 150, 105, 0.12); color: var(--success); border: 
-
-1px solid var(--success); }
-        .status-unpaid { background: rgba(225, 29, 72, 0.12); color: var(--danger); border: 
-
-1px solid var(--danger); }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-top: 8px; }
+        .status-paid { background: rgba(5, 150, 105, 0.12); color: var(--success); border: 1px solid var(--success); }
+        .status-unpaid { background: rgba(225, 29, 72, 0.12); color: var(--danger); border: 1px solid var(--danger); }
         
-        .barcode-img { background: white; padding: 6px; border-radius: 8px; max-width: 
-
-130px; height: auto; border: 1px solid #e2e8f0; }
+        .barcode-img { background: white; padding: 6px; border-radius: 8px; max-width: 130px; height: auto; border: 1px solid #e2e8f0; }
         
         #qr-view-box { 
             width: 100%; 
@@ -391,65 +357,41 @@ font-size: 10px; font-weight: bold; margin-top: 8px; }
             pointer-events: none; 
         }
         @keyframes laserMove { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
-        .scan-instruction-text { color: var(--text-main); font-size: 15px; font-weight: 
-
-800; margin: 12px 0; text-transform: uppercase; letter-spacing: 1px; }
+        .scan-instruction-text { color: var(--text-main); font-size: 15px; font-weight: 800; margin: 12px 0; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
 
-<!-- Startup Splash Screen with Logo -->
+<!-- Startup Splash Screen with Width-Fitted Logo -->
 <div id="app-splash">
     <img src="logo.png" alt="GharApp Logo">
-    <h2 style="color: #0284c7; font-weight: 800; font-size: 1.3rem;">GharApp Mobile</h2>
-    <p style="color: #64748b; font-size: 0.85rem; margin-top: 6px;">Loading 
-
-workspace...</p>
+    <h2 style="color: #0284c7; font-weight: 800; font-size: 1.4rem;">GharApp Mobile</h2>
+    <p style="color: #64748b; font-size: 0.85rem; margin-top: 6px;">Loading workspace...</p>
 </div>
 
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <div id="sidebar-drawer" class="sidebar-drawer">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-
-
-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:12px;">
-        <h3 style="color:var(--primary); font-weight:800;"><i class="fa fa-fingerprint" 
-
-style="margin-right:8px;"></i> GharApp Menu</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:12px;">
+        <h3 style="color:var(--primary); font-weight:800;"><i class="fa fa-fingerprint" style="margin-right:8px;"></i> GharApp Menu</h3>
         <button onclick="toggleSidebar()" class="btn-icon">&times;</button>
     </div>
     
     <div class="card" style="margin-top:5px; background: #f1f5f9;">
-        <small style="color:var(--text-muted); text-transform:uppercase; font-size:11px; 
-
-font-weight:700;"><i class="fa fa-wallet" style="color:var(--primary);"></i> Net 
-
-Balance</small>
-        <h2 id="side-bal-val" style="color:var(--text-main); margin:8px 0; font-
-
-size:1.8rem;">0</h2>
-        <div style="font-size:12px; color:var(--success); margin-top:6px;"><i class="fa 
-
-fa-arrow-down"></i> Income: RS. <span id="side-inc-val">0</span></div>
-        <div style="font-size:12px; color:var(--danger); margin-top:4px;"><i class="fa fa-
-
-arrow-up"></i> Expense: RS. <span id="side-exp-val">0</span></div>
+        <small style="color:var(--text-muted); text-transform:uppercase; font-size:11px; font-weight:700;"><i class="fa fa-wallet" style="color:var(--primary);"></i> Net Balance</small>
+        <h2 id="side-bal-val" style="color:var(--text-main); margin:8px 0; font-size:1.8rem;">0</h2>
+        <div style="font-size:12px; color:var(--success); margin-top:6px;"><i class="fa fa-arrow-down"></i> Income: RS. <span id="side-inc-val">0</span></div>
+        <div style="font-size:12px; color:var(--danger); margin-top:4px;"><i class="fa fa-arrow-up"></i> Expense: RS. <span id="side-exp-val">0</span></div>
     </div>
 
     <ul class="sidebar-menu-list">
-        <li class="sidebar-item active" onclick="switchTab('dash'); setFilterMode('all'); 
-
-toggleSidebar();">
+        <li class="sidebar-item active" onclick="switchTab('dash'); setFilterMode('all'); toggleSidebar();">
             <i class="fa fa-chart-line"></i> Dashboard / All
         </li>
-        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('inc'); 
-
-toggleSidebar();">
+        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('inc'); toggleSidebar();">
             <i class="fa fa-arrow-down" style="color:var(--success);"></i> Income Records
         </li>
-        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('exp'); 
-
-toggleSidebar();">
+        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('exp'); toggleSidebar();">
             <i class="fa fa-arrow-up" style="color:var(--danger);"></i> Expense Records
         </li>
         <li class="sidebar-item" onclick="switchTab('scan'); toggleSidebar();">
@@ -458,28 +400,18 @@ toggleSidebar();">
         <li class="sidebar-item" onclick="switchTab('util'); toggleSidebar();">
             <i class="fa fa-receipt" style="color:#9333ea;"></i> Utility Bills
         </li>
-        <li id="sidebar-admin-link" class="sidebar-item" style="display:none;" 
-
-onclick="switchTab('users'); toggleSidebar();">
+        <li id="sidebar-admin-link" class="sidebar-item" style="display:none;" onclick="switchTab('users'); toggleSidebar();">
             <i class="fa fa-users-cog"></i> User Management
         </li>
     </ul>
 </div>
 
-<div id="auth-screen" style="position:fixed; inset:0; background:#f8fafc; z-index:9999; 
-
-display:flex; align-items:center; justify-content:center; padding: 20px;">
+<div id="auth-screen" style="position:fixed; inset:0; background:#f8fafc; z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px;">
     <div class="card" style="width:100%; max-width:350px; text-align:center;">
-        <div style="width:70px; height:70px; background:linear-gradient(135deg, var(--
-
-primary), var(--secondary)); border-radius:20px; margin:0 auto 18px; display:flex; align-
-
-items:center; justify-content:center; box-shadow: 0 6px 15px var(--primary-glow);">
+        <div style="width:70px; height:70px; background:linear-gradient(135deg, var(--primary), var(--secondary)); border-radius:20px; margin:0 auto 18px; display:flex; align-items:center; justify-content:center; box-shadow: 0 6px 15px var(--primary-glow);">
             <i class="fa fa-qrcode" style="font-size:30px; color:#ffffff;"></i>
         </div>
-        <h2 style="color:var(--primary); margin-bottom:18px; font-weight:800;">GharApp 
-
-Mobile</h2>
+        <h2 style="color:var(--primary); margin-bottom:18px; font-weight:800;">GharApp Mobile</h2>
         <input type="text" id="l-id" placeholder="Username">
         <input type="password" id="l-pass" placeholder="Password">
         <button onclick="login()" class="btn-action">LOGIN</button>
@@ -488,46 +420,24 @@ Mobile</h2>
 
 <div class="top-bar no-print">
     <div style="display:flex; align-items:center; gap:12px;">
-        <button onclick="toggleSidebar()" class="btn-icon"><i class="fa fa-
-
-bars"></i></button>
+        <button onclick="toggleSidebar()" class="btn-icon"><i class="fa fa-bars"></i></button>
         <b id="user-display" style="color:var(--primary); font-size: 1.1rem;">User</b>
     </div>
     <div style="display:flex; gap:8px; align-items: center;">
-        <select id="sel-month" onchange="renderData(); renderUtilities();" 
-
-style="width:95px; margin:0; padding:6px;"></select>
-        <button onclick="logout()" class="btn-icon" style="color:var(--danger);"><i 
-
-class="fa fa-power-off"></i></button>
+        <select id="sel-month" onchange="renderData(); renderUtilities();" style="width:95px; margin:0; padding:6px;"></select>
+        <button onclick="logout()" class="btn-icon" style="color:var(--danger);"><i class="fa fa-power-off"></i></button>
     </div>
 </div>
 
 <div id="tab-dash" class="page active">
-    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> 
-
-Print Ledger</button>
+    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> Print Ledger</button>
     
-    <div class="card" style="text-align:center; background: linear-gradient(135deg, 
-
-#e0f2fe, #f0fdf4);">
-        <small style="color:var(--text-muted); text-transform:uppercase; letter-
-
-spacing:1px; font-weight:700;"><i class="fa fa-scale-balanced" style="margin-
-
-right:6px;"></i> Front Net Balance</small>
-        <h1 id="t-bal" style="margin:10px 0; font-size: 2.6rem; color:var(--text-
-
-main);">0</h1>
-        <div style="display:flex; justify-content:space-around; margin-top:14px; border-
-
-top:1px solid var(--card-border); padding-top:12px;">
-            <div style="color:var(--success);"><small><i class="fa fa-arrow-down"></i> 
-
-Income</small><br><b id="t-inc" style="font-size:1.1rem;">0</b></div>
-            <div style="color:var(--danger);"><small><i class="fa fa-arrow-up"></i> 
-
-Expense</small><br><b id="t-exp" style="font-size:1.1rem;">0</b></div>
+    <div class="card" style="text-align:center; background: linear-gradient(135deg, #e0f2fe, #f0fdf4);">
+        <small style="color:var(--text-muted); text-transform:uppercase; letter-spacing:1px; font-weight:700;"><i class="fa fa-scale-balanced" style="margin-right:6px;"></i> Front Net Balance</small>
+        <h1 id="t-bal" style="margin:10px 0; font-size: 2.6rem; color:var(--text-main);">0</h1>
+        <div style="display:flex; justify-content:space-around; margin-top:14px; border-top:1px solid var(--card-border); padding-top:12px;">
+            <div style="color:var(--success);"><small><i class="fa fa-arrow-down"></i> Income</small><br><b id="t-inc" style="font-size:1.1rem;">0</b></div>
+            <div style="color:var(--danger);"><small><i class="fa fa-arrow-up"></i> Expense</small><br><b id="t-exp" style="font-size:1.1rem;">0</b></div>
         </div>
     </div>
     
@@ -544,24 +454,16 @@ Expense</small><br><b id="t-exp" style="font-size:1.1rem;">0</b></div>
     </div>
 
     <div class="filter-tab-bar no-print">
-        <button id="ft-all" class="filter-tab-btn active" onclick="setFilterMode
-
-('all')">All Records</button>
-        <button id="ft-inc" class="filter-tab-btn" onclick="setFilterMode('inc')">Income 
-
-Only (+)</button>
-        <button id="ft-exp" class="filter-tab-btn" onclick="setFilterMode('exp')">Expense 
-
-Only (-)</button>
+        <button id="ft-all" class="filter-tab-btn active" onclick="setFilterMode('all')">All Records</button>
+        <button id="ft-inc" class="filter-tab-btn" onclick="setFilterMode('inc')">Income Only (+)</button>
+        <button id="ft-exp" class="filter-tab-btn" onclick="setFilterMode('exp')">Expense Only (-)</button>
     </div>
 
     <div id="ledger-body"></div>
 </div>
 
 <div id="tab-scan" class="page">
-    <div class="card" style="text-align: center; background: transparent; border: none; 
-
-padding: 0;">
+    <div class="card" style="text-align: center; background: transparent; border: none; padding: 0;">
         <div class="scan-instruction-text">Scan QR Code / Barcode</div>
         
         <div id="qr-view-box">
@@ -572,51 +474,33 @@ padding: 0;">
 </div>
 
 <div id="tab-util" class="page">
-    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> 
-
-Print Bills History</button>
+    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> Print Bills History</button>
     <div class="utility-grid">
         <div class="utility-card ke-card">
             <div class="util-icon ke-icon"><i class="fa fa-bolt"></i></div>
             <div style="font-weight:bold; font-size:12px;">K-Electric</div>
-            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">A/C: 
-
-...4984761</div>
+            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">A/C: ...4984761</div>
             <div id="ke-status" class="status-badge status-unpaid">No Data</div>
-            <div id="ke-amount" style="font-size:11px; margin-top:5px; color:var(--text-
-
-muted);">RS. 0</div>
+            <div id="ke-amount" style="font-size:11px; margin-top:5px; color:var(--text-muted);">RS. 0</div>
         </div>
         <div class="utility-card ssgc-card">
             <div class="util-icon ssgc-icon"><i class="fa fa-fire-flame-simple"></i></div>
             <div style="font-weight:bold; font-size:12px;">SSGC</div>
-            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">Cust: 
-
-...7590000</div>
+            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">Cust: ...7590000</div>
             <div id="ssgc-status" class="status-badge status-unpaid">No Data</div>
-            <div id="ssgc-amount" style="font-size:11px; margin-top:5px; color:var(--text-
-
-muted);">RS. 0</div>
+            <div id="ssgc-amount" style="font-size:11px; margin-top:5px; color:var(--text-muted);">RS. 0</div>
         </div>
         <div class="utility-card mob-card">
-            <div class="util-icon mob-icon"><i class="fa fa-mobile-screen-
-
-button"></i></div>
+            <div class="util-icon mob-icon"><i class="fa fa-mobile-screen-button"></i></div>
             <div style="font-weight:bold; font-size:12px;">Mobilink Bill</div>
-            <div style="font-size:9px; color:var(--text-muted); margin-
-
-top:2px;">03202491025</div>
+            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">03202491025</div>
             <div id="mob-status" class="status-badge status-unpaid">No Data</div>
-            <div id="mob-amount" style="font-size:11px; margin-top:5px; color:var(--text-
-
-muted);">RS. 0</div>
+            <div id="mob-amount" style="font-size:11px; margin-top:5px; color:var(--text-muted);">RS. 0</div>
         </div>
     </div>
 
     <div class="card no-print">
-        <h4 style="margin:0 0 12px 0; color:var(--primary);">Add / Edit Bill Record 
-
-Manually</h4>
+        <h4 style="margin:0 0 12px 0; color:var(--primary);">Add / Edit Bill Record Manually</h4>
         <input type="date" id="u-date">
         <select id="u-company">
             <option value="K-Electric">K-Electric</option>
@@ -631,9 +515,7 @@ Manually</h4>
         <button class="btn-action" onclick="saveUtilityBill()">SAVE BILL RECORD</button>
     </div>
 
-    <h4 style="margin:15px 0 10px 0; color:var(--primary);">Billing History & Printable 
-
-Barcodes</h4>
+    <h4 style="margin:15px 0 10px 0; color:var(--primary);">Billing History & Printable Barcodes</h4>
     <div id="utility-body"></div>
 </div>
 
@@ -653,18 +535,10 @@ Barcodes</h4>
 </div>
 
 <nav class="bottom-nav no-print">
-    <button class="nav-btn active" id="nb-dash" onclick="switchTab('dash')"><i class="fa 
-
-fa-chart-line"></i>Dash</button>
-    <button class="nav-btn scan-btn" id="nb-scan" onclick="switchTab('scan')"><i class="fa 
-
-fa-qrcode"></i>SCAN</button>
-    <button class="nav-btn" id="nb-util" onclick="switchTab('util')"><i class="fa fa-
-
-receipt"></i>Bills</button>
-    <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab
-
-('users')"><i class="fa fa-users-cog"></i>Users</button>
+    <button class="nav-btn active" id="nb-dash" onclick="switchTab('dash')"><i class="fa fa-chart-line"></i>Dash</button>
+    <button class="nav-btn scan-btn" id="nb-scan" onclick="switchTab('scan')"><i class="fa fa-qrcode"></i>SCAN</button>
+    <button class="nav-btn" id="nb-util" onclick="switchTab('util')"><i class="fa fa-receipt"></i>Bills</button>
+    <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab('users')"><i class="fa fa-users-cog"></i>Users</button>
 </nav>
 
 <script>
@@ -675,9 +549,7 @@ receipt"></i>Bills</button>
     const firebaseConfig = {
       apiKey: "AIzaSyD3mKQ8DIgMh6GEm3FV31BfBJ_UeYz6dz0",
       authDomain: "gharapp-c720a.firebaseapp.com",
-      databaseURL: "https://gharapp-c720a-default-rtdb.asia-
-
-southeast1.firebasedatabase.app",
+      databaseURL: "https://gharapp-c720a-default-rtdb.asia-southeast1.firebasedatabase.app",
       projectId: "gharapp-c720a",
       storageBucket: "gharapp-c720a.firebasestorage.app",
       messagingSenderId: "900171410782",
@@ -686,9 +558,7 @@ southeast1.firebasedatabase.app",
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); 
 
-    let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), 
-
-viewingID = myID;
+    let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
     let html5QrCode = null;
     let currentFilterMode = 'all';
 
@@ -709,9 +579,7 @@ viewingID = myID;
 
     function setFilterMode(mode) {
         currentFilterMode = mode;
-        document.querySelectorAll('.filter-tab-btn').forEach(b => b.classList.remove
-
-('active'));
+        document.querySelectorAll('.filter-tab-btn').forEach(b => b.classList.remove('active'));
         const btn = document.getElementById('ft-' + mode);
         if (btn) btn.classList.add('active');
         renderData();
@@ -719,9 +587,7 @@ viewingID = myID;
 
     window.addEventListener('DOMContentLoaded', () => {
         const parsedUrl = new URL(window.location.href);
-        const sharedText = parsedUrl.searchParams.get('text') || 
-
-parsedUrl.searchParams.get('title') || parsedUrl.searchParams.get('url');
+        const sharedText = parsedUrl.searchParams.get('text') || parsedUrl.searchParams.get('title') || parsedUrl.searchParams.get('url');
         
         if (sharedText) {
             if (myID) {
@@ -730,12 +596,17 @@ parsedUrl.searchParams.get('title') || parsedUrl.searchParams.get('url');
                 localStorage.setItem('pendingSharedText', sharedText);
             }
         }
+
+        // Automatic safety check to hide splash screen and force show login form if user is not authenticated
+        setTimeout(() => {
+            if (!myID || document.getElementById('auth-screen').style.display !== 'none') {
+                hideSplash();
+            }
+        }, 1200);
     });
 
     function login() {
-        const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = 
-
-document.getElementById('l-pass').value;
+        const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value;
         if(id === "admin" && ps === "123") { authDone("admin", "admin"); return; }
         db.ref('users/'+id).once('value', snap => {
             if(snap.exists() && snap.val().pass === ps) authDone(id, snap.val().role);
@@ -767,13 +638,6 @@ document.getElementById('l-pass').value;
         }
     }
 
-    // Agar user logged in nahi hai tau splash screen hata den taake login screen dikhe
-    setTimeout(() => {
-        if(!myID) {
-            hideSplash();
-        }
-    }, 800);
-
     function switchTab(t) {
         document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
         document.querySelectorAll('.nav-btn').forEach(x => x.classList.remove('active'));
@@ -793,12 +657,8 @@ document.getElementById('l-pass').value;
 
     function loadData(id) {
         viewingID = id;
-        db.ref('data/'+id).on('value', snap => { window.currentData = snap.val() || {}; 
-
-renderData(); });
-        db.ref('utilities/'+id).on('value', snap => { window.utilityData = snap.val() || 
-
-{}; renderUtilities(); });
+        db.ref('data/'+id).on('value', snap => { window.currentData = snap.val() || {}; renderData(); });
+        db.ref('utilities/'+id).on('value', snap => { window.utilityData = snap.val() || {}; renderUtilities(); });
     }
 
     function renderData() {
@@ -815,18 +675,10 @@ renderData(); });
                    (currentFilterMode === 'inc' && r.t === 'inc') || 
                    (currentFilterMode === 'exp' && r.t === 'exp')) {
                     
-                    body.innerHTML += `<div class="list-item" style="border-left:4px solid 
-
-${r.t==='inc'?'var(--success)':'var(--danger)'}">
-                        <div><b>${r.n}</b><br><small style="color:var(--text-muted);">
-
-${r.d}</small></div>
+                    body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.t==='inc'?'var(--success)':'var(--danger)'}">
+                        <div><b>${r.n}</b><br><small style="color:var(--text-muted);">${r.d}</small></div>
                         <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
-                        <i class="fa fa-trash no-print" style="color:var(--danger); font-
-
-size:12px; cursor:pointer;" onclick="if(confirm('Delete?')) db.ref('data/${viewingID}/
-
-${k}').remove()"></i></div>
+                        <i class="fa fa-trash no-print" style="color:var(--danger); font-size:12px; cursor:pointer;" onclick="if(confirm('Delete?')) db.ref('data/${viewingID}/${k}').remove()"></i></div>
                     </div>`;
                 }
             }
@@ -854,31 +706,17 @@ ${k}').remove()"></i></div>
             if(new Date(r.d).getMonth() == m) {
                 const a = parseFloat(r.a)||0;
                 
-                if (r.c === 'K-Electric' && keStatus === "No Data") { keStatus = r.s; keAmt 
-
-= a; }
-                if (r.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = r.s; ssgcAmt 
-
-= a; }
-                if (r.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = r.s; 
-
-mobAmt = a; }
+                if (r.c === 'K-Electric' && keStatus === "No Data") { keStatus = r.s; keAmt = a; }
+                if (r.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = r.s; ssgcAmt = a; }
+                if (r.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = r.s; mobAmt = a; }
 
                 const barcodeValue = `BILL-${k.substring(1,9).toUpperCase()}`;
 
-                body.innerHTML += `<div class="list-item" style="border-left:4px solid 
-
-${r.s==='Paid'?'var(--success)':'var(--danger)'}">
-                    <div><b>${r.c}</b> <small style="color:var(--text-muted);">(${r.s})
-
-</small><br><small style="color:var(--text-muted);">${r.d}</small></div>
+                body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.s==='Paid'?'var(--success)':'var(--danger)'}">
+                    <div><b>${r.c}</b> <small style="color:var(--text-muted);">(${r.s})</small><br><small style="color:var(--text-muted);">${r.d}</small></div>
                     <div><svg class="barcode-img" id="bc-${k}"></svg></div>
                     <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
-                    <i class="fa fa-trash no-print" style="color:var(--danger); font-
-
-size:12px; cursor:pointer;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/
-
-${viewingID}/${k}').remove()"></i></div>
+                    <i class="fa fa-trash no-print" style="color:var(--danger); font-size:12px; cursor:pointer;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()"></i></div>
                 </div>`;
 
                 setTimeout(() => {
@@ -893,23 +731,15 @@ ${viewingID}/${k}').remove()"></i></div>
             }
         });
 
-        document.getElementById('ke-status').className = `status-badge ${keStatus === 
-
-'Paid' ? 'status-paid' : 'status-unpaid'}`;
+        document.getElementById('ke-status').className = `status-badge ${keStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
         document.getElementById('ke-status').innerText = keStatus;
         document.getElementById('ke-amount').innerText = 'RS. ' + keAmt.toLocaleString();
 
-        document.getElementById('ssgc-status').className = `status-badge ${ssgcStatus === 
-
-'Paid' ? 'status-paid' : 'status-unpaid'}`;
+        document.getElementById('ssgc-status').className = `status-badge ${ssgcStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
         document.getElementById('ssgc-status').innerText = ssgcStatus;
-        document.getElementById('ssgc-amount').innerText = 'RS. ' + ssgcAmt.toLocaleString
+        document.getElementById('ssgc-amount').innerText = 'RS. ' + ssgcAmt.toLocaleString();
 
-();
-
-        document.getElementById('mob-status').className = `status-badge ${mobStatus === 
-
-'Paid' ? 'status-paid' : 'status-unpaid'}`;
+        document.getElementById('mob-status').className = `status-badge ${mobStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
         document.getElementById('mob-status').innerText = mobStatus;
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
     }
@@ -1021,11 +851,7 @@ ${viewingID}/${k}').remove()"></i></div>
         let finalAmt = null;
 
         const blocklistYears = ["2024", "2025", "2026", "2027"];
-        const unileverBrands = ["unilever", "sunsilk", "lux", "dove", "surf excel", "surf", 
-
-"knorr", "lifebuoy", "vim", "lipton", "ponds", "vaseline", "tresemme", "clear", "glow & 
-
-lovely", "fair & lovely", "rexona", "close up", "closeup", "comfort"];
+        const unileverBrands = ["unilever", "sunsilk", "lux", "dove", "surf excel", "surf", "knorr", "lifebuoy", "vim", "lipton", "ponds", "vaseline", "tresemme", "clear", "glow & lovely", "fair & lovely", "rexona", "close up", "closeup", "comfort"];
 
         let isUnileverProduct = false;
         let lowerRaw = rawText.toLowerCase();
@@ -1037,9 +863,7 @@ lovely", "fair & lovely", "rexona", "close up", "closeup", "comfort"];
             }
         }
 
-        if (!isNaN(rawText.replace(/,/g, "")) && parseFloat(rawText.replace(/,/g, "")) > 0 
-
-&& !blocklistYears.includes(rawText.trim())) {
+        if (!isNaN(rawText.replace(/,/g, "")) && parseFloat(rawText.replace(/,/g, "")) > 0 && !blocklistYears.includes(rawText.trim())) {
             finalAmt = parseFloat(rawText.replace(/,/g, ""));
             displayDetail = "Unilever Product";
         } else {
@@ -1053,9 +877,7 @@ lovely", "fair & lovely", "rexona", "close up", "closeup", "comfort"];
                     isUnileverProduct = true;
                     let cleanLine = line.replace(/,/g, "");
                     let lineNumbers = cleanLine.match(/\d+(?:\.\d{1,2})?/g) || [];
-                    let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) 
-
-&& parseFloat(v) > 5 && parseFloat(v) < 100000);
+                    let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) && parseFloat(v) > 5 && parseFloat(v) < 100000);
 
                     if (filteredNums.length > 0) {
                         finalAmt = parseFloat(filteredNums[filteredNums.length - 1]);
@@ -1071,9 +893,7 @@ lovely", "fair & lovely", "rexona", "close up", "closeup", "comfort"];
                 let targetLine = lines[0];
                 let cleanLine = targetLine.replace(/,/g, "");
                 let lineNumbers = cleanLine.match(/\d+(?:\.\d{1,2})?/g) || [];
-                let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) && 
-
-parseFloat(v) > 5);
+                let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) && parseFloat(v) > 5);
                 if (filteredNums.length > 0) {
                     finalAmt = parseFloat(filteredNums[filteredNums.length - 1]);
                     displayDetail = targetLine.replace(/\d+(?:\.\d{1,2})?/g, "").trim();
@@ -1088,9 +908,7 @@ parseFloat(v) > 5);
                 executeDatabasePush(today, displayDetail, finalAmt, rawText);
             } else {
                 setTimeout(() => {
-                    const userAmtInput = prompt(`Unilever Product Detected!\n\nProduct: 
-
-"${displayDetail}"\n\nEnter Amount (RS):`, "0");
+                    const userAmtInput = prompt(`Unilever Product Detected!\n\nProduct: "${displayDetail}"\n\nEnter Amount (RS):`, "0");
                     finalAmt = parseFloat(userAmtInput);
                     if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
                         executeDatabasePush(today, displayDetail, finalAmt, rawText);
@@ -1102,15 +920,11 @@ parseFloat(v) > 5);
             }
         } else {
             setTimeout(() => {
-                const manualAmt = prompt(`Non-Unilever or Standard Code Detected!\n\nData: 
-
-"${rawText.substring(0,30)}"\n\nEnter Amount to save anyway, or press Cancel:`, "0");
+                const manualAmt = prompt(`Non-Unilever or Standard Code Detected!\n\nData: "${rawText.substring(0,30)}"\n\nEnter Amount to save anyway, or press Cancel:`, "0");
                 if (manualAmt !== null) {
                     let amt = parseFloat(manualAmt);
                     if (!isNaN(amt) && amt > 0) {
-                        let desc = rawText.length > 25 ? rawText.substring(0,22) + "..." : 
-
-rawText;
+                        let desc = rawText.length > 25 ? rawText.substring(0,22) + "..." : rawText;
                         executeDatabasePush(today, "Scan: " + desc, amt, rawText);
                         return;
                     }
@@ -1127,9 +941,7 @@ rawText;
             a: amount,
             t: 'exp'
         }).then(() => {
-            alert(`✅ Record Saved Successfully!\n\nDetail: ${detail}\nAmount Added: RS. 
-
-${amount.toLocaleString()}`);
+            alert(`✅ Record Saved Successfully!\n\nDetail: ${detail}\nAmount Added: RS. ${amount.toLocaleString()}`);
             switchTab('dash');
         }).catch(err => {
             alert("Database Error: " + err);
@@ -1138,32 +950,22 @@ ${amount.toLocaleString()}`);
     }
 
     function saveUtilityBill(automatedData = null) {
-        const d = automatedData ? automatedData.d : document.getElementById('u-
-
-date').value;
-        const c = automatedData ? automatedData.c : document.getElementById('u-
-
-company').value;
+        const d = automatedData ? automatedData.d : document.getElementById('u-date').value;
+        const c = automatedData ? automatedData.c : document.getElementById('u-company').value;
         const a = automatedData ? automatedData.a : document.getElementById('u-amt').value;
-        const s = automatedData ? automatedData.s : document.getElementById('u-
-
-status').value;
+        const s = automatedData ? automatedData.s : document.getElementById('u-status').value;
         
         if(d && a) {
             if(s === 'Paid') {
                 Object.entries(window.utilityData || {}).forEach(([k, r]) => {
-                    if(r.c === c && new Date(r.d).getMonth() === new Date(d).getMonth() && 
-
-r.s === 'Unpaid') {
+                    if(r.c === c && new Date(r.d).getMonth() === new Date(d).getMonth() && r.s === 'Unpaid') {
                         db.ref(`utilities/${viewingID}/${k}`).remove();
                     }
                 });
                 db.ref('data/'+viewingID).push({d, n: c + " Paid", a, t: 'exp'});
             }
             db.ref('utilities/'+viewingID).push({d, c, a, s}).then(() => {
-                if(!automatedData) { alert("Record Saved!"); document.getElementById('u-
-
-amt').value = ""; }
+                if(!automatedData) { alert("Record Saved!"); document.getElementById('u-amt').value = ""; }
             });
         }
     }
@@ -1174,31 +976,17 @@ amt').value = ""; }
             snap.forEach(c => {
                 const uid = c.key, udata = c.val();
                 db.ref('data/'+uid).once('value', dSnap => {
-                    let ti=0, te=0; dSnap.forEach(e => { const a = parseFloat(e.val().a)||
-
-0; if(e.val().t==='inc') ti+=a; else te+=a; });
+                    let ti=0, te=0; dSnap.forEach(e => { const a = parseFloat(e.val().a)||0; if(e.val().t==='inc') ti+=a; else te+=a; });
                     list.innerHTML += `<div class="card">
-                        <div style="display:flex; justify-content:space-between; align-
-
-items:center;">
+                        <div style="display:flex; justify-content:space-between; align-items:center;">
                             <b>${uid.toUpperCase()}</b>
                             <div>
-                                <i class="fa fa-eye" style="color:var(--success); margin-
-
-right:15px; cursor:pointer;" onclick="loadData('${uid}'); switchTab('dash')"></i>
-                                <i class="fa fa-edit" style="color:var(--secondary); 
-
-margin-right:15px; cursor:pointer;" onclick="editUser
-
-('${uid}','${udata.pass}','${udata.role}')"></i>
-                                <i class="fa fa-trash" style="color:var(--danger); 
-
-cursor:pointer;" onclick="if(confirm('Delete User?')) db.ref('users/${uid}').remove()"></i>
+                                <i class="fa fa-eye" style="color:var(--success); margin-right:15px; cursor:pointer;" onclick="loadData('${uid}'); switchTab('dash')"></i>
+                                <i class="fa fa-edit" style="color:var(--secondary); margin-right:15px; cursor:pointer;" onclick="editUser('${uid}','${udata.pass}','${udata.role}')"></i>
+                                <i class="fa fa-trash" style="color:var(--danger); cursor:pointer;" onclick="if(confirm('Delete User?')) db.ref('users/${uid}').remove()"></i>
                             </div>
                         </div>
-                        <div style="font-size:12px; margin-top:8px; color:var(--text-
-
-muted);">Role: ${udata.role} | Bal: RS. ${(ti-te).toLocaleString()}</div>
+                        <div style="font-size:12px; margin-top:8px; color:var(--text-muted);">Role: ${udata.role} | Bal: RS. ${(ti-te).toLocaleString()}</div>
                     </div>`;
                 });
             });
@@ -1206,38 +994,24 @@ muted);">Role: ${udata.role} | Bal: RS. ${(ti-te).toLocaleString()}</div>
     }
 
     function editUser(id, pass, role) {
-        document.getElementById('u-id').value = id; document.getElementById('u-pass').value 
-
-= pass; document.getElementById('u-role').value = role;
+        document.getElementById('u-id').value = id; document.getElementById('u-pass').value = pass; document.getElementById('u-role').value = role;
         document.getElementById('u-form-title').innerText = "Edit: " + id.toUpperCase();
     }
 
     function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = 
-
-document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
-        if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert
-
-("User Updated!"); }); }
+        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
+        if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
     }
 
     function addEntry() {
-        const d = document.getElementById('i-date').value, n = document.getElementById('i-
-
-desc').value, a = document.getElementById('i-amt').value, t = document.getElementById('i-
-
-type').value;
+        const d = document.getElementById('i-date').value, n = document.getElementById('i-desc').value, a = document.getElementById('i-amt').value, t = document.getElementById('i-type').value;
         if(d && n && a) { db.ref('data/'+viewingID).push({d, n, a, t}); }
     }
 
     function setupDates() {
-        const n = new Date(); document.getElementById('i-date').valueAsDate = n; 
-
-document.getElementById('u-date').valueAsDate = n;
+        const n = new Date(); document.getElementById('i-date').valueAsDate = n; document.getElementById('u-date').valueAsDate = n;
         const ms = document.getElementById('sel-month');
-        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach
-
-((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
+        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
     }
 
     function logout() { localStorage.clear(); location.reload(); }
