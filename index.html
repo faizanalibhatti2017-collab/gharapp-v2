@@ -5,8 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-
 
 scale=1.0, user-scalable=no">
-    <title>GharApp Mobile - Finance Manager</title>
+    <meta name="theme-color" content="#f1f5f9">
+    <title>GharApp Mobile - Light Finance Manager</title>
     <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
 
 rel="stylesheet">
@@ -24,16 +27,19 @@ src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script
     
     <style>
         :root { 
-            --primary: #00f2fe; 
-            --secondary: #4facfe; 
-            --success: #10b981; 
-            --danger: #f43f5e; 
-            --bg-main: #030712; 
-            --card-bg: #0d1426; 
-            --card-border: rgba(0, 242, 254, 0.18);
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --input-bg: #050912;
+            --primary: #0284c7; 
+            --secondary: #0ea5e9; 
+            --primary-glow: rgba(2, 132, 199, 0.25);
+            --success: #059669; 
+            --success-glow: rgba(5, 150, 105, 0.2);
+            --danger: #e11d48; 
+            --danger-glow: rgba(225, 29, 72, 0.2);
+            --bg-main: #f8fafc; 
+            --card-bg: #ffffff;
+            --card-border: #cbd5e1;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --input-bg: #f1f5f9;
         }
 
         * { box-sizing: border-box; font-family: 'Inter', -apple-system, 
@@ -51,9 +57,33 @@ transparent; margin: 0; padding: 0; }
             position: relative;
         }
 
+        /* Startup Splash Screen */
+        #app-splash {
+            position: fixed;
+            inset: 0;
+            background: #f8fafc;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.4s ease;
+        }
+        #app-splash img {
+            width: 100px;
+            height: 100px;
+            margin-bottom: 16px;
+            object-fit: contain;
+            animation: pulseLogo 1.5s infinite alternate;
+        }
+        @keyframes pulseLogo {
+            0% { transform: scale(1); opacity: 0.8; }
+            100% { transform: scale(1.08); opacity: 1; }
+        }
+
         /* Top Bar Header */
         .top-bar { 
-            background: #0d1426; 
+            background: #ffffff; 
             padding: 14px 18px; 
             display: flex; 
             justify-content: space-between; 
@@ -62,10 +92,11 @@ transparent; margin: 0; padding: 0; }
             top: 0; 
             z-index: 100; 
             border-bottom: 1px solid var(--card-border); 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
 
         .btn-icon {
-            background: rgba(0, 242, 254, 0.08);
+            background: rgba(2, 132, 199, 0.08);
             border: 1px solid var(--card-border);
             color: var(--primary);
             width: 40px;
@@ -76,6 +107,11 @@ transparent; margin: 0; padding: 0; }
             justify-content: center;
             font-size: 18px;
             cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .btn-icon:hover {
+            background: var(--primary-glow);
+            border-color: var(--primary);
         }
 
         /* Slide-out Sidebar Drawer */
@@ -85,9 +121,10 @@ transparent; margin: 0; padding: 0; }
             left: -320px;
             width: 300px;
             height: 100%;
-            background: #080d1a;
+            background: #ffffff;
             z-index: 2000;
             border-right: 1px solid var(--card-border);
+            box-shadow: 10px 0 30px rgba(0,0,0,0.1);
             transition: left 0.3s ease;
             padding: 24px 18px;
             display: flex;
@@ -100,7 +137,7 @@ transparent; margin: 0; padding: 0; }
         .sidebar-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.7);
+            background: rgba(0,0,0,0.4);
             z-index: 1999;
             display: none;
         }
@@ -121,13 +158,14 @@ transparent; margin: 0; padding: 0; }
             font-size: 0.92rem;
             font-weight: 600;
             cursor: pointer;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             border: 1px solid transparent;
-            background: rgba(255, 255, 255, 0.02);
+            background: #f8fafc;
+            transition: all 0.2s ease;
         }
 
         .sidebar-item:hover, .sidebar-item.active {
-            background: rgba(0, 242, 254, 0.15);
+            background: rgba(2, 132, 199, 0.1);
             border-color: var(--primary);
             color: var(--primary);
         }
@@ -144,12 +182,13 @@ transparent; margin: 0; padding: 0; }
             bottom: 0; 
             left: 0; 
             right: 0; 
-            background: #0d1426; 
+            background: #ffffff; 
             display: flex; 
             justify-content: space-around; 
             padding: 10px 0; 
             border-top: 1px solid var(--card-border); 
             z-index: 1000; 
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
         }
 
         .nav-btn { 
@@ -165,69 +204,80 @@ transparent; margin: 0; padding: 0; }
         .nav-btn i { font-size: 20px; display: block; margin-bottom: 4px; }
         
         .nav-btn.scan-btn { 
-            color: #030712; 
+            color: #ffffff; 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
             border-radius: 50px; 
             margin: -20px 8px 0 8px; 
             height: 60px; 
             font-weight: 800;
+            box-shadow: 0 6px 15px var(--primary-glow);
         }
-        .nav-btn.scan-btn i { color: #030712; font-size: 22px; }
+        .nav-btn.scan-btn i { color: #ffffff; font-size: 22px; }
 
         .page { display: none; padding: 20px 16px; max-width: 550px; margin: 0 auto; }
         .page.active { display: block; }
 
+        /* Clean Light Cards */
         .card { 
             background: var(--card-bg); 
             border-radius: 20px; 
-            padding: 20px; 
+            padding: 22px 18px; 
             margin-bottom: 16px; 
             border: 1px solid var(--card-border); 
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
         }
 
         input, select { 
             width: 100%; 
-            padding: 12px 14px; 
+            padding: 14px 16px; 
             background: var(--input-bg); 
             border-radius: 12px; 
             border: 1px solid var(--card-border); 
-            color: #ffffff; 
-            margin-bottom: 12px; 
+            color: var(--text-main); 
+            margin-bottom: 14px; 
             font-size: 0.95rem; 
             outline: none;
         }
-        input:focus, select:focus { border-color: var(--primary); }
+        input:focus, select:focus {
+            border-color: var(--primary);
+            background: #ffffff;
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
 
         .btn-action { 
             width: 100%; 
-            padding: 14px; 
+            padding: 15px; 
             border-radius: 12px; 
             border: none; 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-            color: #030712; 
+            color: #ffffff; 
             font-weight: 800; 
             font-size: 1rem;
             cursor: pointer; 
+            box-shadow: 0 6px 15px var(--primary-glow);
+            transition: opacity 0.2s ease;
         }
+        .btn-action:hover { opacity: 0.92; }
 
         .btn-print { 
-            background: #3b82f6; 
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8); 
             color: white; 
             border: none; 
             padding: 10px 18px; 
-            border-radius: 10px; 
+            border-radius: 12px; 
             font-weight: bold; 
             cursor: pointer; 
             margin-bottom: 15px; 
         }
 
+        /* Filter Tab Switchers */
         .filter-tab-bar {
             display: flex;
             gap: 8px;
-            margin-bottom: 15px;
-            background: rgba(0, 0, 0, 0.4);
+            margin-bottom: 18px;
+            background: #e2e8f0;
             padding: 4px;
-            border-radius: 12px;
+            border-radius: 14px;
             border: 1px solid var(--card-border);
         }
 
@@ -244,28 +294,29 @@ transparent; margin: 0; padding: 0; }
         }
 
         .filter-tab-btn.active {
-            background: rgba(0, 242, 254, 0.2);
+            background: #ffffff;
             color: var(--primary);
-            border: 1px solid var(--primary);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
         }
 
         .list-item { 
-            background: rgba(255, 255, 255, 0.02); 
-            padding: 14px; 
-            border-radius: 12px; 
-            margin-bottom: 10px; 
+            background: #ffffff; 
+            padding: 15px; 
+            border-radius: 14px; 
+            margin-bottom: 12px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
             flex-wrap: wrap; 
             gap: 10px; 
             border: 1px solid var(--card-border);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.02);
         }
 
         @media print {
             body { background: white !important; color: black !important; padding: 0 !
 
-important; }
+important; margin: 0 !important; }
             .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .btn-print, #qr-
 
 view-box, .scan-instruction-text, .sidebar-drawer, .sidebar-overlay, .filter-tab-bar { 
@@ -274,56 +325,87 @@ display: none !important; }
             .page { display: block !important; padding: 0 !important; }
             .card { background: white !important; border: 1px solid #ddd !important; color: 
 
-black !important; }
-            .list-item { border: 1px solid #ddd !important; background: white !important; 
+black !important; box-shadow: none !important; }
+            .list-item { display: flex !important; justify-content: space-between !
 
-color: black !important; }
+important; align-items: center !important; border: 1px solid #ddd !important; background: 
+
+white !important; padding: 15px !important; color: black !important; }
             .barcode-img { display: block !important; background: white !important; }
         }
 
+        /* Utility Cards Grid */
         .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax
 
-(100px, 1fr)); gap: 10px; margin-bottom: 15px; }
+(105px, 1fr)); gap: 12px; margin-bottom: 20px; }
         .utility-card { 
-            border-radius: 16px; 
-            padding: 14px 10px; 
+            position: relative; 
+            border-radius: 18px; 
+            padding: 16px 10px; 
             text-align: center; 
             border: 1px solid var(--card-border); 
-            background: #0d1426;
+            background: #ffffff;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
         }
-        .util-icon { font-size: 24px; margin-bottom: 6px; }
+        .ke-card { border-top: 4px solid #f59e0b; }
+        .ssgc-card { border-top: 4px solid #3b82f6; }
+        .mob-card { border-top: 4px solid #e11d48; }
+        .util-icon { font-size: 26px; margin-bottom: 6px; }
         .ke-icon { color: #f59e0b; }
         .ssgc-icon { color: #3b82f6; }
-        .mob-icon { color: #f43f5e; }
+        .mob-icon { color: #e11d48; }
         .status-badge { display: inline-block; padding: 4px 10px; border-radius: 20px; 
 
-font-size: 10px; font-weight: bold; margin-top: 6px; }
-        .status-paid { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 
+font-size: 10px; font-weight: bold; margin-top: 8px; }
+        .status-paid { background: rgba(5, 150, 105, 0.12); color: var(--success); border: 
 
 1px solid var(--success); }
-        .status-unpaid { background: rgba(244, 63, 94, 0.2); color: var(--danger); border: 
+        .status-unpaid { background: rgba(225, 29, 72, 0.12); color: var(--danger); border: 
 
 1px solid var(--danger); }
         
-        .barcode-img { background: white; padding: 4px; border-radius: 6px; max-width: 
+        .barcode-img { background: white; padding: 6px; border-radius: 8px; max-width: 
 
-120px; height: auto; }
+130px; height: auto; border: 1px solid #e2e8f0; }
         
         #qr-view-box { 
             width: 100%; 
-            max-width: 300px; 
+            max-width: 320px; 
             margin: 15px auto; 
             border-radius: 20px; 
             overflow: hidden; 
             border: 2px solid var(--primary); 
             background: #000; 
+            position: relative; 
         }
+        
+        .scan-laser { 
+            position: absolute; 
+            width: 100%; 
+            height: 3px; 
+            background: var(--primary); 
+            top: 0; 
+            left: 0; 
+            animation: laserMove 1.4s linear infinite; 
+            z-index: 10; 
+            pointer-events: none; 
+        }
+        @keyframes laserMove { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
         .scan-instruction-text { color: var(--text-main); font-size: 15px; font-weight: 
 
-800; margin: 10px 0; text-transform: uppercase; }
+800; margin: 12px 0; text-transform: uppercase; letter-spacing: 1px; }
     </style>
 </head>
 <body>
+
+<!-- Startup Splash Screen with Logo -->
+<div id="app-splash">
+    <img src="logo.png" alt="GharApp Logo">
+    <h2 style="color: #0284c7; font-weight: 800; font-size: 1.3rem;">GharApp Mobile</h2>
+    <p style="color: #64748b; font-size: 0.85rem; margin-top: 6px;">Loading 
+
+workspace...</p>
+</div>
 
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
@@ -337,14 +419,16 @@ style="margin-right:8px;"></i> GharApp Menu</h3>
         <button onclick="toggleSidebar()" class="btn-icon">&times;</button>
     </div>
     
-    <div class="card" style="margin-top:5px; background: #080d1a;">
+    <div class="card" style="margin-top:5px; background: #f1f5f9;">
         <small style="color:var(--text-muted); text-transform:uppercase; font-size:11px; 
 
 font-weight:700;"><i class="fa fa-wallet" style="color:var(--primary);"></i> Net 
 
 Balance</small>
-        <h2 id="side-bal-val" style="color:#ffffff; margin:6px 0; font-size:1.7rem;">0</h2>
-        <div style="font-size:12px; color:var(--success); margin-top:4px;"><i class="fa 
+        <h2 id="side-bal-val" style="color:var(--text-main); margin:8px 0; font-
+
+size:1.8rem;">0</h2>
+        <div style="font-size:12px; color:var(--success); margin-top:6px;"><i class="fa 
 
 fa-arrow-down"></i> Income: RS. <span id="side-inc-val">0</span></div>
         <div style="font-size:12px; color:var(--danger); margin-top:4px;"><i class="fa fa-
@@ -372,7 +456,7 @@ toggleSidebar();">
             <i class="fa fa-qrcode" style="color:var(--primary);"></i> Smart Scanner
         </li>
         <li class="sidebar-item" onclick="switchTab('util'); toggleSidebar();">
-            <i class="fa fa-receipt" style="color:#a855f7;"></i> Utility Bills
+            <i class="fa fa-receipt" style="color:#9333ea;"></i> Utility Bills
         </li>
         <li id="sidebar-admin-link" class="sidebar-item" style="display:none;" 
 
@@ -382,18 +466,18 @@ onclick="switchTab('users'); toggleSidebar();">
     </ul>
 </div>
 
-<div id="auth-screen" style="position:fixed; inset:0; background:#030712; z-index:9999; 
+<div id="auth-screen" style="position:fixed; inset:0; background:#f8fafc; z-index:9999; 
 
 display:flex; align-items:center; justify-content:center; padding: 20px;">
     <div class="card" style="width:100%; max-width:350px; text-align:center;">
-        <div style="width:60px; height:60px; background:linear-gradient(135deg, var(--
+        <div style="width:70px; height:70px; background:linear-gradient(135deg, var(--
 
-primary), var(--secondary)); border-radius:18px; margin:0 auto 16px; display:flex; align-
+primary), var(--secondary)); border-radius:20px; margin:0 auto 18px; display:flex; align-
 
-items:center; justify-content:center;">
-            <i class="fa fa-qrcode" style="font-size:28px; color:#030712;"></i>
+items:center; justify-content:center; box-shadow: 0 6px 15px var(--primary-glow);">
+            <i class="fa fa-qrcode" style="font-size:30px; color:#ffffff;"></i>
         </div>
-        <h2 style="color:var(--primary); margin-bottom:16px; font-weight:800;">GharApp 
+        <h2 style="color:var(--primary); margin-bottom:18px; font-weight:800;">GharApp 
 
 Mobile</h2>
         <input type="text" id="l-id" placeholder="Username">
@@ -403,16 +487,16 @@ Mobile</h2>
 </div>
 
 <div class="top-bar no-print">
-    <div style="display:flex; align-items:center; gap:10px;">
+    <div style="display:flex; align-items:center; gap:12px;">
         <button onclick="toggleSidebar()" class="btn-icon"><i class="fa fa-
 
 bars"></i></button>
-        <b id="user-display" style="color:var(--primary); font-size: 1.05rem;">User</b>
+        <b id="user-display" style="color:var(--primary); font-size: 1.1rem;">User</b>
     </div>
     <div style="display:flex; gap:8px; align-items: center;">
         <select id="sel-month" onchange="renderData(); renderUtilities();" 
 
-style="width:90px; margin:0; padding:6px;"></select>
+style="width:95px; margin:0; padding:6px;"></select>
         <button onclick="logout()" class="btn-icon" style="color:var(--danger);"><i 
 
 class="fa fa-power-off"></i></button>
@@ -424,16 +508,20 @@ class="fa fa-power-off"></i></button>
 
 Print Ledger</button>
     
-    <div class="card" style="text-align:center;">
-        <small style="color:var(--text-muted); text-transform:uppercase; font-
+    <div class="card" style="text-align:center; background: linear-gradient(135deg, 
 
-weight:700;"><i class="fa fa-scale-balanced" style="margin-right:4px;"></i> Front Net 
+#e0f2fe, #f0fdf4);">
+        <small style="color:var(--text-muted); text-transform:uppercase; letter-
 
-Balance</small>
-        <h1 id="t-bal" style="margin:8px 0; font-size: 2.4rem; color:#ffffff;">0</h1>
-        <div style="display:flex; justify-content:space-around; margin-top:12px; border-
+spacing:1px; font-weight:700;"><i class="fa fa-scale-balanced" style="margin-
 
-top:1px solid var(--card-border); padding-top:10px;">
+right:6px;"></i> Front Net Balance</small>
+        <h1 id="t-bal" style="margin:10px 0; font-size: 2.6rem; color:var(--text-
+
+main);">0</h1>
+        <div style="display:flex; justify-content:space-around; margin-top:14px; border-
+
+top:1px solid var(--card-border); padding-top:12px;">
             <div style="color:var(--success);"><small><i class="fa fa-arrow-down"></i> 
 
 Income</small><br><b id="t-inc" style="font-size:1.1rem;">0</b></div>
@@ -444,7 +532,7 @@ Expense</small><br><b id="t-exp" style="font-size:1.1rem;">0</b></div>
     </div>
     
     <div class="card no-print">
-        <h4 style="margin:0 0 10px 0; color:var(--primary);">New Entry</h4>
+        <h4 style="margin:0 0 12px 0; color:var(--primary);">New Entry</h4>
         <input type="date" id="i-date">
         <input type="text" id="i-desc" placeholder="Detail">
         <input type="number" id="i-amt" placeholder="Amount">
@@ -477,6 +565,7 @@ padding: 0;">
         <div class="scan-instruction-text">Scan QR Code / Barcode</div>
         
         <div id="qr-view-box">
+            <div class="scan-laser"></div>
             <div id="reader" style="width: 100%;"></div>
         </div>
     </div>
@@ -487,45 +576,47 @@ padding: 0;">
 
 Print Bills History</button>
     <div class="utility-grid">
-        <div class="utility-card">
+        <div class="utility-card ke-card">
             <div class="util-icon ke-icon"><i class="fa fa-bolt"></i></div>
             <div style="font-weight:bold; font-size:12px;">K-Electric</div>
-            <div style="font-size:8px; color:var(--text-muted); margin-top:2px;">A/C: 
+            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">A/C: 
 
 ...4984761</div>
             <div id="ke-status" class="status-badge status-unpaid">No Data</div>
-            <div id="ke-amount" style="font-size:11px; margin-top:4px; color:var(--text-
+            <div id="ke-amount" style="font-size:11px; margin-top:5px; color:var(--text-
 
 muted);">RS. 0</div>
         </div>
-        <div class="utility-card">
+        <div class="utility-card ssgc-card">
             <div class="util-icon ssgc-icon"><i class="fa fa-fire-flame-simple"></i></div>
             <div style="font-weight:bold; font-size:12px;">SSGC</div>
-            <div style="font-size:8px; color:var(--text-muted); margin-top:2px;">Cust: 
+            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">Cust: 
 
 ...7590000</div>
             <div id="ssgc-status" class="status-badge status-unpaid">No Data</div>
-            <div id="ssgc-amount" style="font-size:11px; margin-top:4px; color:var(--text-
+            <div id="ssgc-amount" style="font-size:11px; margin-top:5px; color:var(--text-
 
 muted);">RS. 0</div>
         </div>
-        <div class="utility-card">
+        <div class="utility-card mob-card">
             <div class="util-icon mob-icon"><i class="fa fa-mobile-screen-
 
 button"></i></div>
-            <div style="font-weight:bold; font-size:12px;">Mobilink</div>
-            <div style="font-size:8px; color:var(--text-muted); margin-
+            <div style="font-weight:bold; font-size:12px;">Mobilink Bill</div>
+            <div style="font-size:9px; color:var(--text-muted); margin-
 
 top:2px;">03202491025</div>
             <div id="mob-status" class="status-badge status-unpaid">No Data</div>
-            <div id="mob-amount" style="font-size:11px; margin-top:4px; color:var(--text-
+            <div id="mob-amount" style="font-size:11px; margin-top:5px; color:var(--text-
 
 muted);">RS. 0</div>
         </div>
     </div>
 
     <div class="card no-print">
-        <h4 style="margin:0 0 10px 0; color:var(--primary);">Add / Edit Bill Record</h4>
+        <h4 style="margin:0 0 12px 0; color:var(--primary);">Add / Edit Bill Record 
+
+Manually</h4>
         <input type="date" id="u-date">
         <select id="u-company">
             <option value="K-Electric">K-Electric</option>
@@ -540,7 +631,9 @@ muted);">RS. 0</div>
         <button class="btn-action" onclick="saveUtilityBill()">SAVE BILL RECORD</button>
     </div>
 
-    <h4 style="margin:15px 0 10px 0; color:var(--primary);">Billing History & Barcodes</h4>
+    <h4 style="margin:15px 0 10px 0; color:var(--primary);">Billing History & Printable 
+
+Barcodes</h4>
     <div id="utility-body"></div>
 </div>
 
@@ -599,6 +692,14 @@ viewingID = myID;
     let html5QrCode = null;
     let currentFilterMode = 'all';
 
+    function hideSplash() {
+        const splash = document.getElementById('app-splash');
+        if (splash) {
+            splash.style.opacity = '0';
+            setTimeout(() => splash.remove(), 400);
+        }
+    }
+
     function toggleSidebar() {
         const drawer = document.getElementById('sidebar-drawer');
         const overlay = document.getElementById('sidebar-overlay');
@@ -649,6 +750,7 @@ document.getElementById('l-pass').value;
     }
 
     function startApp() {
+        hideSplash();
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('user-display').innerText = myID.toUpperCase();
         if(myRole === 'admin') { 
@@ -664,6 +766,13 @@ document.getElementById('l-pass').value;
             setTimeout(() => { processBruteForceScanEntry(pendingText); }, 1000);
         }
     }
+
+    // Agar user logged in nahi hai tau splash screen hata den taake login screen dikhe
+    setTimeout(() => {
+        if(!myID) {
+            hideSplash();
+        }
+    }, 800);
 
     function switchTab(t) {
         document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
@@ -805,14 +914,67 @@ ${viewingID}/${k}').remove()"></i></div>
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
     }
 
+    async function smartOCRScan(imageData) {
+        try {
+            const result = await Tesseract.recognize(imageData, 'eng');
+            const text = result.data.text || "";
+            const lines = text.split('\n').map(x => x.trim()).filter(x => x.length > 0);
+
+            let productName = "";
+            let amount = null;
+
+            for (let line of lines) {
+                if (/[a-zA-Z]{3,}/.test(line) && !/\d{5,}/.test(line)) {
+                    if (line.length > 3 && line.length < 60) {
+                        productName = line;
+                        break;
+                    }
+                }
+            }
+
+            const priceMatches = text.match(/\d+(?:\.\d{1,2})?/g) || [];
+            const filtered = priceMatches.filter(v => {
+                let n = parseFloat(v);
+                return n > 5 && n < 100000;
+            });
+
+            if (filtered.length > 0) {
+                amount = parseFloat(filtered[filtered.length - 1]);
+            }
+
+            if (productName || amount) {
+                let combined = `${productName} ${amount || ""}`.trim();
+                processBruteForceScanEntry(combined);
+            }
+        } catch(err) {
+            console.log("OCR Error", err);
+        }
+    }
+
     function startCameraEngine() {
         if(!html5QrCode) {
             html5QrCode = new Html5Qrcode("reader");
 
+            const formatsToSupport = [
+                Html5QrcodeSupportedFormats.QR_CODE,
+                Html5QrcodeSupportedFormats.PDF_417,
+                Html5QrcodeSupportedFormats.AZTEC,
+                Html5QrcodeSupportedFormats.CODE_128,
+                Html5QrcodeSupportedFormats.CODE_39,
+                Html5QrcodeSupportedFormats.EAN_13,
+                Html5QrcodeSupportedFormats.UPC_A,
+                Html5QrcodeSupportedFormats.DATA_MATRIX
+            ];
+
             const config = {
-                fps: 10,
-                qrbox: { width: 250, height: 200 },
-                rememberLastUsedCamera: true
+                fps: 20,
+                qrbox: { width: 300, height: 220 },
+                rememberLastUsedCamera: true,
+                aspectRatio: 1.777,
+                formatsToSupport: formatsToSupport,
+                experimentalFeatures: {
+                    useBarCodeDetectorIfSupported: true
+                }
             };
 
             html5QrCode.start(
@@ -825,6 +987,21 @@ ${viewingID}/${k}').remove()"></i></div>
             ).catch(err => {
                 alert("Camera Error: " + err);
             });
+
+            setInterval(async () => {
+                try {
+                    const video = document.querySelector("#reader video");
+                    if(video && video.readyState === 4) {
+                        const canvas = document.createElement("canvas");
+                        canvas.width = video.videoWidth;
+                        canvas.height = video.videoHeight;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(video, 0, 0);
+                        const imgData = canvas.toDataURL("image/png");
+                        smartOCRScan(imgData);
+                    }
+                } catch(e) {}
+            }, 5000);
         }
     }
 
@@ -840,42 +1017,119 @@ ${viewingID}/${k}').remove()"></i></div>
         stopCameraEngine();
         const today = new Date().toISOString().split('T')[0];
         let rawText = scannedCode.trim();
-        let displayDetail = "Scan Item";
-        let finalAmt = 100;
+        let displayDetail = "";
+        let finalAmt = null;
 
-        if (!isNaN(rawText.replace(/,/g, "")) && parseFloat(rawText.replace(/,/g, "")) > 0) 
+        const blocklistYears = ["2024", "2025", "2026", "2027"];
+        const unileverBrands = ["unilever", "sunsilk", "lux", "dove", "surf excel", "surf", 
 
-{
-            finalAmt = parseFloat(rawText.replace(/,/g, ""));
-        } else {
-            displayDetail = rawText.length > 25 ? rawText.substring(0,22) + "..." : 
+"knorr", "lifebuoy", "vim", "lipton", "ponds", "vaseline", "tresemme", "clear", "glow & 
 
-rawText;
+lovely", "fair & lovely", "rexona", "close up", "closeup", "comfort"];
+
+        let isUnileverProduct = false;
+        let lowerRaw = rawText.toLowerCase();
+
+        for (let brand of unileverBrands) {
+            if (lowerRaw.includes(brand)) {
+                isUnileverProduct = true;
+                break;
+            }
         }
 
-        setTimeout(() => {
-            const userAmtInput = prompt(`Scanned Data: "${displayDetail}"\nEnter Amount 
+        if (!isNaN(rawText.replace(/,/g, "")) && parseFloat(rawText.replace(/,/g, "")) > 0 
 
-(RS):`, finalAmt);
-            if(userAmtInput !== null) {
-                let amt = parseFloat(userAmtInput);
-                if(!isNaN(amt) && amt > 0) {
-                    executeDatabasePush(today, displayDetail, amt);
-                    return;
+&& !blocklistYears.includes(rawText.trim())) {
+            finalAmt = parseFloat(rawText.replace(/,/g, ""));
+            displayDetail = "Unilever Product";
+        } else {
+            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+            
+            for (let line of lines) {
+                let lowerLine = line.toLowerCase();
+                let lineHasBrand = unileverBrands.some(brand => lowerLine.includes(brand));
+
+                if (lineHasBrand) {
+                    isUnileverProduct = true;
+                    let cleanLine = line.replace(/,/g, "");
+                    let lineNumbers = cleanLine.match(/\d+(?:\.\d{1,2})?/g) || [];
+                    let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) 
+
+&& parseFloat(v) > 5 && parseFloat(v) < 100000);
+
+                    if (filteredNums.length > 0) {
+                        finalAmt = parseFloat(filteredNums[filteredNums.length - 1]);
+                        let numStr = filteredNums[filteredNums.length - 1];
+                        let namePart = line.substring(0, line.lastIndexOf(numStr)).trim();
+                        displayDetail = namePart.replace(/[:=\-\s\.]+$/, "").trim();
+                        break;
+                    }
                 }
             }
-            if(html5QrCode) startCameraEngine();
-        }, 150);
+
+            if (!finalAmt && isUnileverProduct && lines.length > 0) {
+                let targetLine = lines[0];
+                let cleanLine = targetLine.replace(/,/g, "");
+                let lineNumbers = cleanLine.match(/\d+(?:\.\d{1,2})?/g) || [];
+                let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) && 
+
+parseFloat(v) > 5);
+                if (filteredNums.length > 0) {
+                    finalAmt = parseFloat(filteredNums[filteredNums.length - 1]);
+                    displayDetail = targetLine.replace(/\d+(?:\.\d{1,2})?/g, "").trim();
+                }
+            }
+        }
+
+        if (isUnileverProduct) {
+            if (!displayDetail) displayDetail = "Unilever Product";
+
+            if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
+                executeDatabasePush(today, displayDetail, finalAmt, rawText);
+            } else {
+                setTimeout(() => {
+                    const userAmtInput = prompt(`Unilever Product Detected!\n\nProduct: 
+
+"${displayDetail}"\n\nEnter Amount (RS):`, "0");
+                    finalAmt = parseFloat(userAmtInput);
+                    if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
+                        executeDatabasePush(today, displayDetail, finalAmt, rawText);
+                    } else {
+                        alert("Cancelled.");
+                        if(html5QrCode) startCameraEngine();
+                    }
+                }, 150);
+            }
+        } else {
+            setTimeout(() => {
+                const manualAmt = prompt(`Non-Unilever or Standard Code Detected!\n\nData: 
+
+"${rawText.substring(0,30)}"\n\nEnter Amount to save anyway, or press Cancel:`, "0");
+                if (manualAmt !== null) {
+                    let amt = parseFloat(manualAmt);
+                    if (!isNaN(amt) && amt > 0) {
+                        let desc = rawText.length > 25 ? rawText.substring(0,22) + "..." : 
+
+rawText;
+                        executeDatabasePush(today, "Scan: " + desc, amt, rawText);
+                        return;
+                    }
+                }
+                if(html5QrCode) startCameraEngine();
+            }, 150);
+        }
     }
 
-    function executeDatabasePush(date, detail, amount) {
+    function executeDatabasePush(date, detail, amount, rawCode) {
         db.ref('data/' + viewingID).push({
             d: date,
             n: detail,
             a: amount,
             t: 'exp'
         }).then(() => {
-            alert(`✅ Record Saved Successfully!\nAmount: RS. ${amount.toLocaleString()}`);
+            alert(`✅ Record Saved Successfully!\n\nDetail: ${detail}\nAmount Added: RS. 
+
+${amount.toLocaleString()}`);
             switchTab('dash');
         }).catch(err => {
             alert("Database Error: " + err);
@@ -883,18 +1137,33 @@ rawText;
         });
     }
 
-    function saveUtilityBill() {
-        const d = document.getElementById('u-date').value;
-        const c = document.getElementById('u-company').value;
-        const a = document.getElementById('u-amt').value;
-        const s = document.getElementById('u-status').value;
+    function saveUtilityBill(automatedData = null) {
+        const d = automatedData ? automatedData.d : document.getElementById('u-
+
+date').value;
+        const c = automatedData ? automatedData.c : document.getElementById('u-
+
+company').value;
+        const a = automatedData ? automatedData.a : document.getElementById('u-amt').value;
+        const s = automatedData ? automatedData.s : document.getElementById('u-
+
+status').value;
         
         if(d && a) {
             if(s === 'Paid') {
+                Object.entries(window.utilityData || {}).forEach(([k, r]) => {
+                    if(r.c === c && new Date(r.d).getMonth() === new Date(d).getMonth() && 
+
+r.s === 'Unpaid') {
+                        db.ref(`utilities/${viewingID}/${k}`).remove();
+                    }
+                });
                 db.ref('data/'+viewingID).push({d, n: c + " Paid", a, t: 'exp'});
             }
             db.ref('utilities/'+viewingID).push({d, c, a, s}).then(() => {
-                alert("Record Saved!"); document.getElementById('u-amt').value = "";
+                if(!automatedData) { alert("Record Saved!"); document.getElementById('u-
+
+amt').value = ""; }
             });
         }
     }
