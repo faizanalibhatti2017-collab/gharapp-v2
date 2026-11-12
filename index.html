@@ -34,7 +34,7 @@
         body { 
             background-color: var(--bg-main); 
             /* Yahan logo image ka link ya path dein, 30% transparency ke sath background watermarked lagega */
-            background-image: linear-gradient(rgba(3, 7, 18, 0.85), rgba(3, 7, 18, 0.85)), url('logo.png');
+            background-image: linear-gradient(rgba(3, 7, 18, 0.85), rgba(3, 7, 18, 0.85)), url('https://raw.githubusercontent.com/faizanalibhatti2017-collab/gharapp-v2/main/logo.png');
             background-repeat: no-repeat;
             background-position: center;
             background-size: 60% auto;
@@ -43,7 +43,7 @@
             min-height: 100vh;
             padding-bottom: 90px; 
             overflow-x: hidden;
-            perspective: none;
+            perspective: 1000px;
             position: relative;
         }
 
@@ -59,9 +59,9 @@
         .cyber-orb {
             position: absolute;
             border-radius: 50%;
-            filter: none;
+            filter: blur(110px);
             opacity: 0.45;
-            animation: none;
+            animation: cyberFloat 10s infinite alternate ease-in-out;
         }
 
         .orb-cyber-1 {
@@ -99,8 +99,8 @@
         /* Top Bar Header */
         .top-bar { 
             background: rgba(13, 20, 38, 0.8); 
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             padding: 14px 18px; 
             display: flex; 
             justify-content: space-between; 
@@ -142,8 +142,8 @@
             width: 300px;
             height: 100%;
             background: rgba(8, 13, 26, 0.96);
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
+            backdrop-filter: blur(35px);
+            -webkit-backdrop-filter: blur(35px);
             z-index: 2000;
             border-right: 1px solid var(--card-border);
             box-shadow: 20px 0 50px rgba(0,0,0,0.85);
@@ -160,7 +160,7 @@
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.75);
-            backdrop-filter: none;
+            backdrop-filter: blur(8px);
             z-index: 1999;
             display: none;
             transition: opacity 0.3s ease;
@@ -209,8 +209,8 @@
             left: 0; 
             right: 0; 
             background: rgba(13, 20, 38, 0.88); 
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
             display: flex; 
             justify-content: space-around; 
             padding: 10px 0; 
@@ -240,8 +240,8 @@
             margin: -20px 8px 0 8px; 
             height: 60px; 
             font-weight: 800;
-            box-shadow: 0 3px 10px rgba(0, 242, 254, 0.12); 
-            animation: none;
+            box-shadow: 0 10px 30px var(--primary-glow); 
+            animation: scanBtnPulse 2s infinite;
             transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .nav-btn.scan-btn i { color: #030712; font-size: 22px; }
@@ -264,17 +264,15 @@
         /* Stunning 3D Neon Glass Cards */
         .card { 
             background: var(--card-bg); 
-            backdrop-filter: none;
-            -webkit-backdrop-filter: none;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
             border-radius: 26px; 
             padding: 24px 20px; 
             margin-bottom: 20px; 
             border: 1px solid var(--card-border); 
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            transform-style: flat;
-            transition: border-color 0.15s ease;
-            content-visibility: auto;
-            contain-intrinsic-size: auto 190px;
+            transform-style: preserve-3d;
+            transition: all 0.3s ease;
         }
         .card:hover {
             border-color: rgba(0, 242, 254, 0.4);
@@ -373,7 +371,7 @@
             flex-wrap: wrap; 
             gap: 10px; 
             border: 1px solid var(--card-border);
-            backdrop-filter: blur(6px);
+            backdrop-filter: blur(12px);
             transition: transform 0.25s ease, border-color 0.25s ease;
         }
         .list-item:hover {
@@ -399,7 +397,7 @@
             text-align: center; 
             border: 1px solid var(--card-border); 
             box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
-            backdrop-filter: none;
+            backdrop-filter: blur(15px);
             transition: transform 0.3s ease;
         }
         .utility-card:hover { transform: translateY(-3px); }
@@ -429,7 +427,6 @@
             position: relative; 
         }
         
-        #scan-page:not(.active) .scan-laser { animation: none; }
         .scan-laser { 
             position: absolute; 
             width: 100%; 
@@ -437,55 +434,64 @@
             background: var(--primary); 
             top: 0; 
             left: 0; 
-            animation: laserMove 2s linear infinite; 
+            animation: laserMove 1.4s linear infinite; 
             box-shadow: 0 0 20px var(--primary); 
             z-index: 10; 
             pointer-events: none; 
         }
         @keyframes laserMove { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
         .scan-instruction-text { color: var(--text-main); font-size: 16px; font-weight: 800; margin: 12px 0; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 10px var(--primary-glow); }
-
-        /* Performance and accessibility safeguards */
-        @media (prefers-reduced-motion: reduce) {
-            *, *::before, *::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
+    
+        body:not(.app-ready) .top-bar,
+        body:not(.app-ready) .page,
+        body:not(.app-ready) .bottom-nav,
+        body:not(.app-ready) .sidebar-drawer,
+        body:not(.app-ready) .sidebar-overlay { visibility:hidden !important; }
+        /* GharApp high-performance splash + mobile rendering */
+        #splash-screen {
+            position:fixed; inset:0; z-index:20000; display:flex; flex-direction:column;
+            align-items:center; justify-content:center; overflow:hidden; background:#050b18;
+            color:#f8fafc; transition:opacity .45s ease, visibility .45s ease;
+        }
+        #splash-screen.hide { opacity:0; visibility:hidden; pointer-events:none; }
+        .splash-glow {
+            position:absolute; width:min(75vw,360px); aspect-ratio:1; border-radius:50%;
+            background:radial-gradient(circle,rgba(0,220,255,.20),rgba(75,80,255,.08) 48%,transparent 72%);
+        }
+        .splash-logo {
+            position:relative; width:min(58vw,230px); height:min(58vw,230px); object-fit:contain;
+            border-radius:30px; filter:drop-shadow(0 10px 28px rgba(0,220,255,.22));
+            animation:splashPop .75s cubic-bezier(.2,.8,.2,1) both;
+        }
+        .splash-title { position:relative; margin-top:22px; font-size:27px; font-weight:900; letter-spacing:5px; }
+        .splash-subtitle { position:relative; margin-top:8px; color:#8da7bd; font-size:10px; letter-spacing:2px; }
+        .splash-loader { position:relative; width:110px; height:3px; margin-top:34px; overflow:hidden; border-radius:8px; background:#18283c; }
+        .splash-loader span { display:block; width:42%; height:100%; border-radius:8px; background:linear-gradient(90deg,#00f2fe,#4facfe); animation:splashLoad 1.2s ease-in-out infinite; }
+        .login-logo { display:block; width:92px; height:92px; object-fit:contain; margin:0 auto 16px; border-radius:22px; filter:drop-shadow(0 8px 20px rgba(0,220,255,.20)); }
+        #login-message { min-height:20px; margin-top:10px; font-size:13px; color:#fda4af; }
+        @keyframes splashPop { from { opacity:0; transform:scale(.84); } to { opacity:1; transform:scale(1); } }
+        @keyframes splashLoad { 0% { transform:translateX(-120%); } 100% { transform:translateX(260%); } }
+        @media (max-width:768px), (pointer:coarse) {
+            html { scroll-behavior:auto !important; }
+            body { background-attachment:scroll !important; perspective:none !important; }
+            .cyber-bg-container, #canvas-bg { display:none !important; }
+            .cyber-orb { display:none !important; animation:none !important; filter:none !important; }
+            .top-bar,.bottom-nav,.sidebar-drawer,.sidebar-overlay,.card {
+                backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
             }
+            .top-bar,.bottom-nav { background:#0d1426 !important; box-shadow:0 2px 8px rgba(0,0,0,.25) !important; }
+            .sidebar-drawer { background:#080d1a !important; box-shadow:4px 0 12px rgba(0,0,0,.35) !important; }
+            .card { background:#0d1426 !important; box-shadow:0 2px 8px rgba(0,0,0,.20) !important; }
+            .card:hover,.list-item:hover,.sidebar-item:hover { transform:none !important; }
+            .nav-btn,.nav-btn i,.btn-icon,.sidebar-item { transition:none !important; }
+            .page { animation:none !important; }
+            .list-item { content-visibility:auto; contain-intrinsic-size:auto 72px; }
+            * { scroll-behavior:auto !important; }
         }
-        @media (max-width: 600px) {
-            .card { box-shadow: 0 10px 24px rgba(0,0,0,.35); }
-            .card:hover, .list-item:hover, .utility-card:hover { transform: none; }
-        }
-
-        /* Low-power scrolling profile for phones/tablets */
-        @media (max-width: 768px), (pointer: coarse) {
-            html { scroll-behavior: auto !important; }
-            body { background-attachment: scroll !important; perspective: none !important; }
-            .cyber-bg-container, #canvas-bg { display: none !important; }
-            .cyber-orb { display: none !important; animation: none !important; filter: none !important; }
-            .top-bar, .bottom-nav, .sidebar-drawer, .sidebar-overlay,
-            .card, .utility-card, .list-item {
-                backdrop-filter: none !important;
-                -webkit-backdrop-filter: none !important;
-            }
-            .top-bar { background: #0d1426 !important; box-shadow: 0 2px 6px rgba(0,0,0,.25) !important; }
-            .bottom-nav { background: #0d1426 !important; box-shadow: 0 -2px 6px rgba(0,0,0,.25) !important; }
-            .sidebar-drawer { background: #080d1a !important; box-shadow: 4px 0 12px rgba(0,0,0,.35) !important; }
-            .sidebar-overlay { background: rgba(0,0,0,.65) !important; }
-            .card, .utility-card { box-shadow: 0 2px 8px rgba(0,0,0,.22) !important; }
-            .card { transform: none !important; transform-style: flat !important; }
-            .card:hover, .utility-card:hover, .list-item:hover { transform: none !important; }
-            .nav-btn, .nav-btn i, .btn-icon, .sidebar-item { transition: none !important; }
-            .nav-btn.scan-btn { animation: none !important; box-shadow: none !important; }
-            .page { animation: none !important; contain: none; }
-            .card, .list-item { content-visibility: auto; contain-intrinsic-size: auto 150px; }
-            * { scroll-behavior: auto !important; }
+        @media (prefers-reduced-motion:reduce) {
+            *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
         }
 
-        .btn-action:disabled { opacity: .6; cursor: wait; transform: none; }
-        .page { contain: layout style; }
     </style>
 </head>
 <body>
@@ -534,15 +540,14 @@
     </ul>
 </div>
 
-<div id="auth-screen" style="position:fixed; inset:0; background:rgba(3, 7, 18, 0.96); backdrop-filter:blur(35px); z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px;">
+<div id="splash-screen" aria-label="GharApp loading"><div class="splash-glow"></div><img src="https://raw.githubusercontent.com/faizanalibhatti2017-collab/gharapp-v2/main/logo.png" alt="GharApp Logo" class="splash-logo"><div class="splash-title">GHARAPP</div><div class="splash-subtitle">SMART FINANCE • SIMPLE LIFE</div><div class="splash-loader"><span></span></div></div>
+<div id="auth-screen" style="position:fixed; inset:0; background:#030712; z-index:9999; display:none; align-items:center; justify-content:center; padding:20px;">
     <div class="card" style="width:100%; max-width:350px; text-align:center;">
-        <div style="width:70px; height:70px; background:linear-gradient(135deg, var(--primary), var(--secondary)); border-radius:22px; margin:0 auto 18px; display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px var(--primary-glow);">
-            <i class="fa fa-qrcode" style="font-size:32px; color:#030712;"></i>
-        </div>
+        <img src="https://raw.githubusercontent.com/faizanalibhatti2017-collab/gharapp-v2/main/logo.png" alt="GharApp Logo" class="login-logo">
         <h2 style="color:var(--primary); margin-bottom:18px; font-weight:800; text-shadow:0 0 15px var(--primary-glow);">GharApp Mobile</h2>
         <input type="text" id="l-id" placeholder="Username">
         <input type="password" id="l-pass" placeholder="Password">
-        <button onclick="login()" class="btn-action">LOGIN</button>
+        <button id="login-btn" onclick="login()" class="btn-action">LOGIN</button><div id="login-message" role="status" aria-live="polite"></div>
     </div>
 </div>
 
@@ -598,8 +603,6 @@
             <div class="scan-laser"></div>
             <div id="reader" style="width: 100%;"></div>
         </div>
-        <button class="btn-action no-print" type="button" onclick="captureReceiptOCR()">SCAN RECEIPT TEXT</button>
-        <small class="no-print" style="display:block;color:var(--text-muted);margin-top:8px;">Receipt OCR runs only when you tap this button to keep the app fast.</small>
     </div>
 </div>
 
@@ -685,21 +688,12 @@
       messagingSenderId: "900171410782",
       appId: "1:900171410782:web:9d4de47b6cd5b00e3cf3cf"
     };
-    if (!window.firebase || !firebase.database) {
-        alert('Firebase could not load. Please check your internet connection and refresh.');
-        throw new Error('Firebase SDK unavailable');
-    }
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); 
 
     let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
     let html5QrCode = null;
-    let cameraStarting = false;
-    let scanHandled = false;
-    let ocrBusy = false;
-    let ocrTimer = null;
-    let dataListenerRef = null;
-    let utilityListenerRef = null;
+    let cameraStarting = false, scanHandled = false;
     let currentFilterMode = 'all';
 
     function toggleSidebar() {
@@ -730,22 +724,40 @@
         }
     });
 
-    function login() {
-        const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value;
-        if(id === "admin" && ps === "123") { authDone("admin", "admin"); return; }
-        db.ref('users/'+id).once('value', snap => {
-            if(snap.exists() && snap.val().pass === ps) authDone(id, snap.val().role);
-            else alert("Invalid Details!");
-        });
+    async function login() {
+        const id = document.getElementById('l-id').value.trim().toLowerCase();
+        const ps = document.getElementById('l-pass').value;
+        const btn = document.getElementById('login-btn');
+        const msg = document.getElementById('login-message');
+        if (!id || !ps) { msg.textContent = 'Username aur password dono enter karein.'; return; }
+        if (btn.disabled) return;
+        btn.disabled = true; btn.textContent = 'PLEASE WAIT...'; msg.textContent = '';
+        try {
+            if (id === "admin" && ps === "123") { authDone("admin", "admin"); return; }
+            const snap = await db.ref('users/' + id).once('value');
+            if (snap.exists() && snap.val().pass === ps) {
+                authDone(id, snap.val().role || 'viewer');
+            } else {
+                msg.textContent = 'Username ya password ghalat hai.';
+            }
+        } catch (err) {
+            console.error('Login failed:', err);
+            msg.textContent = 'Login nahi ho saka. Internet connection check karein.';
+        } finally {
+            btn.disabled = false; btn.textContent = 'LOGIN';
+        }
     }
 
-    function authDone(id, role) { 
-        localStorage.setItem('ghUser', id); 
-        localStorage.setItem('ghRole', role); 
-        location.reload(); 
+    function authDone(id, role) {
+        myID = id; myRole = role; viewingID = id;
+        localStorage.setItem('ghUser', id);
+        localStorage.setItem('ghRole', role);
+        document.getElementById('auth-screen').style.display = 'none';
+        startApp();
     }
 
     function startApp() {
+        document.body.classList.add('app-ready');
         document.getElementById('auth-screen').style.display = 'none';
         document.getElementById('user-display').innerText = myID.toUpperCase();
         if(myRole === 'admin') { 
@@ -779,162 +791,105 @@
         }
     }
 
+    let dataListenerRef = null, utilityListenerRef = null;
     function loadData(id) {
         viewingID = id;
         if (dataListenerRef) dataListenerRef.off('value');
         if (utilityListenerRef) utilityListenerRef.off('value');
-
         dataListenerRef = db.ref('data/' + id);
         utilityListenerRef = db.ref('utilities/' + id);
-
-        dataListenerRef.on('value', snap => {
-            window.currentData = snap.val() || {};
-            renderData();
-        }, err => console.error('Ledger load failed:', err));
-
-        utilityListenerRef.on('value', snap => {
-            window.utilityData = snap.val() || {};
-            renderUtilities();
-        }, err => console.error('Bills load failed:', err));
+        dataListenerRef.on('value', snap => { window.currentData = snap.val() || {}; renderData(); });
+        utilityListenerRef.on('value', snap => { window.utilityData = snap.val() || {}; renderUtilities(); });
     }
 
     function renderData() {
-        const m = parseInt(document.getElementById('sel-month').value);
+        const monthEl = document.getElementById('sel-month');
+        const m = monthEl ? parseInt(monthEl.value, 10) : new Date().getMonth();
         const body = document.getElementById('ledger-body');
         if (!body) return;
-        body.replaceChildren();
+        const rows = Object.entries(window.currentData || {}).reverse();
         const fragment = document.createDocumentFragment();
-        let ti=0, te=0;
+        let ti = 0, te = 0;
+        for (const [key, record] of rows) {
+            if (!record || !record.d) continue;
+            const date = new Date(record.d);
+            if (date.getMonth() !== m || date.getFullYear() !== new Date().getFullYear()) continue;
+            const amount = Number.parseFloat(record.a) || 0;
+            if (record.t === 'inc') ti += amount; else te += amount;
+            if (currentFilterMode !== 'all' && record.t !== currentFilterMode) continue;
 
-        Object.entries(window.currentData).reverse().forEach(([k, r]) => {
-            if (new Date(r.d).getMonth() === m && new Date(r.d).getFullYear() === new Date().getFullYear()) {
-                const a = parseFloat(r.a)||0;
-                if(r.t === 'inc') ti += a; else te += a;
-
-                if (currentFilterMode === 'all' || 
-                   (currentFilterMode === 'inc' && r.t === 'inc') || 
-                   (currentFilterMode === 'exp' && r.t === 'exp')) {
-                    
-                    const item = document.createElement('div');
-                    item.className = 'list-item';
-                    item.style.borderLeft = `4px solid ${r.t === 'inc' ? 'var(--success)' : 'var(--danger)'}`;
-                    const detail = document.createElement('div');
-                    const name = document.createElement('b');
-                    name.textContent = String(r.n || 'Entry');
-                    const date = document.createElement('small');
-                    date.style.color = 'var(--text-muted)';
-                    date.textContent = String(r.d || '');
-                    detail.append(name, document.createElement('br'), date);
-                    const amountBox = document.createElement('div');
-                    amountBox.style.textAlign = 'right';
-                    const amountText = document.createElement('b');
-                    amountText.textContent = 'RS. ' + a.toLocaleString();
-                    const del = document.createElement('button');
-                    del.type = 'button';
-                    del.className = 'no-print';
-                    del.textContent = 'Delete';
-                    del.style.cssText = 'display:block;margin-top:6px;background:none;border:0;color:var(--danger);cursor:pointer;';
-                    del.addEventListener('click', () => {
-                        if (confirm('Delete this entry?')) db.ref('data/' + viewingID + '/' + k).remove();
-                    });
-                    amountBox.append(amountText, del);
-                    item.append(detail, amountBox);
-                    fragment.appendChild(item);
-                }
-            }
-        });
-
-        const balance = ti - te;
+            const item = document.createElement('div');
+            item.className = 'list-item';
+            item.style.borderLeft = '4px solid ' + (record.t === 'inc' ? 'var(--success)' : 'var(--danger)');
+            const details = document.createElement('div');
+            const name = document.createElement('b'); name.textContent = record.n || 'Entry';
+            const dateText = document.createElement('small'); dateText.style.color = 'var(--text-muted)'; dateText.textContent = record.d;
+            details.append(name, document.createElement('br'), dateText);
+            const right = document.createElement('div'); right.style.textAlign = 'right';
+            const value = document.createElement('b'); value.textContent = 'RS. ' + amount.toLocaleString();
+            const del = document.createElement('button'); del.type = 'button'; del.className = 'no-print'; del.textContent = 'Delete';
+            del.style.cssText = 'display:block;margin:5px 0 0 auto;color:var(--danger);background:none;border:0;font-size:12px;';
+            del.addEventListener('click', () => { if (confirm('Delete?')) db.ref('data/' + viewingID + '/' + key).remove(); });
+            right.append(value, del); item.append(details, right); fragment.appendChild(item);
+        }
+        body.replaceChildren(fragment);
         document.getElementById('t-inc').innerText = ti.toLocaleString();
         document.getElementById('t-exp').innerText = te.toLocaleString();
-        document.getElementById('t-bal').innerText = balance.toLocaleString();
-
-        document.getElementById('side-bal-val').innerText = balance.toLocaleString();
+        document.getElementById('t-bal').innerText = (ti - te).toLocaleString();
+        document.getElementById('side-bal-val').innerText = (ti - te).toLocaleString();
         document.getElementById('side-inc-val').innerText = ti.toLocaleString();
         document.getElementById('side-exp-val').innerText = te.toLocaleString();
-        body.appendChild(fragment);
     }
 
     function renderUtilities() {
-        const m = parseInt(document.getElementById('sel-month').value);
-        const body = document.getElementById('utility-body'); 
-        if(!body) return;
-        body.replaceChildren();
+        const m = parseInt(document.getElementById('sel-month').value, 10);
+        const body = document.getElementById('utility-body');
+        if (!body) return;
         const fragment = document.createDocumentFragment();
         const barcodeJobs = [];
-        
         let keStatus = "No Data", ssgcStatus = "No Data", mobStatus = "No Data";
         let keAmt = 0, ssgcAmt = 0, mobAmt = 0;
-
-        Object.entries(window.utilityData || {}).reverse().forEach(([k, r]) => {
-            if (new Date(r.d).getMonth() === m && new Date(r.d).getFullYear() === new Date().getFullYear()) {
-                const a = parseFloat(r.a)||0;
-                
-                if (r.c === 'K-Electric' && keStatus === "No Data") { keStatus = r.s; keAmt = a; }
-                if (r.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = r.s; ssgcAmt = a; }
-                if (r.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = r.s; mobAmt = a; }
-
-                const barcodeValue = `BILL-${k.substring(1,9).toUpperCase()}`;
-
-                const item = document.createElement('div');
-                item.className = 'list-item';
-                item.style.borderLeft = `4px solid ${r.s === 'Paid' ? 'var(--success)' : 'var(--danger)'}`;
-                const info = document.createElement('div');
-                const company = document.createElement('b');
-                company.textContent = String(r.c || 'Utility');
-                const status = document.createElement('small');
-                status.style.color = 'var(--text-muted)';
-                status.textContent = ' (' + String(r.s || '') + ')';
-                const date = document.createElement('small');
-                date.style.color = 'var(--text-muted)';
-                date.textContent = String(r.d || '');
-                info.append(company, status, document.createElement('br'), date);
-
-                const barcode = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
-                barcode.classList.add('barcode-img');
-                barcode.id = 'bc-' + k;
-
-                const amountBox = document.createElement('div');
-                amountBox.style.textAlign = 'right';
-                const amountText = document.createElement('b');
-                amountText.textContent = 'RS. ' + a.toLocaleString();
-                const del = document.createElement('button');
-                del.type = 'button';
-                del.className = 'no-print';
-                del.textContent = 'Delete';
-                del.style.cssText = 'display:block;margin-top:6px;background:none;border:0;color:var(--danger);cursor:pointer;';
-                del.addEventListener('click', () => {
-                    if (confirm('Delete this bill?')) db.ref('utilities/' + viewingID + '/' + k).remove();
-                });
-                amountBox.append(amountText, del);
-                item.append(info, barcode, amountBox);
-                fragment.appendChild(item);
-                barcodeJobs.push({ barcode, barcodeValue });
-            }
-        });
-
-        document.getElementById('ke-status').className = `status-badge ${keStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
-        document.getElementById('ke-status').innerText = keStatus;
-        document.getElementById('ke-amount').innerText = 'RS. ' + keAmt.toLocaleString();
-
-        document.getElementById('ssgc-status').className = `status-badge ${ssgcStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
-        document.getElementById('ssgc-status').innerText = ssgcStatus;
-        document.getElementById('ssgc-amount').innerText = 'RS. ' + ssgcAmt.toLocaleString();
-
-        document.getElementById('mob-status').className = `status-badge ${mobStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
-        document.getElementById('mob-status').innerText = mobStatus;
-        document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
-        body.appendChild(fragment);
-        if (window.JsBarcode) {
-            barcodeJobs.forEach(({ barcode, barcodeValue }) => {
-                try {
-                    JsBarcode(barcode, barcodeValue, {
-                        format: 'CODE128', width: 1.2, height: 32,
-                        fontSize: 9, displayValue: true, margin: 2
-                    });
-                } catch (err) { console.warn('Barcode render skipped:', err); }
-            });
+        const rows = Object.entries(window.utilityData || {}).reverse();
+        for (const [key, record] of rows) {
+            if (!record || !record.d) continue;
+            const date = new Date(record.d);
+            if (date.getMonth() !== m || date.getFullYear() !== new Date().getFullYear()) continue;
+            const amount = Number.parseFloat(record.a) || 0;
+            if (record.c === 'K-Electric' && keStatus === "No Data") { keStatus = record.s; keAmt = amount; }
+            if (record.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = record.s; ssgcAmt = amount; }
+            if (record.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = record.s; mobAmt = amount; }
+            const item = document.createElement('div'); item.className = 'list-item';
+            item.style.borderLeft = '4px solid ' + (record.s === 'Paid' ? 'var(--success)' : 'var(--danger)');
+            const info = document.createElement('div');
+            const title = document.createElement('b'); title.textContent = record.c || 'Bill';
+            const status = document.createElement('small'); status.textContent = ' (' + (record.s || 'Unknown') + ')';
+            const dateLabel = document.createElement('small'); dateLabel.style.color = 'var(--text-muted)'; dateLabel.textContent = record.d;
+            info.append(title, status, document.createElement('br'), dateLabel);
+            const barcode = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            barcode.classList.add('barcode-img');
+            const barcodeWrap = document.createElement('div'); barcodeWrap.appendChild(barcode);
+            const del = document.createElement('button'); del.type = 'button'; del.className = 'no-print'; del.textContent = 'Delete';
+            del.style.cssText = 'display:block;margin:5px 0 0 auto;color:var(--danger);background:none;border:0;font-size:12px;';
+            del.addEventListener('click', () => { if (confirm('Delete Bill?')) db.ref('utilities/' + viewingID + '/' + key).remove(); });
+            const right = document.createElement('div'); right.style.textAlign = 'right';
+            const val = document.createElement('b'); val.textContent = 'RS. ' + amount.toLocaleString();
+            right.append(val, del); item.append(info, barcodeWrap, right); fragment.appendChild(item);
+            barcodeJobs.push([barcode, 'BILL-' + key.substring(1, 9).toUpperCase()]);
         }
+        body.replaceChildren(fragment);
+        if (window.JsBarcode) {
+            for (const [node, value] of barcodeJobs) {
+                try { JsBarcode(node, value, {format:'CODE128', width:1.1, height:30, fontSize:9, displayValue:true}); } catch (e) {}
+            }
+        }
+        const set = (id, value, isStatus) => {
+            const el = document.getElementById(id); if (!el) return;
+            el.textContent = isStatus ? value : 'RS. ' + value.toLocaleString();
+            if (isStatus) el.className = 'status-badge ' + (value === 'Paid' ? 'status-paid' : 'status-unpaid');
+        };
+        set('ke-status', keStatus, true); set('ke-amount', keAmt, false);
+        set('ssgc-status', ssgcStatus, true); set('ssgc-amount', ssgcAmt, false);
+        set('mob-status', mobStatus, true); set('mob-amount', mobAmt, false);
     }
 
     async function smartOCRScan(imageData) {
@@ -974,30 +929,9 @@
         }
     }
 
-    async function captureReceiptOCR() {
-        if (ocrBusy) return;
-        const video = document.querySelector('#reader video');
-        if (!video || video.readyState !== 4) {
-            alert('Please start the scanner and position the receipt in view first.');
-            return;
-        }
-        ocrBusy = true;
-        try {
-            const canvas = document.createElement('canvas');
-            canvas.width = Math.min(video.videoWidth, 1280);
-            canvas.height = Math.round(canvas.width * video.videoHeight / video.videoWidth);
-            const context = canvas.getContext('2d', { willReadFrequently: true });
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            await smartOCRScan(canvas.toDataURL('image/jpeg', 0.75));
-        } finally {
-            ocrBusy = false;
-        }
-    }
-
-    function startCameraEngine() {
-        if (html5QrCode || cameraStarting) return;
-        cameraStarting = true;
-        scanHandled = false;
+    async function startCameraEngine() {
+        if (cameraStarting || (html5QrCode && html5QrCode.isScanning)) return;
+        cameraStarting = true; scanHandled = false;
         if(!html5QrCode) {
             html5QrCode = new Html5Qrcode("reader");
 
@@ -1027,41 +961,26 @@
                 { facingMode: "environment" },
                 config,
                 async (decodedText) => {
-                    if (scanHandled) return;
-                    scanHandled = true;
+                    if (scanHandled) return; scanHandled = true;
                     processBruteForceScanEntry(decodedText);
                 },
                 () => {}
-            ).then(() => {
-                cameraStarting = false;
-                // OCR is deliberately not run continuously in the background.
-                // QR/barcode scanning remains active; OCR can be triggered explicitly if needed.
-            }).catch(err => {
-                cameraStarting = false;
-                html5QrCode = null;
-                alert("Camera Error: " + err);
+            ).then(() => { cameraStarting = false; }).catch(err => {
+                cameraStarting = false; console.error('Camera Error:', err); alert('Camera start nahi ho saka. Permission check karein.');
             });
         }
     }
 
     function stopCameraEngine() {
-        if (ocrTimer) {
-            clearInterval(ocrTimer);
-            ocrTimer = null;
-        }
-        if (html5QrCode && html5QrCode.isScanning) {
-            const scanner = html5QrCode;
+        const scanner = html5QrCode;
+        if (scanner && scanner.isScanning) {
             scanner.stop().then(() => {
                 if (html5QrCode === scanner) html5QrCode = null;
-                cameraStarting = false;
-            }).catch(err => {
-                console.warn('Camera stop issue:', err);
-                if (html5QrCode === scanner) html5QrCode = null;
-                cameraStarting = false;
-            });
-        } else if (!cameraStarting) {
+            }).catch(() => { if (html5QrCode === scanner) html5QrCode = null; });
+        } else {
             html5QrCode = null;
         }
+        cameraStarting = false;
     }
 
     function processBruteForceScanEntry(scannedCode) {
@@ -1135,8 +1054,7 @@
                         executeDatabasePush(today, displayDetail, finalAmt, rawText);
                     } else {
                         alert("Cancelled.");
-                        scanHandled = false;
-                startCameraEngine();
+                        if(html5QrCode) startCameraEngine();
                     }
                 }, 150);
             }
@@ -1151,8 +1069,7 @@
                         return;
                     }
                 }
-                scanHandled = false;
-                startCameraEngine();
+                if(html5QrCode) startCameraEngine();
             }, 150);
         }
     }
@@ -1178,11 +1095,6 @@
         const a = automatedData ? automatedData.a : document.getElementById('u-amt').value;
         const s = automatedData ? automatedData.s : document.getElementById('u-status').value;
         
-        const amount = Number(a);
-        if (!d || !a || !Number.isFinite(amount) || amount <= 0) {
-            alert('Please select a date and enter a valid bill amount greater than zero.');
-            return;
-        }
         if(d && a) {
             if(s === 'Paid') {
                 Object.entries(window.utilityData || {}).forEach(([k, r]) => {
@@ -1190,11 +1102,11 @@
                         db.ref(`utilities/${viewingID}/${k}`).remove();
                     }
                 });
-                db.ref('data/'+viewingID).push({d, n: c + " Paid", a: amount, t: 'exp'});
+                db.ref('data/'+viewingID).push({d, n: c + " Paid", a, t: 'exp'});
             }
-            db.ref('utilities/'+viewingID).push({d, c, a: amount, s}).then(() => {
+            db.ref('utilities/'+viewingID).push({d, c, a, s}).then(() => {
                 if(!automatedData) { alert("Record Saved!"); document.getElementById('u-amt').value = ""; }
-            }).catch(err => alert('Could not save bill: ' + err.message));
+            });
         }
     }
 
@@ -1233,17 +1145,7 @@
 
     function addEntry() {
         const d = document.getElementById('i-date').value, n = document.getElementById('i-desc').value, a = document.getElementById('i-amt').value, t = document.getElementById('i-type').value;
-        const amount = Number(a);
-        if (!d || !n.trim() || !a || !Number.isFinite(amount) || amount <= 0) {
-            alert('Please enter a date, detail and a valid amount greater than zero.');
-            return;
-        }
-        db.ref('data/' + viewingID).push({ d, n: n.trim(), a: amount, t })
-          .then(() => {
-              document.getElementById('i-desc').value = '';
-              document.getElementById('i-amt').value = '';
-          })
-          .catch(err => alert('Could not save entry: ' + err.message));
+        if(d && n && a) { db.ref('data/'+viewingID).push({d, n, a, t}); }
     }
 
     function setupDates() {
@@ -1252,8 +1154,19 @@
         ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
     }
 
-    function logout() { localStorage.clear(); location.reload(); }
-    if(myID) startApp();
+    function logout() { localStorage.removeItem('ghUser'); localStorage.removeItem('ghRole'); location.reload(); }
+    // Startup sequence: branded splash -> login -> app. Do not auto-open past the login screen.
+    window.addEventListener('load', () => {
+        const splash = document.getElementById('splash-screen');
+        const auth = document.getElementById('auth-screen');
+        window.setTimeout(() => {
+            if (splash) splash.classList.add('hide');
+            window.setTimeout(() => {
+                if (splash) splash.style.display = 'none';
+                if (auth) auth.style.display = 'flex';
+            }, 460);
+        }, 1500);
+    });
 
     const canvas = document.getElementById('canvas-bg');
     const ctx = canvas.getContext('2d');
@@ -1265,11 +1178,8 @@
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-
     const lowPowerDevice = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
-    if (lowPowerDevice) {
-        canvas.style.display = 'none';
-    }
+    if (lowPowerDevice) canvas.style.display = 'none';
 
     class Particle {
         constructor() {
@@ -1288,7 +1198,7 @@
         }
         draw() {
             ctx.fillStyle = `rgba(0, 242, 254, ${this.opacity})`;
-            ctx.shadowBlur = 4;
+            ctx.shadowBlur = 12;
             ctx.shadowColor = "rgba(0, 242, 254, 0.9)";
             ctx.beginPath();
             ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
@@ -1296,26 +1206,14 @@
         }
     }
 
-    for (let i = 0; i < 22; i++) particles.push(new Particle());
+    for (let i = 0; i < 55; i++) particles.push(new Particle());
 
-    let animationFrameId = null;
     function animateParticles() {
-        if (document.hidden) {
-            animationFrameId = null;
-            return;
-        }
+        if (lowPowerDevice || document.hidden) { requestAnimationFrame(animateParticles); return; }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => { p.update(); p.draw(); });
-        animationFrameId = requestAnimationFrame(animateParticles);
+        requestAnimationFrame(animateParticles);
     }
-    document.addEventListener('visibilitychange', () => {
-        if (document.hidden && animationFrameId !== null) {
-            cancelAnimationFrame(animationFrameId);
-            animationFrameId = null;
-        } else if (!document.hidden && animationFrameId === null) {
-            animateParticles();
-        }
-    });
     if (!lowPowerDevice) animateParticles();
 </script>
 </body>
