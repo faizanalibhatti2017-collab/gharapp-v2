@@ -28,11 +28,9 @@ src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script
             --secondary: #4facfe; 
             --primary-glow: rgba(0, 242, 254, 0.35);
             --success: #10b981; 
-            --success-glow: rgba(16, 185, 129, 0.3);
             --danger: #f43f5e; 
-            --danger-glow: rgba(244, 63, 94, 0.3);
             --bg-main: #030712; 
-            --card-bg: rgba(13, 20, 38, 0.92);
+            --card-bg: rgba(13, 20, 38, 0.94);
             --card-border: rgba(0, 242, 254, 0.22);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
@@ -61,53 +59,38 @@ url('logo.png');
             position: relative;
         }
 
-        /* Full-Screen Splash Screen Before Login */
+        /* Full-Screen Splash Screen (Auto-hides & closes on tap) */
         #splash-screen {
             position: fixed;
             inset: 0;
             background-color: #030712;
             z-index: 10000;
             display: flex;
-            flex-direction: column;
             align-items: center;
             justify-content: center;
-            transition: opacity 0.45s ease, visibility 0.45s ease;
-        }
-        #splash-screen.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
         }
         #splash-screen img {
             width: 100%;
             height: 100%;
             object-fit: contain;
             padding: 25px;
-            animation: logoZoom 1.2s ease-out forwards;
-        }
-        @keyframes logoZoom {
-            0% { transform: scale(0.92); opacity: 0.4; }
-            100% { transform: scale(1); opacity: 1; }
         }
 
-        /* Lightweight Ambient Glow (GPU Friendly) */
         .cyber-bg-container {
             position: fixed;
             inset: 0;
             z-index: -2;
-            overflow: hidden;
             pointer-events: none;
-            background: radial-gradient(circle at 10% 10%, rgba(0, 242, 254, 0.08) 0%, 
+            background: radial-gradient(circle at 15% 15%, rgba(0, 242, 254, 0.08) 0%, 
 
 transparent 45%),
-                        radial-gradient(circle at 90% 90%, rgba(121, 40, 202, 0.1) 0%, 
+                        radial-gradient(circle at 85% 85%, rgba(121, 40, 202, 0.1) 0%, 
 
 transparent 45%);
         }
 
-        /* Top Bar Header */
         .top-bar { 
-            background: rgba(13, 20, 38, 0.96); 
+            background: rgba(13, 20, 38, 0.97); 
             padding: 13px 16px; 
             display: flex; 
             justify-content: space-between; 
@@ -116,7 +99,6 @@ transparent 45%);
             top: 0; 
             z-index: 100; 
             border-bottom: 1px solid var(--card-border); 
-            box-shadow: 0 6px 20px rgba(0,0,0,0.5);
         }
 
         .btn-icon {
@@ -131,14 +113,8 @@ transparent 45%);
             justify-content: center;
             font-size: 17px;
             cursor: pointer;
-            transition: transform 0.2s ease, background 0.2s ease;
-        }
-        .btn-icon:active {
-            transform: scale(0.94);
-            background: var(--primary-glow);
         }
 
-        /* Slide-out Sidebar Drawer */
         .sidebar-drawer {
             position: fixed;
             top: 0;
@@ -148,15 +124,12 @@ transparent 45%);
             background: #080d1a;
             z-index: 2000;
             border-right: 1px solid var(--card-border);
-            box-shadow: 15px 0 40px rgba(0,0,0,0.85);
-            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: transform 0.25s ease;
             padding: 22px 16px;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
-            will-change: transform;
         }
-
         .sidebar-drawer.active { transform: translateX(310px); }
 
         .sidebar-overlay {
@@ -168,10 +141,7 @@ transparent 45%);
         }
         .sidebar-overlay.active { display: block; }
 
-        .sidebar-menu-list {
-            list-style: none;
-            margin-top: 14px;
-        }
+        .sidebar-menu-list { list-style: none; margin-top: 14px; }
 
         .sidebar-item {
             display: flex;
@@ -187,32 +157,24 @@ transparent 45%);
             border: 1px solid transparent;
             background: rgba(255, 255, 255, 0.03);
         }
-
-        .sidebar-item:active, .sidebar-item.active {
+        .sidebar-item.active {
             background: rgba(0, 242, 254, 0.15);
             border-color: var(--primary);
             color: var(--primary);
         }
+        .sidebar-item i { width: 20px; text-align: center; font-size: 16px; }
 
-        .sidebar-item i {
-            width: 20px;
-            text-align: center;
-            font-size: 16px;
-        }
-
-        /* Bottom Nav Bar */
         .bottom-nav { 
             position: fixed; 
             bottom: 0; 
             left: 0; 
             right: 0; 
-            background: rgba(13, 20, 38, 0.97); 
+            background: rgba(13, 20, 38, 0.98); 
             display: flex; 
             justify-content: space-around; 
             padding: 9px 0; 
             border-top: 1px solid var(--card-border); 
             z-index: 1000; 
-            box-shadow: 0 -6px 20px rgba(0,0,0,0.5);
         }
 
         .nav-btn { 
@@ -234,21 +196,19 @@ transparent 45%);
             margin: -18px 8px 0 8px; 
             height: 56px; 
             font-weight: 800;
-            box-shadow: 0 6px 20px var(--primary-glow); 
         }
         .nav-btn.scan-btn i { color: #030712; font-size: 21px; }
 
         .page { display: none; padding: 16px 14px; max-width: 550px; margin: 0 auto; }
         .page.active { display: block; }
 
-        /* Fast Smooth Cards */
         .card { 
             background: var(--card-bg); 
             border-radius: 22px; 
             padding: 20px 18px; 
             margin-bottom: 16px; 
             border: 1px solid var(--card-border); 
-            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.5);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
         }
 
         input, select { 
@@ -262,9 +222,7 @@ transparent 45%);
             font-size: 0.95rem; 
             outline: none;
         }
-        input:focus, select:focus {
-            border-color: var(--primary);
-        }
+        input:focus, select:focus { border-color: var(--primary); }
 
         .btn-action { 
             width: 100%; 
@@ -276,9 +234,7 @@ transparent 45%);
             font-weight: 800; 
             font-size: 0.98rem;
             cursor: pointer; 
-            box-shadow: 0 6px 18px var(--primary-glow);
         }
-        .btn-action:active { opacity: 0.88; transform: scale(0.98); }
 
         .btn-print { 
             background: linear-gradient(135deg, #3b82f6, #1d4ed8); 
@@ -291,7 +247,6 @@ transparent 45%);
             margin-bottom: 14px; 
         }
 
-        /* Filter Tab Switchers */
         .filter-tab-bar {
             display: flex;
             gap: 6px;
@@ -313,7 +268,6 @@ transparent 45%);
             border-radius: 10px;
             cursor: pointer;
         }
-
         .filter-tab-btn.active {
             background: rgba(0, 242, 254, 0.2);
             color: var(--primary);
@@ -321,7 +275,7 @@ transparent 45%);
         }
 
         .list-item { 
-            background: rgba(18, 27, 48, 0.85); 
+            background: rgba(18, 27, 48, 0.9); 
             padding: 13px 14px; 
             border-radius: 14px; 
             margin-bottom: 10px; 
@@ -356,7 +310,6 @@ white !important; padding: 15px !important; color: black !important; }
 background: white !important; }
         }
 
-        /* Utility Cards Grid */
         .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax
 
 (100px, 1fr)); gap: 10px; margin-bottom: 16px; }
@@ -366,7 +319,6 @@ background: white !important; }
             padding: 14px 8px; 
             text-align: center; 
             border: 1px solid var(--card-border); 
-            box-shadow: 0 8px 20px rgba(0,0,0,0.4); 
         }
         .ke-card { background: linear-gradient(135deg, rgba(13, 20, 38, 0.95), rgba(249, 
 
@@ -395,7 +347,6 @@ font-size: 10px; font-weight: bold; margin-top: 6px; }
 
 125px; height: auto; }
         
-        /* Cyberpunk Scanner Box */
         #qr-view-box { 
             width: 100%; 
             max-width: 320px; 
@@ -428,9 +379,9 @@ translateY(220px); } 100% { transform: translateY(0); } }
 </head>
 <body>
 
-<!-- Full-Screen Splash Screen Before Login -->
-<div id="splash-screen">
-    <img src="logo.png" alt="GharApp Logo" onerror="this.style.display='none'">
+<!-- Full-Screen Splash Screen Before Login (Tap anywhere or wait 1.5s to close) -->
+<div id="splash-screen" onclick="hideSplash()">
+    <img src="logo.png" alt="GharApp Logo" onerror="hideSplash()">
 </div>
 
 <div class="cyber-bg-container"></div>
@@ -502,7 +453,7 @@ display:flex; align-items:center; justify-content:center; padding: 20px;">
 
 primary), var(--secondary)); border-radius:20px; margin:0 auto 16px; display:flex; align-
 
-items:center; justify-content:center; box-shadow:0 0 25px var(--primary-glow);">
+items:center; justify-content:center;">
             <i class="fa fa-qrcode" style="font-size:30px; color:#030712;"></i>
         </div>
         <h2 style="color:var(--primary); margin-bottom:16px; font-weight:800;">GharApp 
@@ -694,6 +645,12 @@ receipt"></i>Bills</button>
 </nav>
 
 <script>
+    function hideSplash() {
+        const s = document.getElementById('splash-screen');
+        if (s) s.style.display = 'none';
+    }
+    setTimeout(hideSplash, 1500);
+
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('sw.js').catch(() => {});
     }
@@ -718,12 +675,6 @@ viewingID = myID;
     let html5QrCode = null;
     let ocrIntervalId = null;
     let currentFilterMode = 'all';
-
-    // Hide full-screen splash logo after 1.6 seconds to reveal login or app
-    setTimeout(() => {
-        const splash = document.getElementById('splash-screen');
-        if (splash) splash.classList.add('hidden');
-    }, 1600);
 
     function toggleSidebar() {
         const drawer = document.getElementById('sidebar-drawer');
@@ -761,13 +712,13 @@ parsedUrl.searchParams.get('title') || parsedUrl.searchParams.get('url');
         const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = 
 
 document.getElementById('l-pass').value;
-        if(!id || !ps) { alert("Please enter Username and Password!"); return; }
+        if(!id || !ps) { alert("Username aur Password likhein!"); return; }
         if(id === "admin" && ps === "123") { authDone("admin", "admin"); return; }
         db.ref('users/'+id).once('value', snap => {
             if(snap.exists() && snap.val().pass === ps) authDone(id, snap.val().role);
             else alert("Invalid Details!");
         }).catch(err => {
-            alert("Connection Error: " + err.message);
+            alert("Database Error: " + err.message);
         });
     }
 
