@@ -2,15 +2,25 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-
+
+scale=1.0, user-scalable=no">
     <title>GharApp Mobile - Cyber 3D Finance Manager</title>
     <link rel="manifest" href="manifest.json">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+
+rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-
+
+compat.js"></script>
+    <script 
+
+src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script 
+
+src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
     <style>
         :root { 
@@ -29,12 +39,19 @@
             --input-bg: rgba(5, 9, 18, 0.85);
         }
 
-        * { box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        * { box-sizing: border-box; font-family: 'Inter', -apple-system, 
+
+BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: 
+
+transparent; margin: 0; padding: 0; }
         
         body { 
             background-color: var(--bg-main); 
-            /* Yahan logo image ka link ya path dein, 30% transparency ke sath background watermarked lagega */
-            background-image: linear-gradient(rgba(3, 7, 18, 0.85), rgba(3, 7, 18, 0.85)), url('https://raw.githubusercontent.com/faizanalibhatti2017-collab/gharapp-v2/main/logo.png');
+            background-image: linear-gradient(rgba(3, 7, 18, 0.85), rgba(3, 7, 18, 0.85)), 
+
+url('https://raw.githubusercontent.com/faizanalibhatti2017-collab/gharapp-
+
+v2/main/logo.png');
             background-repeat: no-repeat;
             background-position: center;
             background-size: 60% auto;
@@ -230,8 +247,12 @@
             transition: all 0.3s ease;
         }
         .nav-btn.active { color: var(--primary); font-weight: bold; }
-        .nav-btn i { font-size: 20px; display: block; margin-bottom: 4px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .nav-btn.active i { transform: scale(1.25) translateY(-2px); filter: drop-shadow(0 0 12px var(--primary-glow)); }
+        .nav-btn i { font-size: 20px; display: block; margin-bottom: 4px; transition: 
+
+transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .nav-btn.active i { transform: scale(1.25) translateY(-2px); filter: drop-shadow(0 
+
+0 12px var(--primary-glow)); }
         
         .nav-btn.scan-btn { 
             color: #030712; 
@@ -253,7 +274,9 @@
             100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
         }
 
-        .page { display: none; padding: 20px 16px; max-width: 550px; margin: 0 auto; animation: fadeInPage 0.4s ease; }
+        .page { display: none; padding: 20px 16px; max-width: 550px; margin: 0 auto; 
+
+animation: fadeInPage 0.4s ease; }
         .page.active { display: block; }
 
         @keyframes fadeInPage {
@@ -270,7 +293,9 @@
             padding: 24px 20px; 
             margin-bottom: 20px; 
             border: 1px solid var(--card-border); 
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 
+
+0.2);
             transform-style: preserve-3d;
             transition: all 0.3s ease;
         }
@@ -327,7 +352,9 @@
             box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
             transition: all 0.25s ease;
         }
-        .btn-print:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.5); }
+        .btn-print:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(59, 
+
+130, 246, 0.5); }
 
         /* Filter Tab Switchers */
         .filter-tab-bar {
@@ -354,7 +381,9 @@
         }
 
         .filter-tab-btn.active {
-            background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.15));
+            background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 
+
+0.15));
             color: var(--primary);
             border: 1px solid var(--primary);
             box-shadow: 0 0 15px var(--primary-glow);
@@ -380,16 +409,32 @@
         }
 
         @media print {
-            body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
-            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .btn-print, #qr-view-box, .scan-instruction-text, #canvas-bg, .sidebar-drawer, .sidebar-overlay, .filter-tab-bar, .cyber-bg-container { display: none !important; }
+            body { background: white !important; color: black !important; padding: 0 !
+
+important; margin: 0 !important; }
+            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .btn-print, #qr-
+
+view-box, .scan-instruction-text, #canvas-bg, .sidebar-drawer, .sidebar-overlay, .filter-
+
+tab-bar, .cyber-bg-container { display: none !important; }
             .page { display: block !important; padding: 0 !important; }
-            .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; }
-            .list-item { display: flex !important; justify-content: space-between !important; align-items: center !important; border: 1px solid #ddd !important; background: white !important; padding: 15px !important; color: black !important; }
-            .barcode-img { display: block !important; visibility: visible !important; background: white !important; }
+            .card { background: white !important; border: 1px solid #eee !important; color: 
+
+black !important; box-shadow: none !important; margin-bottom: 20px !important; }
+            .list-item { display: flex !important; justify-content: space-between !
+
+important; align-items: center !important; border: 1px solid #ddd !important; background: 
+
+white !important; padding: 15px !important; color: black !important; }
+            .barcode-img { display: block !important; visibility: visible !important; 
+
+background: white !important; }
         }
 
         /* Utility Cards Grid */
-        .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax
+
+(105px, 1fr)); gap: 12px; margin-bottom: 20px; }
         .utility-card { 
             position: relative; 
             border-radius: 20px; 
@@ -401,18 +446,32 @@
             transition: transform 0.3s ease;
         }
         .utility-card:hover { transform: translateY(-3px); }
-        .ke-card { background: linear-gradient(135deg, rgba(13, 20, 38, 0.85), rgba(249, 115, 22, 0.2)); }
-        .ssgc-card { background: linear-gradient(135deg, rgba(13, 20, 38, 0.85), rgba(59, 130, 246, 0.2)); }
-        .mob-card { background: linear-gradient(135deg, rgba(13, 20, 38, 0.85), rgba(244, 63, 94, 0.2)); }
+        .ke-card { background: linear-gradient(135deg, rgba(13, 20, 38, 0.85), rgba(249, 
+
+115, 22, 0.2)); }
+        .ssgc-card { background: linear-gradient(135deg, rgba(13, 20, 38, 0.85), rgba(59, 
+
+130, 246, 0.2)); }
+        .mob-card { background: linear-gradient(135deg, rgba(13, 20, 38, 0.85), rgba(244, 
+
+63, 94, 0.2)); }
         .util-icon { font-size: 28px; margin-bottom: 6px; }
         .ke-icon { color: #f59e0b; filter: drop-shadow(0 0 8px rgba(245,158,11,0.5)); }
         .ssgc-icon { color: #3b82f6; filter: drop-shadow(0 0 8px rgba(59,130,246,0.5)); }
         .mob-icon { color: #f43f5e; filter: drop-shadow(0 0 8px rgba(244,63,94,0.5)); }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-top: 8px; }
-        .status-paid { background: rgba(16, 185, 129, 0.25); color: var(--success); border: 1px solid var(--success); box-shadow: 0 0 10px var(--success-glow); }
-        .status-unpaid { background: rgba(244, 63, 94, 0.25); color: var(--danger); border: 1px solid var(--danger); box-shadow: 0 0 10px var(--danger-glow); }
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; 
+
+font-size: 10px; font-weight: bold; margin-top: 8px; }
+        .status-paid { background: rgba(16, 185, 129, 0.25); color: var(--success); border: 
+
+1px solid var(--success); box-shadow: 0 0 10px var(--success-glow); }
+        .status-unpaid { background: rgba(244, 63, 94, 0.25); color: var(--danger); border: 
+
+1px solid var(--danger); box-shadow: 0 0 10px var(--danger-glow); }
         
-        .barcode-img { background: white; padding: 6px; border-radius: 8px; max-width: 130px; height: auto; }
+        .barcode-img { background: white; padding: 6px; border-radius: 8px; max-width: 
+
+130px; height: auto; }
         
         /* Cyberpunk Scanner Box */
         #qr-view-box { 
@@ -440,7 +499,11 @@
             pointer-events: none; 
         }
         @keyframes laserMove { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
-        .scan-instruction-text { color: var(--text-main); font-size: 16px; font-weight: 800; margin: 12px 0; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 10px var(--primary-glow); }
+        .scan-instruction-text { color: var(--text-main); font-size: 16px; font-weight: 
+
+800; margin: 12px 0; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 
+
+10px var(--primary-glow); }
     
         body:not(.app-ready) .top-bar,
         body:not(.app-ready) .page,
@@ -450,38 +513,68 @@
         /* GharApp high-performance splash + mobile rendering */
         #splash-screen {
             position:fixed; inset:0; z-index:20000; display:flex; flex-direction:column;
-            align-items:center; justify-content:center; overflow:hidden; background:#050b18;
+            align-items:center; justify-content:center; overflow:hidden; 
+
+background:#050b18;
             color:#f8fafc; transition:opacity .45s ease, visibility .45s ease;
         }
         #splash-screen.hide { opacity:0; visibility:hidden; pointer-events:none; }
         .splash-glow {
             position:absolute; width:min(75vw,360px); aspect-ratio:1; border-radius:50%;
-            background:radial-gradient(circle,rgba(0,220,255,.20),rgba(75,80,255,.08) 48%,transparent 72%);
+            background:radial-gradient(circle,rgba(0,220,255,.20),rgba(75,80,255,.08) 
+
+48%,transparent 72%);
         }
         .splash-logo {
-            position:relative; width:min(58vw,230px); height:min(58vw,230px); object-fit:contain;
+            position:relative; width:min(58vw,230px); height:min(58vw,230px); object-
+
+fit:contain;
             border-radius:30px; filter:drop-shadow(0 10px 28px rgba(0,220,255,.22));
             animation:splashPop .75s cubic-bezier(.2,.8,.2,1) both;
         }
-        .splash-title { position:relative; margin-top:22px; font-size:27px; font-weight:900; letter-spacing:5px; }
-        .splash-subtitle { position:relative; margin-top:8px; color:#8da7bd; font-size:10px; letter-spacing:2px; }
-        .splash-loader { position:relative; width:110px; height:3px; margin-top:34px; overflow:hidden; border-radius:8px; background:#18283c; }
-        .splash-loader span { display:block; width:42%; height:100%; border-radius:8px; background:linear-gradient(90deg,#00f2fe,#4facfe); animation:splashLoad 1.2s ease-in-out infinite; }
-        .login-logo { display:block; width:92px; height:92px; object-fit:contain; margin:0 auto 16px; border-radius:22px; filter:drop-shadow(0 8px 20px rgba(0,220,255,.20)); }
+        .splash-title { position:relative; margin-top:22px; font-size:27px; font-
+
+weight:900; letter-spacing:5px; }
+        .splash-subtitle { position:relative; margin-top:8px; color:#8da7bd; font-
+
+size:10px; letter-spacing:2px; }
+        .splash-loader { position:relative; width:110px; height:3px; margin-top:34px; 
+
+overflow:hidden; border-radius:8px; background:#18283c; }
+        .splash-loader span { display:block; width:42%; height:100%; border-radius:8px; 
+
+background:linear-gradient(90deg,#00f2fe,#4facfe); animation:splashLoad 1.2s ease-in-out 
+
+infinite; }
+        .login-logo { display:block; width:92px; height:92px; object-fit:contain; margin:0 
+
+auto 16px; border-radius:22px; filter:drop-shadow(0 8px 20px rgba(0,220,255,.20)); }
         #login-message { min-height:20px; margin-top:10px; font-size:13px; color:#fda4af; }
-        @keyframes splashPop { from { opacity:0; transform:scale(.84); } to { opacity:1; transform:scale(1); } }
-        @keyframes splashLoad { 0% { transform:translateX(-120%); } 100% { transform:translateX(260%); } }
+        @keyframes splashPop { from { opacity:0; transform:scale(.84); } to { opacity:1; 
+
+transform:scale(1); } }
+        @keyframes splashLoad { 0% { transform:translateX(-120%); } 100% { 
+
+transform:translateX(260%); } }
         @media (max-width:768px), (pointer:coarse) {
             html { scroll-behavior:auto !important; }
             body { background-attachment:scroll !important; perspective:none !important; }
             .cyber-bg-container, #canvas-bg { display:none !important; }
-            .cyber-orb { display:none !important; animation:none !important; filter:none !important; }
+            .cyber-orb { display:none !important; animation:none !important; filter:none !
+
+important; }
             .top-bar,.bottom-nav,.sidebar-drawer,.sidebar-overlay,.card {
                 backdrop-filter:none !important; -webkit-backdrop-filter:none !important;
             }
-            .top-bar,.bottom-nav { background:#0d1426 !important; box-shadow:0 2px 8px rgba(0,0,0,.25) !important; }
-            .sidebar-drawer { background:#080d1a !important; box-shadow:4px 0 12px rgba(0,0,0,.35) !important; }
-            .card { background:#0d1426 !important; box-shadow:0 2px 8px rgba(0,0,0,.20) !important; }
+            .top-bar,.bottom-nav { background:#0d1426 !important; box-shadow:0 2px 8px 
+
+rgba(0,0,0,.25) !important; }
+            .sidebar-drawer { background:#080d1a !important; box-shadow:4px 0 12px rgba
+
+(0,0,0,.35) !important; }
+            .card { background:#0d1426 !important; box-shadow:0 2px 8px rgba(0,0,0,.20) !
+
+important; }
             .card:hover,.list-item:hover,.sidebar-item:hover { transform:none !important; }
             .nav-btn,.nav-btn i,.btn-icon,.sidebar-item { transition:none !important; }
             .page { animation:none !important; }
@@ -489,7 +582,9 @@
             * { scroll-behavior:auto !important; }
         }
         @media (prefers-reduced-motion:reduce) {
-            *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+            *,*::before,*::after { animation-duration:.01ms !important; animation-
+
+iteration-count:1 !important; transition-duration:.01ms !important; }
         }
 
     </style>
@@ -506,26 +601,50 @@
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <div id="sidebar-drawer" class="sidebar-drawer">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:12px;">
-        <h3 style="color:var(--primary); font-weight:800; text-shadow:0 0 10px var(--primary-glow);"><i class="fa fa-fingerprint" style="margin-right:8px;"></i> GharApp Menu</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-
+
+bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:12px;">
+        <h3 style="color:var(--primary); font-weight:800; text-shadow:0 0 10px var(--
+
+primary-glow);"><i class="fa fa-fingerprint" style="margin-right:8px;"></i> GharApp 
+
+Menu</h3>
         <button onclick="toggleSidebar()" class="btn-icon">&times;</button>
     </div>
     
-    <div class="card" style="margin-top:5px; background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(121, 40, 202, 0.15)); border-color: rgba(0, 242, 254, 0.4);">
-        <small style="color:var(--text-muted); text-transform:uppercase; font-size:11px; letter-spacing:1.5px; font-weight:700;"><i class="fa fa-wallet" style="color:var(--primary);"></i> Net Balance</small>
-        <h2 id="side-bal-val" style="color:#ffffff; margin:8px 0; font-size:1.9rem; text-shadow:0 0 20px var(--primary-glow);">0</h2>
-        <div style="font-size:12px; color:var(--success); margin-top:6px;"><i class="fa fa-arrow-down"></i> Income: RS. <span id="side-inc-val">0</span></div>
-        <div style="font-size:12px; color:var(--danger); margin-top:4px;"><i class="fa fa-arrow-up"></i> Expense: RS. <span id="side-exp-val">0</span></div>
+    <div class="card" style="margin-top:5px; background: linear-gradient(135deg, rgba(0, 
+
+242, 254, 0.2), rgba(121, 40, 202, 0.15)); border-color: rgba(0, 242, 254, 0.4);">
+        <small style="color:var(--text-muted); text-transform:uppercase; font-size:11px; 
+
+letter-spacing:1.5px; font-weight:700;"><i class="fa fa-wallet" style="color:var(--
+
+primary);"></i> Net Balance</small>
+        <h2 id="side-bal-val" style="color:#ffffff; margin:8px 0; font-size:1.9rem; text-
+
+shadow:0 0 20px var(--primary-glow);">0</h2>
+        <div style="font-size:12px; color:var(--success); margin-top:6px;"><i class="fa 
+
+fa-arrow-down"></i> Income: RS. <span id="side-inc-val">0</span></div>
+        <div style="font-size:12px; color:var(--danger); margin-top:4px;"><i class="fa fa-
+
+arrow-up"></i> Expense: RS. <span id="side-exp-val">0</span></div>
     </div>
 
     <ul class="sidebar-menu-list">
-        <li class="sidebar-item active" onclick="switchTab('dash'); setFilterMode('all'); toggleSidebar();">
+        <li class="sidebar-item active" onclick="switchTab('dash'); setFilterMode('all'); 
+
+toggleSidebar();">
             <i class="fa fa-chart-line"></i> Dashboard / All
         </li>
-        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('inc'); toggleSidebar();">
+        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('inc'); 
+
+toggleSidebar();">
             <i class="fa fa-arrow-down" style="color:var(--success);"></i> Income Records
         </li>
-        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('exp'); toggleSidebar();">
+        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('exp'); 
+
+toggleSidebar();">
             <i class="fa fa-arrow-up" style="color:var(--danger);"></i> Expense Records
         </li>
         <li class="sidebar-item" onclick="switchTab('scan'); toggleSidebar();">
@@ -534,48 +653,92 @@
         <li class="sidebar-item" onclick="switchTab('util'); toggleSidebar();">
             <i class="fa fa-receipt" style="color:#a855f7;"></i> Utility Bills
         </li>
-        <li id="sidebar-admin-link" class="sidebar-item" style="display:none;" onclick="switchTab('users'); toggleSidebar();">
+        <li id="sidebar-admin-link" class="sidebar-item" style="display:none;" 
+
+onclick="switchTab('users'); toggleSidebar();">
             <i class="fa fa-users-cog"></i> User Management
         </li>
     </ul>
 </div>
 
-<div id="splash-screen" aria-label="GharApp loading"><div class="splash-glow"></div><img src="https://raw.githubusercontent.com/faizanalibhatti2017-collab/gharapp-v2/main/logo.png" alt="GharApp Logo" class="splash-logo"><div class="splash-title">GHARAPP</div><div class="splash-subtitle">SMART FINANCE • SIMPLE LIFE</div><div class="splash-loader"><span></span></div></div>
-<div id="auth-screen" style="position:fixed; inset:0; background:#030712; z-index:9999; display:none; align-items:center; justify-content:center; padding:20px;">
+<div id="splash-screen" aria-label="GharApp loading"><div class="splash-glow"></div><img 
+
+src="https://raw.githubusercontent.com/faizanalibhatti2017-collab/gharapp-v2/main/logo.png" 
+
+alt="GharApp Logo" class="splash-logo"><div class="splash-title">GHARAPP</div><div 
+
+class="splash-subtitle">SMART FINANCE • SIMPLE LIFE</div><div class="splash-
+
+loader"><span></span></div></div>
+<div id="auth-screen" style="position:fixed; inset:0; background:#030712; z-index:9999; 
+
+display:none; align-items:center; justify-content:center; padding:20px;">
     <div class="card" style="width:100%; max-width:350px; text-align:center;">
-        <img src="https://raw.githubusercontent.com/faizanalibhatti2017-collab/gharapp-v2/main/logo.png" alt="GharApp Logo" class="login-logo">
-        <h2 style="color:var(--primary); margin-bottom:18px; font-weight:800; text-shadow:0 0 15px var(--primary-glow);">GharApp Mobile</h2>
+        <img src="https://raw.githubusercontent.com/faizanalibhatti2017-collab/gharapp-
+
+v2/main/logo.png" alt="GharApp Logo" class="login-logo">
+        <h2 style="color:var(--primary); margin-bottom:18px; font-weight:800; text-shadow:0 
+
+0 15px var(--primary-glow);">GharApp Mobile</h2>
         <input type="text" id="l-id" placeholder="Username">
         <input type="password" id="l-pass" placeholder="Password">
-        <button id="login-btn" onclick="login()" class="btn-action">LOGIN</button><div id="login-message" role="status" aria-live="polite"></div>
+        <button id="login-btn" onclick="login()" class="btn-action">LOGIN</button><div 
+
+id="login-message" role="status" aria-live="polite"></div>
     </div>
 </div>
 
 <div class="top-bar no-print">
     <div style="display:flex; align-items:center; gap:12px;">
-        <button onclick="toggleSidebar()" class="btn-icon"><i class="fa fa-bars"></i></button>
-        <b id="user-display" style="color:var(--primary); font-size: 1.1rem; text-shadow:0 0 10px var(--primary-glow);">User</b>
+        <button onclick="toggleSidebar()" class="btn-icon"><i class="fa fa-
+
+bars"></i></button>
+        <b id="user-display" style="color:var(--primary); font-size: 1.1rem; text-shadow:0 
+
+0 10px var(--primary-glow);">User</b>
     </div>
     <div style="display:flex; gap:8px; align-items: center;">
-        <select id="sel-month" onchange="renderData(); renderUtilities();" style="width:95px; margin:0; padding:6px;"></select>
-        <button onclick="logout()" class="btn-icon" style="color:var(--danger);"><i class="fa fa-power-off"></i></button>
+        <select id="sel-month" onchange="renderData(); renderUtilities();" 
+
+style="width:95px; margin:0; padding:6px;"></select>
+        <button onclick="logout()" class="btn-icon" style="color:var(--danger);"><i 
+
+class="fa fa-power-off"></i></button>
     </div>
 </div>
 
 <div id="tab-dash" class="page active">
-    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> Print Ledger</button>
+    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> 
+
+Print Ledger</button>
     
-    <div class="card" style="text-align:center; background: linear-gradient(135deg, rgba(0, 242, 254, 0.18), rgba(121, 40, 202, 0.12)); border-color: rgba(0, 242, 254, 0.4);">
-        <small style="color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; font-weight:700;"><i class="fa fa-scale-balanced" style="margin-right:6px;"></i> Front Net Balance</small>
-        <h1 id="t-bal" style="margin:10px 0; font-size: 2.8rem; text-shadow:0 0 30px var(--primary-glow); color:#ffffff;">0</h1>
-        <div style="display:flex; justify-content:space-around; margin-top:14px; border-top:1px solid var(--card-border); padding-top:12px;">
-            <div style="color:var(--success);"><small><i class="fa fa-arrow-down"></i> Income</small><br><b id="t-inc" style="font-size:1.2rem;">0</b></div>
-            <div style="color:var(--danger);"><small><i class="fa fa-arrow-up"></i> Expense</small><br><b id="t-exp" style="font-size:1.2rem;">0</b></div>
+    <div class="card" style="text-align:center; background: linear-gradient(135deg, rgba(0, 
+
+242, 254, 0.18), rgba(121, 40, 202, 0.12)); border-color: rgba(0, 242, 254, 0.4);">
+        <small style="color:var(--text-muted); text-transform:uppercase; letter-
+
+spacing:1.5px; font-weight:700;"><i class="fa fa-scale-balanced" style="margin-
+
+right:6px;"></i> Front Net Balance</small>
+        <h1 id="t-bal" style="margin:10px 0; font-size: 2.8rem; text-shadow:0 0 30px var
+
+(--primary-glow); color:#ffffff;">0</h1>
+        <div style="display:flex; justify-content:space-around; margin-top:14px; border-
+
+top:1px solid var(--card-border); padding-top:12px;">
+            <div style="color:var(--success);"><small><i class="fa fa-arrow-down"></i> 
+
+Income</small><br><b id="t-inc" style="font-size:1.2rem;">0</b></div>
+            <div style="color:var(--danger);"><small><i class="fa fa-arrow-up"></i> 
+
+Expense</small><br><b id="t-exp" style="font-size:1.2rem;">0</b></div>
         </div>
     </div>
     
     <div class="card no-print">
-        <h4 style="margin:0 0 12px 0; color:var(--primary); text-shadow:0 0 10px var(--primary-glow);">New Entry</h4>
+        <h4 style="margin:0 0 12px 0; color:var(--primary); text-shadow:0 0 10px var(--
+
+primary-glow);">New Entry</h4>
         <input type="date" id="i-date">
         <input type="text" id="i-desc" placeholder="Detail">
         <input type="number" id="i-amt" placeholder="Amount">
@@ -587,16 +750,24 @@
     </div>
 
     <div class="filter-tab-bar no-print">
-        <button id="ft-all" class="filter-tab-btn active" onclick="setFilterMode('all')">All Records</button>
-        <button id="ft-inc" class="filter-tab-btn" onclick="setFilterMode('inc')">Income Only (+)</button>
-        <button id="ft-exp" class="filter-tab-btn" onclick="setFilterMode('exp')">Expense Only (-)</button>
+        <button id="ft-all" class="filter-tab-btn active" onclick="setFilterMode
+
+('all')">All Records</button>
+        <button id="ft-inc" class="filter-tab-btn" onclick="setFilterMode('inc')">Income 
+
+Only (+)</button>
+        <button id="ft-exp" class="filter-tab-btn" onclick="setFilterMode('exp')">Expense 
+
+Only (-)</button>
     </div>
 
     <div id="ledger-body"></div>
 </div>
 
 <div id="tab-scan" class="page">
-    <div class="card" style="text-align: center; background: transparent; border: none; padding: 0;">
+    <div class="card" style="text-align: center; background: transparent; border: none; 
+
+padding: 0;">
         <div class="scan-instruction-text">Scan QR Code / Barcode</div>
         
         <div id="qr-view-box">
@@ -607,33 +778,51 @@
 </div>
 
 <div id="tab-util" class="page">
-    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> Print Bills History</button>
+    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> 
+
+Print Bills History</button>
     <div class="utility-grid">
         <div class="utility-card ke-card">
             <div class="util-icon ke-icon"><i class="fa fa-bolt"></i></div>
             <div style="font-weight:bold; font-size:13px;">K-Electric</div>
-            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">A/C: ...4984761</div>
+            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">A/C: 
+
+...4984761</div>
             <div id="ke-status" class="status-badge status-unpaid">No Data</div>
-            <div id="ke-amount" style="font-size:11px; margin-top:5px; color:var(--text-muted);">RS. 0</div>
+            <div id="ke-amount" style="font-size:11px; margin-top:5px; color:var(--text-
+
+muted);">RS. 0</div>
         </div>
         <div class="utility-card ssgc-card">
             <div class="util-icon ssgc-icon"><i class="fa fa-fire-flame-simple"></i></div>
             <div style="font-weight:bold; font-size:13px;">SSGC</div>
-            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">Cust: ...7590000</div>
+            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">Cust: 
+
+...7590000</div>
             <div id="ssgc-status" class="status-badge status-unpaid">No Data</div>
-            <div id="ssgc-amount" style="font-size:11px; margin-top:5px; color:var(--text-muted);">RS. 0</div>
+            <div id="ssgc-amount" style="font-size:11px; margin-top:5px; color:var(--text-
+
+muted);">RS. 0</div>
         </div>
         <div class="utility-card mob-card">
-            <div class="util-icon mob-icon"><i class="fa fa-mobile-screen-button"></i></div>
+            <div class="util-icon mob-icon"><i class="fa fa-mobile-screen-
+
+button"></i></div>
             <div style="font-weight:bold; font-size:13px;">Mobilink Bill</div>
-            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">03202491025</div>
+            <div style="font-size:9px; color:var(--text-muted); margin-
+
+top:2px;">03202491025</div>
             <div id="mob-status" class="status-badge status-unpaid">No Data</div>
-            <div id="mob-amount" style="font-size:11px; margin-top:5px; color:var(--text-muted);">RS. 0</div>
+            <div id="mob-amount" style="font-size:11px; margin-top:5px; color:var(--text-
+
+muted);">RS. 0</div>
         </div>
     </div>
 
     <div class="card no-print">
-        <h4 style="margin:0 0 12px 0; color:var(--primary); text-shadow:0 0 10px var(--primary-glow);">Add / Edit Bill Record Manually</h4>
+        <h4 style="margin:0 0 12px 0; color:var(--primary); text-shadow:0 0 10px var(--
+
+primary-glow);">Add / Edit Bill Record Manually</h4>
         <input type="date" id="u-date">
         <select id="u-company">
             <option value="K-Electric">K-Electric</option>
@@ -648,13 +837,17 @@
         <button class="btn-action" onclick="saveUtilityBill()">SAVE BILL RECORD</button>
     </div>
 
-    <h4 style="margin:15px 0 10px 0; color:var(--primary);">Billing History & Printable Barcodes</h4>
+    <h4 style="margin:15px 0 10px 0; color:var(--primary);">Billing History & Printable 
+
+Barcodes</h4>
     <div id="utility-body"></div>
 </div>
 
 <div id="tab-users" class="page">
     <div class="card no-print">
-        <h3 id="u-form-title" style="margin-top:0; color:var(--primary); text-shadow:0 0 10px var(--primary-glow);">User Editor</h3>
+        <h3 id="u-form-title" style="margin-top:0; color:var(--primary); text-shadow:0 0 
+
+10px var(--primary-glow);">User Editor</h3>
         <input type="text" id="u-id" placeholder="User ID">
         <input type="text" id="u-pass" placeholder="Password">
         <select id="u-role">
@@ -668,10 +861,18 @@
 </div>
 
 <nav class="bottom-nav no-print">
-    <button class="nav-btn active" id="nb-dash" onclick="switchTab('dash')"><i class="fa fa-chart-line"></i>Dash</button>
-    <button class="nav-btn scan-btn" id="nb-scan" onclick="switchTab('scan')"><i class="fa fa-qrcode"></i>SCAN</button>
-    <button class="nav-btn" id="nb-util" onclick="switchTab('util')"><i class="fa fa-receipt"></i>Bills</button>
-    <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab('users')"><i class="fa fa-users-cog"></i>Users</button>
+    <button class="nav-btn active" id="nb-dash" onclick="switchTab('dash')"><i class="fa 
+
+fa-chart-line"></i>Dash</button>
+    <button class="nav-btn scan-btn" id="nb-scan" onclick="switchTab('scan')"><i class="fa 
+
+fa-qrcode"></i>SCAN</button>
+    <button class="nav-btn" id="nb-util" onclick="switchTab('util')"><i class="fa fa-
+
+receipt"></i>Bills</button>
+    <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab
+
+('users')"><i class="fa fa-users-cog"></i>Users</button>
 </nav>
 
 <script>
@@ -682,7 +883,9 @@
     const firebaseConfig = {
       apiKey: "AIzaSyD3mKQ8DIgMh6GEm3FV31BfBJ_UeYz6dz0",
       authDomain: "gharapp-c720a.firebaseapp.com",
-      databaseURL: "https://gharapp-c720a-default-rtdb.asia-southeast1.firebasedatabase.app",
+      databaseURL: "https://gharapp-c720a-default-rtdb.asia-
+
+southeast1.firebasedatabase.app",
       projectId: "gharapp-c720a",
       storageBucket: "gharapp-c720a.firebasestorage.app",
       messagingSenderId: "900171410782",
@@ -691,7 +894,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); 
 
-    let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
+    let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), 
+
+viewingID = myID;
     let html5QrCode = null;
     let cameraStarting = false, scanHandled = false;
     let currentFilterMode = 'all';
@@ -705,7 +910,9 @@
 
     function setFilterMode(mode) {
         currentFilterMode = mode;
-        document.querySelectorAll('.filter-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-tab-btn').forEach(b => b.classList.remove
+
+('active'));
         const btn = document.getElementById('ft-' + mode);
         if (btn) btn.classList.add('active');
         renderData();
@@ -713,7 +920,9 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         const parsedUrl = new URL(window.location.href);
-        const sharedText = parsedUrl.searchParams.get('text') || parsedUrl.searchParams.get('title') || parsedUrl.searchParams.get('url');
+        const sharedText = parsedUrl.searchParams.get('text') || 
+
+parsedUrl.searchParams.get('title') || parsedUrl.searchParams.get('url');
         
         if (sharedText) {
             if (myID) {
@@ -729,7 +938,9 @@
         const ps = document.getElementById('l-pass').value;
         const btn = document.getElementById('login-btn');
         const msg = document.getElementById('login-message');
-        if (!id || !ps) { msg.textContent = 'Username aur password dono enter karein.'; return; }
+        if (!id || !ps) { msg.textContent = 'Username aur password dono enter karein.'; 
+
+return; }
         if (btn.disabled) return;
         btn.disabled = true; btn.textContent = 'PLEASE WAIT...'; msg.textContent = '';
         try {
@@ -798,8 +1009,12 @@
         if (utilityListenerRef) utilityListenerRef.off('value');
         dataListenerRef = db.ref('data/' + id);
         utilityListenerRef = db.ref('utilities/' + id);
-        dataListenerRef.on('value', snap => { window.currentData = snap.val() || {}; renderData(); });
-        utilityListenerRef.on('value', snap => { window.utilityData = snap.val() || {}; renderUtilities(); });
+        dataListenerRef.on('value', snap => { window.currentData = snap.val() || {}; 
+
+renderData(); });
+        utilityListenerRef.on('value', snap => { window.utilityData = snap.val() || {}; 
+
+renderUtilities(); });
     }
 
     function renderData() {
@@ -813,24 +1028,42 @@
         for (const [key, record] of rows) {
             if (!record || !record.d) continue;
             const date = new Date(record.d);
-            if (date.getMonth() !== m || date.getFullYear() !== new Date().getFullYear()) continue;
+            if (date.getMonth() !== m || date.getFullYear() !== new Date().getFullYear()) 
+
+continue;
             const amount = Number.parseFloat(record.a) || 0;
             if (record.t === 'inc') ti += amount; else te += amount;
             if (currentFilterMode !== 'all' && record.t !== currentFilterMode) continue;
 
             const item = document.createElement('div');
             item.className = 'list-item';
-            item.style.borderLeft = '4px solid ' + (record.t === 'inc' ? 'var(--success)' : 'var(--danger)');
+            item.style.borderLeft = '4px solid ' + (record.t === 'inc' ? 'var(--success)' : 
+
+'var(--danger)');
             const details = document.createElement('div');
-            const name = document.createElement('b'); name.textContent = record.n || 'Entry';
-            const dateText = document.createElement('small'); dateText.style.color = 'var(--text-muted)'; dateText.textContent = record.d;
+            const name = document.createElement('b'); name.textContent = record.n || 
+
+'Entry';
+            const dateText = document.createElement('small'); dateText.style.color = 'var
+
+(--text-muted)'; dateText.textContent = record.d;
             details.append(name, document.createElement('br'), dateText);
             const right = document.createElement('div'); right.style.textAlign = 'right';
-            const value = document.createElement('b'); value.textContent = 'RS. ' + amount.toLocaleString();
-            const del = document.createElement('button'); del.type = 'button'; del.className = 'no-print'; del.textContent = 'Delete';
-            del.style.cssText = 'display:block;margin:5px 0 0 auto;color:var(--danger);background:none;border:0;font-size:12px;';
-            del.addEventListener('click', () => { if (confirm('Delete?')) db.ref('data/' + viewingID + '/' + key).remove(); });
-            right.append(value, del); item.append(details, right); fragment.appendChild(item);
+            const value = document.createElement('b'); value.textContent = 'RS. ' + 
+
+amount.toLocaleString();
+            const del = document.createElement('button'); del.type = 'button'; 
+
+del.className = 'no-print'; del.textContent = 'Delete';
+            del.style.cssText = 'display:block;margin:5px 0 0 auto;color:var(--
+
+danger);background:none;border:0;font-size:12px;';
+            del.addEventListener('click', () => { if (confirm('Delete?')) db.ref('data/' + 
+
+viewingID + '/' + key).remove(); });
+            right.append(value, del); item.append(details, right); fragment.appendChild
+
+(item);
         }
         body.replaceChildren(fragment);
         document.getElementById('t-inc').innerText = ti.toLocaleString();
@@ -853,39 +1086,71 @@
         for (const [key, record] of rows) {
             if (!record || !record.d) continue;
             const date = new Date(record.d);
-            if (date.getMonth() !== m || date.getFullYear() !== new Date().getFullYear()) continue;
+            if (date.getMonth() !== m || date.getFullYear() !== new Date().getFullYear()) 
+
+continue;
             const amount = Number.parseFloat(record.a) || 0;
-            if (record.c === 'K-Electric' && keStatus === "No Data") { keStatus = record.s; keAmt = amount; }
-            if (record.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = record.s; ssgcAmt = amount; }
-            if (record.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = record.s; mobAmt = amount; }
+            if (record.c === 'K-Electric' && keStatus === "No Data") { keStatus = record.s; 
+
+keAmt = amount; }
+            if (record.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = record.s; 
+
+ssgcAmt = amount; }
+            if (record.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = 
+
+record.s; mobAmt = amount; }
             const item = document.createElement('div'); item.className = 'list-item';
-            item.style.borderLeft = '4px solid ' + (record.s === 'Paid' ? 'var(--success)' : 'var(--danger)');
+            item.style.borderLeft = '4px solid ' + (record.s === 'Paid' ? 'var(--success)' 
+
+: 'var(--danger)');
             const info = document.createElement('div');
-            const title = document.createElement('b'); title.textContent = record.c || 'Bill';
-            const status = document.createElement('small'); status.textContent = ' (' + (record.s || 'Unknown') + ')';
-            const dateLabel = document.createElement('small'); dateLabel.style.color = 'var(--text-muted)'; dateLabel.textContent = record.d;
+            const title = document.createElement('b'); title.textContent = record.c || 
+
+'Bill';
+            const status = document.createElement('small'); status.textContent = ' (' + 
+
+(record.s || 'Unknown') + ')';
+            const dateLabel = document.createElement('small'); dateLabel.style.color = 
+
+'var(--text-muted)'; dateLabel.textContent = record.d;
             info.append(title, status, document.createElement('br'), dateLabel);
             const barcode = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
             barcode.classList.add('barcode-img');
-            const barcodeWrap = document.createElement('div'); barcodeWrap.appendChild(barcode);
-            const del = document.createElement('button'); del.type = 'button'; del.className = 'no-print'; del.textContent = 'Delete';
-            del.style.cssText = 'display:block;margin:5px 0 0 auto;color:var(--danger);background:none;border:0;font-size:12px;';
-            del.addEventListener('click', () => { if (confirm('Delete Bill?')) db.ref('utilities/' + viewingID + '/' + key).remove(); });
+            const barcodeWrap = document.createElement('div'); barcodeWrap.appendChild
+
+(barcode);
+            const del = document.createElement('button'); del.type = 'button'; 
+
+del.className = 'no-print'; del.textContent = 'Delete';
+            del.style.cssText = 'display:block;margin:5px 0 0 auto;color:var(--
+
+danger);background:none;border:0;font-size:12px;';
+            del.addEventListener('click', () => { if (confirm('Delete Bill?')) db.ref
+
+('utilities/' + viewingID + '/' + key).remove(); });
             const right = document.createElement('div'); right.style.textAlign = 'right';
-            const val = document.createElement('b'); val.textContent = 'RS. ' + amount.toLocaleString();
-            right.append(val, del); item.append(info, barcodeWrap, right); fragment.appendChild(item);
+            const val = document.createElement('b'); val.textContent = 'RS. ' + 
+
+amount.toLocaleString();
+            right.append(val, del); item.append(info, barcodeWrap, right); 
+
+fragment.appendChild(item);
             barcodeJobs.push([barcode, 'BILL-' + key.substring(1, 9).toUpperCase()]);
         }
         body.replaceChildren(fragment);
         if (window.JsBarcode) {
             for (const [node, value] of barcodeJobs) {
-                try { JsBarcode(node, value, {format:'CODE128', width:1.1, height:30, fontSize:9, displayValue:true}); } catch (e) {}
+                try { JsBarcode(node, value, {format:'CODE128', width:1.1, height:30, 
+
+fontSize:9, displayValue:true}); } catch (e) {}
             }
         }
         const set = (id, value, isStatus) => {
             const el = document.getElementById(id); if (!el) return;
             el.textContent = isStatus ? value : 'RS. ' + value.toLocaleString();
-            if (isStatus) el.className = 'status-badge ' + (value === 'Paid' ? 'status-paid' : 'status-unpaid');
+            if (isStatus) el.className = 'status-badge ' + (value === 'Paid' ? 'status-
+
+paid' : 'status-unpaid');
         };
         set('ke-status', keStatus, true); set('ke-amount', keAmt, false);
         set('ssgc-status', ssgcStatus, true); set('ssgc-amount', ssgcAmt, false);
@@ -966,7 +1231,9 @@
                 },
                 () => {}
             ).then(() => { cameraStarting = false; }).catch(err => {
-                cameraStarting = false; console.error('Camera Error:', err); alert('Camera start nahi ho saka. Permission check karein.');
+                cameraStarting = false; console.error('Camera Error:', err); alert('Camera 
+
+start nahi ho saka. Permission check karein.');
             });
         }
     }
@@ -991,7 +1258,11 @@
         let finalAmt = null;
 
         const blocklistYears = ["2024", "2025", "2026", "2027"];
-        const unileverBrands = ["unilever", "sunsilk", "lux", "dove", "surf excel", "surf", "knorr", "lifebuoy", "vim", "lipton", "ponds", "vaseline", "tresemme", "clear", "glow & lovely", "fair & lovely", "rexona", "close up", "closeup", "comfort"];
+        const unileverBrands = ["unilever", "sunsilk", "lux", "dove", "surf excel", "surf", 
+
+"knorr", "lifebuoy", "vim", "lipton", "ponds", "vaseline", "tresemme", "clear", "glow & 
+
+lovely", "fair & lovely", "rexona", "close up", "closeup", "comfort"];
 
         let isUnileverProduct = false;
         let lowerRaw = rawText.toLowerCase();
@@ -1003,7 +1274,9 @@
             }
         }
 
-        if (!isNaN(rawText.replace(/,/g, "")) && parseFloat(rawText.replace(/,/g, "")) > 0 && !blocklistYears.includes(rawText.trim())) {
+        if (!isNaN(rawText.replace(/,/g, "")) && parseFloat(rawText.replace(/,/g, "")) > 0 
+
+&& !blocklistYears.includes(rawText.trim())) {
             finalAmt = parseFloat(rawText.replace(/,/g, ""));
             displayDetail = "Unilever Product";
         } else {
@@ -1017,7 +1290,9 @@
                     isUnileverProduct = true;
                     let cleanLine = line.replace(/,/g, "");
                     let lineNumbers = cleanLine.match(/\d+(?:\.\d{1,2})?/g) || [];
-                    let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) && parseFloat(v) > 5 && parseFloat(v) < 100000);
+                    let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) 
+
+&& parseFloat(v) > 5 && parseFloat(v) < 100000);
 
                     if (filteredNums.length > 0) {
                         finalAmt = parseFloat(filteredNums[filteredNums.length - 1]);
@@ -1033,7 +1308,9 @@
                 let targetLine = lines[0];
                 let cleanLine = targetLine.replace(/,/g, "");
                 let lineNumbers = cleanLine.match(/\d+(?:\.\d{1,2})?/g) || [];
-                let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) && parseFloat(v) > 5);
+                let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) && 
+
+parseFloat(v) > 5);
                 if (filteredNums.length > 0) {
                     finalAmt = parseFloat(filteredNums[filteredNums.length - 1]);
                     displayDetail = targetLine.replace(/\d+(?:\.\d{1,2})?/g, "").trim();
@@ -1048,7 +1325,9 @@
                 executeDatabasePush(today, displayDetail, finalAmt, rawText);
             } else {
                 setTimeout(() => {
-                    const userAmtInput = prompt(`Unilever Product Detected!\n\nProduct: "${displayDetail}"\n\nEnter Amount (RS):`, "0");
+                    const userAmtInput = prompt(`Unilever Product Detected!\n\nProduct: 
+
+"${displayDetail}"\n\nEnter Amount (RS):`, "0");
                     finalAmt = parseFloat(userAmtInput);
                     if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
                         executeDatabasePush(today, displayDetail, finalAmt, rawText);
@@ -1060,11 +1339,15 @@
             }
         } else {
             setTimeout(() => {
-                const manualAmt = prompt(`Non-Unilever or Standard Code Detected!\n\nData: "${rawText.substring(0,30)}"\n\nEnter Amount to save anyway, or press Cancel:`, "0");
+                const manualAmt = prompt(`Non-Unilever or Standard Code Detected!\n\nData: 
+
+"${rawText.substring(0,30)}"\n\nEnter Amount to save anyway, or press Cancel:`, "0");
                 if (manualAmt !== null) {
                     let amt = parseFloat(manualAmt);
                     if (!isNaN(amt) && amt > 0) {
-                        let desc = rawText.length > 25 ? rawText.substring(0,22) + "..." : rawText;
+                        let desc = rawText.length > 25 ? rawText.substring(0,22) + "..." : 
+
+rawText;
                         executeDatabasePush(today, "Scan: " + desc, amt, rawText);
                         return;
                     }
@@ -1081,7 +1364,9 @@
             a: amount,
             t: 'exp'
         }).then(() => {
-            alert(`✅ Record Saved Successfully!\n\nDetail: ${detail}\nAmount Added: RS. ${amount.toLocaleString()}`);
+            alert(`✅ Record Saved Successfully!\n\nDetail: ${detail}\nAmount Added: RS. 
+
+${amount.toLocaleString()}`);
             switchTab('dash');
         }).catch(err => {
             alert("Database Error: " + err);
@@ -1090,22 +1375,32 @@
     }
 
     function saveUtilityBill(automatedData = null) {
-        const d = automatedData ? automatedData.d : document.getElementById('u-date').value;
-        const c = automatedData ? automatedData.c : document.getElementById('u-company').value;
+        const d = automatedData ? automatedData.d : document.getElementById('u-
+
+date').value;
+        const c = automatedData ? automatedData.c : document.getElementById('u-
+
+company').value;
         const a = automatedData ? automatedData.a : document.getElementById('u-amt').value;
-        const s = automatedData ? automatedData.s : document.getElementById('u-status').value;
+        const s = automatedData ? automatedData.s : document.getElementById('u-
+
+status').value;
         
         if(d && a) {
             if(s === 'Paid') {
                 Object.entries(window.utilityData || {}).forEach(([k, r]) => {
-                    if(r.c === c && new Date(r.d).getMonth() === new Date(d).getMonth() && r.s === 'Unpaid') {
+                    if(r.c === c && new Date(r.d).getMonth() === new Date(d).getMonth() && 
+
+r.s === 'Unpaid') {
                         db.ref(`utilities/${viewingID}/${k}`).remove();
                     }
                 });
                 db.ref('data/'+viewingID).push({d, n: c + " Paid", a, t: 'exp'});
             }
             db.ref('utilities/'+viewingID).push({d, c, a, s}).then(() => {
-                if(!automatedData) { alert("Record Saved!"); document.getElementById('u-amt').value = ""; }
+                if(!automatedData) { alert("Record Saved!"); document.getElementById('u-
+
+amt').value = ""; }
             });
         }
     }
@@ -1116,17 +1411,31 @@
             snap.forEach(c => {
                 const uid = c.key, udata = c.val();
                 db.ref('data/'+uid).once('value', dSnap => {
-                    let ti=0, te=0; dSnap.forEach(e => { const a = parseFloat(e.val().a)||0; if(e.val().t==='inc') ti+=a; else te+=a; });
+                    let ti=0, te=0; dSnap.forEach(e => { const a = parseFloat(e.val().a)||
+
+0; if(e.val().t==='inc') ti+=a; else te+=a; });
                     list.innerHTML += `<div class="card">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; justify-content:space-between; align-
+
+items:center;">
                             <b>${uid.toUpperCase()}</b>
                             <div>
-                                <i class="fa fa-eye" style="color:var(--success); margin-right:15px; cursor:pointer;" onclick="loadData('${uid}'); switchTab('dash')"></i>
-                                <i class="fa fa-edit" style="color:var(--secondary); margin-right:15px; cursor:pointer;" onclick="editUser('${uid}','${udata.pass}','${udata.role}')"></i>
-                                <i class="fa fa-trash" style="color:var(--danger); cursor:pointer;" onclick="if(confirm('Delete User?')) db.ref('users/${uid}').remove()"></i>
+                                <i class="fa fa-eye" style="color:var(--success); margin-
+
+right:15px; cursor:pointer;" onclick="loadData('${uid}'); switchTab('dash')"></i>
+                                <i class="fa fa-edit" style="color:var(--secondary); 
+
+margin-right:15px; cursor:pointer;" onclick="editUser
+
+('${uid}','${udata.pass}','${udata.role}')"></i>
+                                <i class="fa fa-trash" style="color:var(--danger); 
+
+cursor:pointer;" onclick="if(confirm('Delete User?')) db.ref('users/${uid}').remove()"></i>
                             </div>
                         </div>
-                        <div style="font-size:12px; margin-top:8px; color:var(--text-muted);">Role: ${udata.role} | Bal: RS. ${(ti-te).toLocaleString()}</div>
+                        <div style="font-size:12px; margin-top:8px; color:var(--text-
+
+muted);">Role: ${udata.role} | Bal: RS. ${(ti-te).toLocaleString()}</div>
                     </div>`;
                 });
             });
@@ -1134,36 +1443,67 @@
     }
 
     function editUser(id, pass, role) {
-        document.getElementById('u-id').value = id; document.getElementById('u-pass').value = pass; document.getElementById('u-role').value = role;
+        document.getElementById('u-id').value = id; document.getElementById('u-pass').value 
+
+= pass; document.getElementById('u-role').value = role;
         document.getElementById('u-form-title').innerText = "Edit: " + id.toUpperCase();
     }
 
     function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
-        if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
+        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = 
+
+document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
+        if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert
+
+("User Updated!"); }); }
     }
 
     function addEntry() {
-        const d = document.getElementById('i-date').value, n = document.getElementById('i-desc').value, a = document.getElementById('i-amt').value, t = document.getElementById('i-type').value;
+        const d = document.getElementById('i-date').value, n = document.getElementById('i-
+
+desc').value, a = document.getElementById('i-amt').value, t = document.getElementById('i-
+
+type').value;
         if(d && n && a) { db.ref('data/'+viewingID).push({d, n, a, t}); }
     }
 
     function setupDates() {
-        const n = new Date(); document.getElementById('i-date').valueAsDate = n; document.getElementById('u-date').valueAsDate = n;
+        const n = new Date(); document.getElementById('i-date').valueAsDate = n; 
+
+document.getElementById('u-date').valueAsDate = n;
         const ms = document.getElementById('sel-month');
-        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
+        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach
+
+((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
     }
 
-    function logout() { localStorage.removeItem('ghUser'); localStorage.removeItem('ghRole'); location.reload(); }
-    // Startup sequence: branded splash -> login -> app. Do not auto-open past the login screen.
+    function logout() { 
+        localStorage.removeItem('ghUser'); 
+        localStorage.removeItem('ghRole'); 
+        location.reload(); 
+    }
+
+    // Persistent Session Startup: Splash -> Direct App (if logged in) OR Login Page (if 
+
+logged out)
     window.addEventListener('load', () => {
         const splash = document.getElementById('splash-screen');
         const auth = document.getElementById('auth-screen');
+        const savedUser = localStorage.getItem('ghUser');
+        const savedRole = localStorage.getItem('ghRole');
+
         window.setTimeout(() => {
             if (splash) splash.classList.add('hide');
             window.setTimeout(() => {
                 if (splash) splash.style.display = 'none';
-                if (auth) auth.style.display = 'flex';
+                if (savedUser) {
+                    myID = savedUser;
+                    myRole = savedRole || 'viewer';
+                    viewingID = savedUser;
+                    startApp();
+                } else {
+                    if (auth) auth.style.display = 'flex';
+                }
             }, 460);
         }, 1500);
     });
@@ -1178,7 +1518,9 @@
     }
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
-    const lowPowerDevice = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+    const lowPowerDevice = window.matchMedia('(max-width: 768px), (pointer: 
+
+coarse)').matches;
     if (lowPowerDevice) canvas.style.display = 'none';
 
     class Particle {
@@ -1209,7 +1551,9 @@
     for (let i = 0; i < 55; i++) particles.push(new Particle());
 
     function animateParticles() {
-        if (lowPowerDevice || document.hidden) { requestAnimationFrame(animateParticles); return; }
+        if (lowPowerDevice || document.hidden) { requestAnimationFrame(animateParticles); 
+
+return; }
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         particles.forEach(p => { p.update(); p.draw(); });
         requestAnimationFrame(animateParticles);
