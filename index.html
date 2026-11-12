@@ -2,39 +2,52 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-
+
+scale=1.0, user-scalable=no">
     <title>GharApp Mobile - Cyber 3D Finance Manager</title>
     <link rel="manifest" href="manifest.json">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+
+rel="stylesheet">
     <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-compat.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database-
+
+compat.js"></script>
+    <script 
+
+src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
     <script src="https://unpkg.com/html5-qrcode"></script>
-    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
+    <script 
+
+src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     
     <style>
         :root { 
             --primary: #00f2fe; 
             --secondary: #4facfe; 
-            --primary-glow: rgba(0, 242, 254, 0.5);
+            --primary-glow: rgba(0, 242, 254, 0.3);
             --success: #10b981; 
-            --success-glow: rgba(16, 185, 129, 0.4);
             --danger: #f43f5e; 
-            --danger-glow: rgba(244, 63, 94, 0.4);
             --bg-main: #030712; 
-            --card-bg: rgba(13, 20, 38, 0.72);
-            --card-border: rgba(0, 242, 254, 0.18);
+            --card-bg: rgba(13, 20, 38, 0.85);
+            --card-border: rgba(0, 242, 254, 0.15);
             --text-main: #f8fafc;
             --text-muted: #94a3b8;
-            --input-bg: rgba(5, 9, 18, 0.85);
+            --input-bg: rgba(5, 9, 18, 0.9);
         }
 
-        * { box-sizing: border-box; font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: transparent; margin: 0; padding: 0; }
+        * { box-sizing: border-box; font-family: 'Inter', -apple-system, 
+
+BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; -webkit-tap-highlight-color: 
+
+transparent; margin: 0; padding: 0; }
         
         body { 
             background-color: var(--bg-main); 
-            /* Yahan logo image ka link ya path dein, 30% transparency ke sath background watermarked lagega */
-            background-image: linear-gradient(rgba(3, 7, 18, 0.85), rgba(3, 7, 18, 0.85)), url('logo.png');
+            background-image: linear-gradient(rgba(3, 7, 18, 0.9), rgba(3, 7, 18, 0.9)), 
+
+url('logo.png');
             background-repeat: no-repeat;
             background-position: center;
             background-size: 60% auto;
@@ -43,11 +56,10 @@
             min-height: 100vh;
             padding-bottom: 90px; 
             overflow-x: hidden;
-            perspective: 1000px;
             position: relative;
         }
 
-        /* Highly Attractive Animated Cyberpunk Background Orbs */
+        /* Light & Smooth CSS Background Orbs (No Heavy JS) */
         .cyber-bg-container {
             position: fixed;
             inset: 0;
@@ -59,49 +71,28 @@
         .cyber-orb {
             position: absolute;
             border-radius: 50%;
-            filter: blur(110px);
-            opacity: 0.45;
-            animation: cyberFloat 10s infinite alternate ease-in-out;
+            filter: blur(80px);
+            opacity: 0.25;
+            animation: cyberFloat 12s infinite alternate ease-in-out;
         }
 
-        .orb-cyber-1 {
-            top: -150px;
-            left: -150px;
-            width: 450px;
-            height: 450px;
-            background: radial-gradient(circle, #00f2fe 0%, #0072ff 100%);
-            animation-duration: 9s;
-        }
+        .orb-cyber-1 { top: -100px; left: -100px; width: 350px; height: 350px; background: 
 
-        .orb-cyber-2 {
-            bottom: -150px;
-            right: -150px;
-            width: 480px;
-            height: 480px;
-            background: radial-gradient(circle, #7928ca 0%, #ff0080 100%);
-            animation-duration: 12s;
-            animation-delay: -2s;
-        }
+#00f2fe; }
+        .orb-cyber-2 { bottom: -100px; right: -100px; width: 380px; height: 380px; 
+
+background: #7928ca; animation-delay: -4s; }
 
         @keyframes cyberFloat {
-            0% { transform: translate(0, 0) scale(1) rotate(0deg); }
-            50% { transform: translate(50px, 70px) scale(1.2) rotate(180deg); }
-            100% { transform: translate(-40px, 40px) scale(0.9) rotate(360deg); }
-        }
-
-        #canvas-bg {
-            position: fixed;
-            inset: 0;
-            z-index: -1;
-            pointer-events: none;
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(30px, 40px); }
         }
 
         /* Top Bar Header */
         .top-bar { 
-            background: rgba(13, 20, 38, 0.8); 
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
-            padding: 14px 18px; 
+            background: rgba(13, 20, 38, 0.9); 
+            backdrop-filter: blur(10px);
+            padding: 12px 16px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
@@ -109,98 +100,71 @@
             top: 0; 
             z-index: 100; 
             border-bottom: 1px solid var(--card-border); 
-            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
         }
 
         .btn-icon {
             background: rgba(0, 242, 254, 0.08);
             border: 1px solid var(--card-border);
             color: var(--primary);
-            width: 40px;
-            height: 40px;
-            border-radius: 14px;
+            width: 38px;
+            height: 38px;
+            border-radius: 12px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 0 10px rgba(0, 242, 254, 0.15);
+            transition: background 0.2s ease;
         }
-        .btn-icon:hover {
-            background: var(--primary-glow);
-            border-color: var(--primary);
-            transform: scale(1.1) rotate(5deg);
-            box-shadow: 0 0 20px var(--primary-glow);
-        }
+        .btn-icon:hover { background: rgba(0, 242, 254, 0.2); }
 
         /* Slide-out Sidebar Drawer */
         .sidebar-drawer {
             position: fixed;
             top: 0;
-            left: -320px;
-            width: 300px;
+            left: -300px;
+            width: 280px;
             height: 100%;
-            background: rgba(8, 13, 26, 0.96);
-            backdrop-filter: blur(35px);
-            -webkit-backdrop-filter: blur(35px);
+            background: rgba(8, 13, 26, 0.98);
             z-index: 2000;
             border-right: 1px solid var(--card-border);
-            box-shadow: 20px 0 50px rgba(0,0,0,0.85);
-            transition: left 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-            padding: 24px 18px;
+            transition: left 0.3s ease;
+            padding: 20px 16px;
             display: flex;
             flex-direction: column;
             overflow-y: auto;
         }
-
         .sidebar-drawer.active { left: 0; }
 
         .sidebar-overlay {
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.75);
-            backdrop-filter: blur(8px);
+            background: rgba(0,0,0,0.7);
             z-index: 1999;
             display: none;
-            transition: opacity 0.3s ease;
         }
         .sidebar-overlay.active { display: block; }
 
-        .sidebar-menu-list {
-            list-style: none;
-            margin-top: 15px;
-        }
+        .sidebar-menu-list { list-style: none; margin-top: 10px; }
 
         .sidebar-item {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 13px 16px;
-            border-radius: 14px;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 12px;
             color: var(--text-main);
-            font-size: 0.92rem;
+            font-size: 0.9rem;
             font-weight: 600;
             cursor: pointer;
-            margin-bottom: 10px;
-            transition: all 0.3s ease;
-            border: 1px solid transparent;
+            margin-bottom: 8px;
             background: rgba(255, 255, 255, 0.02);
         }
-
         .sidebar-item:hover, .sidebar-item.active {
-            background: rgba(0, 242, 254, 0.15);
-            border-color: var(--primary);
+            background: rgba(0, 242, 254, 0.12);
             color: var(--primary);
-            transform: translateX(5px);
-            box-shadow: 0 0 15px rgba(0, 242, 254, 0.2);
         }
-
-        .sidebar-item i {
-            width: 22px;
-            text-align: center;
-            font-size: 17px;
-        }
+        .sidebar-item i { width: 20px; text-align: center; }
 
         /* Bottom Nav Bar */
         .bottom-nav { 
@@ -208,15 +172,13 @@
             bottom: 0; 
             left: 0; 
             right: 0; 
-            background: rgba(13, 20, 38, 0.88); 
-            backdrop-filter: blur(25px);
-            -webkit-backdrop-filter: blur(25px);
+            background: rgba(13, 20, 38, 0.95); 
+            backdrop-filter: blur(10px);
             display: flex; 
             justify-content: space-around; 
-            padding: 10px 0; 
+            padding: 8px 0; 
             border-top: 1px solid var(--card-border); 
             z-index: 1000; 
-            box-shadow: 0 -10px 30px rgba(0,0,0,0.5);
         }
 
         .nav-btn { 
@@ -227,220 +189,177 @@
             font-size: 11px; 
             flex: 1; 
             cursor: pointer; 
-            transition: all 0.3s ease;
         }
         .nav-btn.active { color: var(--primary); font-weight: bold; }
-        .nav-btn i { font-size: 20px; display: block; margin-bottom: 4px; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-        .nav-btn.active i { transform: scale(1.25) translateY(-2px); filter: drop-shadow(0 0 12px var(--primary-glow)); }
+        .nav-btn i { font-size: 18px; display: block; margin-bottom: 3px; }
         
         .nav-btn.scan-btn { 
             color: #030712; 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
             border-radius: 50px; 
-            margin: -20px 8px 0 8px; 
-            height: 60px; 
+            margin: -16px 8px 0 8px; 
+            height: 52px; 
             font-weight: 800;
-            box-shadow: 0 10px 30px var(--primary-glow); 
-            animation: scanBtnPulse 2s infinite;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 15px var(--primary-glow); 
         }
-        .nav-btn.scan-btn i { color: #030712; font-size: 22px; }
-        .nav-btn.scan-btn:hover { transform: translateY(-4px) scale(1.08); }
+        .nav-btn.scan-btn i { color: #030712; font-size: 20px; margin-bottom: 0; }
 
-        @keyframes scanBtnPulse {
-            0% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0.5); }
-            70% { box-shadow: 0 0 0 15px rgba(0, 242, 254, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(0, 242, 254, 0); }
-        }
-
-        .page { display: none; padding: 20px 16px; max-width: 550px; margin: 0 auto; animation: fadeInPage 0.4s ease; }
+        .page { display: none; padding: 16px; max-width: 550px; margin: 0 auto; }
         .page.active { display: block; }
 
-        @keyframes fadeInPage {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Stunning 3D Neon Glass Cards */
+        /* Clean Glass Cards */
         .card { 
             background: var(--card-bg); 
-            backdrop-filter: blur(30px);
-            -webkit-backdrop-filter: blur(30px);
-            border-radius: 26px; 
-            padding: 24px 20px; 
-            margin-bottom: 20px; 
+            border-radius: 20px; 
+            padding: 20px 16px; 
+            margin-bottom: 16px; 
             border: 1px solid var(--card-border); 
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.2);
-            transform-style: preserve-3d;
-            transition: all 0.3s ease;
-        }
-        .card:hover {
-            border-color: rgba(0, 242, 254, 0.4);
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.7), 0 0 25px rgba(0, 242, 254, 0.15);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
         }
 
         input, select { 
             width: 100%; 
-            padding: 14px 16px; 
+            padding: 12px 14px; 
             background: var(--input-bg); 
-            border-radius: 14px; 
+            border-radius: 12px; 
             border: 1px solid var(--card-border); 
             color: #ffffff; 
-            margin-bottom: 14px; 
+            margin-bottom: 12px; 
             font-size: 0.95rem; 
             outline: none;
-            transition: all 0.3s ease;
         }
-        input:focus, select:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 20px var(--primary-glow);
-            background: rgba(13, 20, 38, 0.95);
-        }
+        input:focus, select:focus { border-color: var(--primary); }
 
         .btn-action { 
             width: 100%; 
-            padding: 15px; 
-            border-radius: 14px; 
+            padding: 14px; 
+            border-radius: 12px; 
             border: none; 
             background: linear-gradient(135deg, var(--primary), var(--secondary)); 
             color: #030712; 
             font-weight: 800; 
-            font-size: 1rem;
+            font-size: 0.95rem;
             cursor: pointer; 
-            box-shadow: 0 10px 25px var(--primary-glow);
-            transition: all 0.3s ease;
-        }
-        .btn-action:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 15px 35px var(--primary-glow);
+            box-shadow: 0 5px 15px var(--primary-glow);
         }
 
         .btn-print { 
-            background: linear-gradient(135deg, #3b82f6, #1d4ed8); 
+            background: #3b82f6; 
             color: white; 
             border: none; 
-            padding: 10px 18px; 
-            border-radius: 12px; 
+            padding: 8px 14px; 
+            border-radius: 10px; 
             font-weight: bold; 
             cursor: pointer; 
-            margin-bottom: 15px; 
-            box-shadow: 0 8px 20px rgba(59, 130, 246, 0.35);
-            transition: all 0.25s ease;
+            margin-bottom: 12px; 
         }
-        .btn-print:hover { transform: translateY(-2px); box-shadow: 0 12px 25px rgba(59, 130, 246, 0.5); }
 
         /* Filter Tab Switchers */
         .filter-tab-bar {
             display: flex;
-            gap: 8px;
-            margin-bottom: 18px;
-            background: rgba(0, 0, 0, 0.4);
-            padding: 5px;
-            border-radius: 16px;
+            gap: 6px;
+            margin-bottom: 14px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px;
+            border-radius: 12px;
             border: 1px solid var(--card-border);
         }
 
         .filter-tab-btn {
             flex: 1;
-            padding: 11px;
+            padding: 9px;
             border: none;
             background: transparent;
             color: var(--text-muted);
-            font-size: 0.82rem;
+            font-size: 0.8rem;
             font-weight: 700;
-            border-radius: 12px;
+            border-radius: 10px;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
-
         .filter-tab-btn.active {
-            background: linear-gradient(135deg, rgba(0, 242, 254, 0.25), rgba(79, 172, 254, 0.15));
+            background: rgba(0, 242, 254, 0.2);
             color: var(--primary);
             border: 1px solid var(--primary);
-            box-shadow: 0 0 15px var(--primary-glow);
         }
 
         .list-item { 
-            background: rgba(255, 255, 255, 0.03); 
-            padding: 15px; 
-            border-radius: 16px; 
-            margin-bottom: 12px; 
+            background: rgba(255, 255, 255, 0.02); 
+            padding: 12px 14px; 
+            border-radius: 12px; 
+            margin-bottom: 10px; 
             display: flex; 
             justify-content: space-between; 
             align-items: center; 
-            flex-wrap: wrap; 
-            gap: 10px; 
             border: 1px solid var(--card-border);
-            backdrop-filter: blur(12px);
-            transition: transform 0.25s ease, border-color 0.25s ease;
-        }
-        .list-item:hover {
-            transform: translateX(4px);
-            border-color: rgba(0, 242, 254, 0.35);
         }
 
         @media print {
-            body { background: white !important; color: black !important; padding: 0 !important; margin: 0 !important; }
-            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .btn-print, #qr-view-box, .scan-instruction-text, #canvas-bg, .sidebar-drawer, .sidebar-overlay, .filter-tab-bar, .cyber-bg-container { display: none !important; }
+            body { background: white !important; color: black !important; padding: 0 !
+
+important; }
+            .no-print, .bottom-nav, .top-bar, .btn-action, .fa-trash, .btn-print, #qr-
+
+view-box, .scan-instruction-text, .sidebar-drawer, .sidebar-overlay, .filter-tab-bar, 
+
+.cyber-bg-container { display: none !important; }
             .page { display: block !important; padding: 0 !important; }
-            .card { background: white !important; border: 1px solid #eee !important; color: black !important; box-shadow: none !important; margin-bottom: 20px !important; }
-            .list-item { display: flex !important; justify-content: space-between !important; align-items: center !important; border: 1px solid #ddd !important; background: white !important; padding: 15px !important; color: black !important; }
-            .barcode-img { display: block !important; visibility: visible !important; background: white !important; }
+            .card, .list-item { background: white !important; border: 1px solid #ddd !
+
+important; color: black !important; box-shadow: none !important; }
         }
 
         /* Utility Cards Grid */
-        .utility-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(105px, 1fr)); gap: 12px; margin-bottom: 20px; }
+        .utility-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; 
+
+margin-bottom: 16px; }
         .utility-card { 
-            position: relative; 
-            border-radius: 20px; 
-            padding: 16px 10px; 
+            border-radius: 16px; 
+            padding: 14px 8px; 
             text-align: center; 
             border: 1px solid var(--card-border); 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
-            backdrop-filter: blur(15px);
-            transition: transform 0.3s ease;
+            background: rgba(13, 20, 38, 0.8);
         }
-        .utility-card:hover { transform: translateY(-3px); }
-        .ke-card { background: linear-gradient(135deg, rgba(13, 20, 38, 0.85), rgba(249, 115, 22, 0.2)); }
-        .ssgc-card { background: linear-gradient(135deg, rgba(13, 20, 38, 0.85), rgba(59, 130, 246, 0.2)); }
-        .mob-card { background: linear-gradient(135deg, rgba(13, 20, 38, 0.85), rgba(244, 63, 94, 0.2)); }
-        .util-icon { font-size: 28px; margin-bottom: 6px; }
-        .ke-icon { color: #f59e0b; filter: drop-shadow(0 0 8px rgba(245,158,11,0.5)); }
-        .ssgc-icon { color: #3b82f6; filter: drop-shadow(0 0 8px rgba(59,130,246,0.5)); }
-        .mob-icon { color: #f43f5e; filter: drop-shadow(0 0 8px rgba(244,63,94,0.5)); }
-        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 10px; font-weight: bold; margin-top: 8px; }
-        .status-paid { background: rgba(16, 185, 129, 0.25); color: var(--success); border: 1px solid var(--success); box-shadow: 0 0 10px var(--success-glow); }
-        .status-unpaid { background: rgba(244, 63, 94, 0.25); color: var(--danger); border: 1px solid var(--danger); box-shadow: 0 0 10px var(--danger-glow); }
+        .util-icon { font-size: 24px; margin-bottom: 4px; }
+        .ke-icon { color: #f59e0b; }
+        .ssgc-icon { color: #3b82f6; }
+        .mob-icon { color: #f43f5e; }
+        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; 
+
+font-size: 9px; font-weight: bold; margin-top: 6px; }
+        .status-paid { background: rgba(16, 185, 129, 0.2); color: var(--success); border: 
+
+1px solid var(--success); }
+        .status-unpaid { background: rgba(244, 63, 94, 0.2); color: var(--danger); border: 
+
+1px solid var(--danger); }
         
-        .barcode-img { background: white; padding: 6px; border-radius: 8px; max-width: 130px; height: auto; }
+        .barcode-img { background: white; padding: 4px; border-radius: 6px; max-width: 
+
+110px; height: auto; }
         
-        /* Cyberpunk Scanner Box */
         #qr-view-box { 
             width: 100%; 
-            max-width: 320px; 
-            margin: 15px auto; 
-            border-radius: 26px; 
+            max-width: 300px; 
+            margin: 10px auto; 
+            border-radius: 20px; 
             overflow: hidden; 
             border: 2px solid var(--primary); 
-            box-shadow: 0 0 40px var(--primary-glow); 
             background: #000; 
             position: relative; 
         }
-        
         .scan-laser { 
             position: absolute; 
             width: 100%; 
-            height: 3px; 
+            height: 2px; 
             background: var(--primary); 
-            top: 0; 
-            left: 0; 
-            animation: laserMove 1.4s linear infinite; 
-            box-shadow: 0 0 20px var(--primary); 
+            top: 0; left: 0; 
+            animation: laserMove 1.5s linear infinite; 
             z-index: 10; 
-            pointer-events: none; 
         }
         @keyframes laserMove { 0% { top: 0%; } 50% { top: 100%; } 100% { top: 0%; } }
-        .scan-instruction-text { color: var(--text-main); font-size: 16px; font-weight: 800; margin: 12px 0; text-transform: uppercase; letter-spacing: 1.5px; text-shadow: 0 0 10px var(--primary-glow); }
+        .scan-instruction-text { color: var(--text-main); font-size: 14px; font-weight: 
+
+800; margin: 10px 0; text-transform: uppercase; }
     </style>
 </head>
 <body>
@@ -450,51 +369,73 @@
     <div class="cyber-orb orb-cyber-2"></div>
 </div>
 
-<canvas id="canvas-bg"></canvas>
-
 <div id="sidebar-overlay" class="sidebar-overlay" onclick="toggleSidebar()"></div>
 
 <div id="sidebar-drawer" class="sidebar-drawer">
-    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px; border-bottom:1px solid var(--card-border); padding-bottom:12px;">
-        <h3 style="color:var(--primary); font-weight:800; text-shadow:0 0 10px var(--primary-glow);"><i class="fa fa-fingerprint" style="margin-right:8px;"></i> GharApp Menu</h3>
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-
+
+bottom:16px; border-bottom:1px solid var(--card-border); padding-bottom:10px;">
+        <h3 style="color:var(--primary); font-weight:800;"><i class="fa fa-fingerprint" 
+
+style="margin-right:6px;"></i> GharApp Menu</h3>
         <button onclick="toggleSidebar()" class="btn-icon">&times;</button>
     </div>
     
-    <div class="card" style="margin-top:5px; background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(121, 40, 202, 0.15)); border-color: rgba(0, 242, 254, 0.4);">
-        <small style="color:var(--text-muted); text-transform:uppercase; font-size:11px; letter-spacing:1.5px; font-weight:700;"><i class="fa fa-wallet" style="color:var(--primary);"></i> Net Balance</small>
-        <h2 id="side-bal-val" style="color:#ffffff; margin:8px 0; font-size:1.9rem; text-shadow:0 0 20px var(--primary-glow);">0</h2>
-        <div style="font-size:12px; color:var(--success); margin-top:6px;"><i class="fa fa-arrow-down"></i> Income: RS. <span id="side-inc-val">0</span></div>
-        <div style="font-size:12px; color:var(--danger); margin-top:4px;"><i class="fa fa-arrow-up"></i> Expense: RS. <span id="side-exp-val">0</span></div>
+    <div class="card" style="margin-top:0; background: rgba(0, 242, 254, 0.08);">
+        <small style="color:var(--text-muted); text-transform:uppercase; font-size:10px; 
+
+font-weight:700;">Net Balance</small>
+        <h2 id="side-bal-val" style="color:#ffffff; margin:6px 0; font-size:1.6rem;">0</h2>
+        <div style="font-size:11px; color:var(--success);"><i class="fa fa-arrow-down"></i> 
+
+Income: RS. <span id="side-inc-val">0</span></div>
+        <div style="font-size:11px; color:var(--danger); margin-top:3px;"><i class="fa fa-
+
+arrow-up"></i> Expense: RS. <span id="side-exp-val">0</span></div>
     </div>
 
     <ul class="sidebar-menu-list">
-        <li class="sidebar-item active" onclick="switchTab('dash'); setFilterMode('all'); toggleSidebar();">
-            <i class="fa fa-chart-line"></i> Dashboard / All
-        </li>
-        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('inc'); toggleSidebar();">
-            <i class="fa fa-arrow-down" style="color:var(--success);"></i> Income Records
-        </li>
-        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('exp'); toggleSidebar();">
-            <i class="fa fa-arrow-up" style="color:var(--danger);"></i> Expense Records
-        </li>
-        <li class="sidebar-item" onclick="switchTab('scan'); toggleSidebar();">
-            <i class="fa fa-qrcode" style="color:var(--primary);"></i> Smart Scanner
-        </li>
-        <li class="sidebar-item" onclick="switchTab('util'); toggleSidebar();">
-            <i class="fa fa-receipt" style="color:#a855f7;"></i> Utility Bills
-        </li>
-        <li id="sidebar-admin-link" class="sidebar-item" style="display:none;" onclick="switchTab('users'); toggleSidebar();">
-            <i class="fa fa-users-cog"></i> User Management
-        </li>
+        <li class="sidebar-item active" onclick="switchTab('dash'); setFilterMode('all'); 
+
+toggleSidebar();"><i class="fa fa-chart-line"></i> Dashboard / All</li>
+        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('inc'); 
+
+toggleSidebar();"><i class="fa fa-arrow-down" style="color:var(--success);"></i> Income 
+
+Records</li>
+        <li class="sidebar-item" onclick="switchTab('dash'); setFilterMode('exp'); 
+
+toggleSidebar();"><i class="fa fa-arrow-up" style="color:var(--danger);"></i> Expense 
+
+Records</li>
+        <li class="sidebar-item" onclick="switchTab('scan'); toggleSidebar();"><i class="fa 
+
+fa-qrcode" style="color:var(--primary);"></i> Smart Scanner</li>
+        <li class="sidebar-item" onclick="switchTab('util'); toggleSidebar();"><i class="fa 
+
+fa-receipt" style="color:#a855f7;"></i> Utility Bills</li>
+        <li id="sidebar-admin-link" class="sidebar-item" style="display:none;" 
+
+onclick="switchTab('users'); toggleSidebar();"><i class="fa fa-users-cog"></i> User 
+
+Management</li>
     </ul>
 </div>
 
-<div id="auth-screen" style="position:fixed; inset:0; background:rgba(3, 7, 18, 0.96); backdrop-filter:blur(35px); z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px;">
-    <div class="card" style="width:100%; max-width:350px; text-align:center;">
-        <div style="width:70px; height:70px; background:linear-gradient(135deg, var(--primary), var(--secondary)); border-radius:22px; margin:0 auto 18px; display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px var(--primary-glow);">
-            <i class="fa fa-qrcode" style="font-size:32px; color:#030712;"></i>
+<div id="auth-screen" style="position:fixed; inset:0; background:rgba(3, 7, 18, 0.95); z-
+
+index:9999; display:flex; align-items:center; justify-content:center; padding: 20px;">
+    <div class="card" style="width:100%; max-width:330px; text-align:center;">
+        <div style="width:60px; height:60px; background:linear-gradient(135deg, var(--
+
+primary), var(--secondary)); border-radius:18px; margin:0 auto 16px; display:flex; align-
+
+items:center; justify-content:center;">
+            <i class="fa fa-qrcode" style="font-size:28px; color:#030712;"></i>
         </div>
-        <h2 style="color:var(--primary); margin-bottom:18px; font-weight:800; text-shadow:0 0 15px var(--primary-glow);">GharApp Mobile</h2>
+        <h2 style="color:var(--primary); margin-bottom:16px; font-weight:800;">GharApp 
+
+Mobile</h2>
         <input type="text" id="l-id" placeholder="Username">
         <input type="password" id="l-pass" placeholder="Password">
         <button onclick="login()" class="btn-action">LOGIN</button>
@@ -502,30 +443,46 @@
 </div>
 
 <div class="top-bar no-print">
-    <div style="display:flex; align-items:center; gap:12px;">
-        <button onclick="toggleSidebar()" class="btn-icon"><i class="fa fa-bars"></i></button>
-        <b id="user-display" style="color:var(--primary); font-size: 1.1rem; text-shadow:0 0 10px var(--primary-glow);">User</b>
+    <div style="display:flex; align-items:center; gap:10px;">
+        <button onclick="toggleSidebar()" class="btn-icon"><i class="fa fa-
+
+bars"></i></button>
+        <b id="user-display" style="color:var(--primary); font-size: 1rem;">User</b>
     </div>
-    <div style="display:flex; gap:8px; align-items: center;">
-        <select id="sel-month" onchange="renderData(); renderUtilities();" style="width:95px; margin:0; padding:6px;"></select>
-        <button onclick="logout()" class="btn-icon" style="color:var(--danger);"><i class="fa fa-power-off"></i></button>
+    <div style="display:flex; gap:6px; align-items: center;">
+        <select id="sel-month" onchange="renderData(); renderUtilities();" 
+
+style="width:90px; margin:0; padding:6px;"></select>
+        <button onclick="logout()" class="btn-icon" style="color:var(--danger);"><i 
+
+class="fa fa-power-off"></i></button>
     </div>
 </div>
 
 <div id="tab-dash" class="page active">
-    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> Print Ledger</button>
+    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> 
+
+Print Ledger</button>
     
-    <div class="card" style="text-align:center; background: linear-gradient(135deg, rgba(0, 242, 254, 0.18), rgba(121, 40, 202, 0.12)); border-color: rgba(0, 242, 254, 0.4);">
-        <small style="color:var(--text-muted); text-transform:uppercase; letter-spacing:1.5px; font-weight:700;"><i class="fa fa-scale-balanced" style="margin-right:6px;"></i> Front Net Balance</small>
-        <h1 id="t-bal" style="margin:10px 0; font-size: 2.8rem; text-shadow:0 0 30px var(--primary-glow); color:#ffffff;">0</h1>
-        <div style="display:flex; justify-content:space-around; margin-top:14px; border-top:1px solid var(--card-border); padding-top:12px;">
-            <div style="color:var(--success);"><small><i class="fa fa-arrow-down"></i> Income</small><br><b id="t-inc" style="font-size:1.2rem;">0</b></div>
-            <div style="color:var(--danger);"><small><i class="fa fa-arrow-up"></i> Expense</small><br><b id="t-exp" style="font-size:1.2rem;">0</b></div>
+    <div class="card" style="text-align:center; background: rgba(0, 242, 254, 0.06);">
+        <small style="color:var(--text-muted); text-transform:uppercase; letter-
+
+spacing:1px; font-weight:700;">Front Net Balance</small>
+        <h1 id="t-bal" style="margin:8px 0; font-size: 2.4rem; color:#ffffff;">0</h1>
+        <div style="display:flex; justify-content:space-around; margin-top:10px; border-
+
+top:1px solid var(--card-border); padding-top:10px;">
+            <div style="color:var(--success);"><small><i class="fa fa-arrow-down"></i> 
+
+Income</small><br><b id="t-inc" style="font-size:1.1rem;">0</b></div>
+            <div style="color:var(--danger);"><small><i class="fa fa-arrow-up"></i> 
+
+Expense</small><br><b id="t-exp" style="font-size:1.1rem;">0</b></div>
         </div>
     </div>
     
     <div class="card no-print">
-        <h4 style="margin:0 0 12px 0; color:var(--primary); text-shadow:0 0 10px var(--primary-glow);">New Entry</h4>
+        <h4 style="margin:0 0 10px 0; color:var(--primary);">New Entry</h4>
         <input type="date" id="i-date">
         <input type="text" id="i-desc" placeholder="Detail">
         <input type="number" id="i-amt" placeholder="Amount">
@@ -537,18 +494,25 @@
     </div>
 
     <div class="filter-tab-bar no-print">
-        <button id="ft-all" class="filter-tab-btn active" onclick="setFilterMode('all')">All Records</button>
-        <button id="ft-inc" class="filter-tab-btn" onclick="setFilterMode('inc')">Income Only (+)</button>
-        <button id="ft-exp" class="filter-tab-btn" onclick="setFilterMode('exp')">Expense Only (-)</button>
+        <button id="ft-all" class="filter-tab-btn active" onclick="setFilterMode
+
+('all')">All Records</button>
+        <button id="ft-inc" class="filter-tab-btn" onclick="setFilterMode('inc')">Income 
+
+(+)</button>
+        <button id="ft-exp" class="filter-tab-btn" onclick="setFilterMode('exp')">Expense 
+
+(-)</button>
     </div>
 
     <div id="ledger-body"></div>
 </div>
 
 <div id="tab-scan" class="page">
-    <div class="card" style="text-align: center; background: transparent; border: none; padding: 0;">
+    <div class="card" style="text-align: center; background: transparent; border: none; 
+
+padding: 0;">
         <div class="scan-instruction-text">Scan QR Code / Barcode</div>
-        
         <div id="qr-view-box">
             <div class="scan-laser"></div>
             <div id="reader" style="width: 100%;"></div>
@@ -557,54 +521,65 @@
 </div>
 
 <div id="tab-util" class="page">
-    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> Print Bills History</button>
+    <button class="btn-print no-print" onclick="window.print()"><i class="fa fa-print"></i> 
+
+Print Bills</button>
     <div class="utility-grid">
-        <div class="utility-card ke-card">
+        <div class="utility-card">
             <div class="util-icon ke-icon"><i class="fa fa-bolt"></i></div>
-            <div style="font-weight:bold; font-size:13px;">K-Electric</div>
-            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">A/C: ...4984761</div>
+            <div style="font-weight:bold; font-size:12px;">K-Electric</div>
             <div id="ke-status" class="status-badge status-unpaid">No Data</div>
-            <div id="ke-amount" style="font-size:11px; margin-top:5px; color:var(--text-muted);">RS. 0</div>
+            <div id="ke-amount" style="font-size:10px; margin-top:4px; color:var(--text-
+
+muted);">RS. 0</div>
         </div>
-        <div class="utility-card ssgc-card">
+        <div class="utility-card">
             <div class="util-icon ssgc-icon"><i class="fa fa-fire-flame-simple"></i></div>
-            <div style="font-weight:bold; font-size:13px;">SSGC</div>
-            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">Cust: ...7590000</div>
+            <div style="font-weight:bold; font-size:12px;">SSGC</div>
             <div id="ssgc-status" class="status-badge status-unpaid">No Data</div>
-            <div id="ssgc-amount" style="font-size:11px; margin-top:5px; color:var(--text-muted);">RS. 0</div>
+            <div id="ssgc-amount" style="font-size:10px; margin-top:4px; color:var(--text-
+
+muted);">RS. 0</div>
         </div>
-        <div class="utility-card mob-card">
-            <div class="util-icon mob-icon"><i class="fa fa-mobile-screen-button"></i></div>
-            <div style="font-weight:bold; font-size:13px;">Mobilink Bill</div>
-            <div style="font-size:9px; color:var(--text-muted); margin-top:2px;">03202491025</div>
+        <div class="utility-card">
+            <div class="util-icon mob-icon"><i class="fa fa-mobile-screen-
+
+button"></i></div>
+            <div style="font-weight:bold; font-size:12px;">Mobilink</div>
             <div id="mob-status" class="status-badge status-unpaid">No Data</div>
-            <div id="mob-amount" style="font-size:11px; margin-top:5px; color:var(--text-muted);">RS. 0</div>
+            <div id="mob-amount" style="font-size:10px; margin-top:4px; color:var(--text-
+
+muted);">RS. 0</div>
         </div>
     </div>
 
     <div class="card no-print">
-        <h4 style="margin:0 0 12px 0; color:var(--primary); text-shadow:0 0 10px var(--primary-glow);">Add / Edit Bill Record Manually</h4>
+        <h4 style="margin:0 0 10px 0; color:var(--primary);">Add / Edit Bill Record</h4>
         <input type="date" id="u-date">
         <select id="u-company">
             <option value="K-Electric">K-Electric</option>
             <option value="SSGC">SSGC</option>
-            <option value="Mobilink Bill">Mobilink Postpaid (03202491025)</option>
+            <option value="Mobilink Bill">Mobilink Postpaid</option>
         </select>
-        <input type="number" id="u-amt" placeholder="Bill Amount (RS)">
+        <input type="number" id="u-amt" placeholder="Amount (RS)">
         <select id="u-status">
-            <option value="Unpaid">Unpaid (Live Pending)</option>
+            <option value="Unpaid">Unpaid</option>
             <option value="Paid">Paid</option>
         </select>
-        <button class="btn-action" onclick="saveUtilityBill()">SAVE BILL RECORD</button>
+        <button class="btn-action" onclick="saveUtilityBill()">SAVE BILL</button>
     </div>
 
-    <h4 style="margin:15px 0 10px 0; color:var(--primary);">Billing History & Printable Barcodes</h4>
+    <h4 style="margin:12px 0 8px 0; color:var(--primary); font-size:0.95rem;">Billing 
+
+History</h4>
     <div id="utility-body"></div>
 </div>
 
 <div id="tab-users" class="page">
     <div class="card no-print">
-        <h3 id="u-form-title" style="margin-top:0; color:var(--primary); text-shadow:0 0 10px var(--primary-glow);">User Editor</h3>
+        <h3 id="u-form-title" style="margin-top:0; color:var(--primary); font-
+
+size:1rem;">User Editor</h3>
         <input type="text" id="u-id" placeholder="User ID">
         <input type="text" id="u-pass" placeholder="Password">
         <select id="u-role">
@@ -618,21 +593,29 @@
 </div>
 
 <nav class="bottom-nav no-print">
-    <button class="nav-btn active" id="nb-dash" onclick="switchTab('dash')"><i class="fa fa-chart-line"></i>Dash</button>
-    <button class="nav-btn scan-btn" id="nb-scan" onclick="switchTab('scan')"><i class="fa fa-qrcode"></i>SCAN</button>
-    <button class="nav-btn" id="nb-util" onclick="switchTab('util')"><i class="fa fa-receipt"></i>Bills</button>
-    <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab('users')"><i class="fa fa-users-cog"></i>Users</button>
+    <button class="nav-btn active" id="nb-dash" onclick="switchTab('dash')"><i class="fa 
+
+fa-chart-line"></i>Dash</button>
+    <button class="nav-btn scan-btn" id="nb-scan" onclick="switchTab('scan')"><i class="fa 
+
+fa-qrcode"></i>SCAN</button>
+    <button class="nav-btn" id="nb-util" onclick="switchTab('util')"><i class="fa fa-
+
+receipt"></i>Bills</button>
+    <button id="admin-nav-item" class="nav-btn" style="display:none;" onclick="switchTab
+
+('users')"><i class="fa fa-users-cog"></i>Users</button>
 </nav>
 
 <script>
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('sw.js');
-    }
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js'); }
 
     const firebaseConfig = {
       apiKey: "AIzaSyD3mKQ8DIgMh6GEm3FV31BfBJ_UeYz6dz0",
       authDomain: "gharapp-c720a.firebaseapp.com",
-      databaseURL: "https://gharapp-c720a-default-rtdb.asia-southeast1.firebasedatabase.app",
+      databaseURL: "https://gharapp-c720a-default-rtdb.asia-
+
+southeast1.firebasedatabase.app",
       projectId: "gharapp-c720a",
       storageBucket: "gharapp-c720a.firebasestorage.app",
       messagingSenderId: "900171410782",
@@ -641,40 +624,31 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database(); 
 
-    let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), viewingID = myID;
+    let myID = localStorage.getItem('ghUser'), myRole = localStorage.getItem('ghRole'), 
+
+viewingID = myID;
     let html5QrCode = null;
     let currentFilterMode = 'all';
 
     function toggleSidebar() {
-        const drawer = document.getElementById('sidebar-drawer');
-        const overlay = document.getElementById('sidebar-overlay');
-        drawer.classList.toggle('active');
-        overlay.classList.toggle('active');
+        document.getElementById('sidebar-drawer').classList.toggle('active');
+        document.getElementById('sidebar-overlay').classList.toggle('active');
     }
 
     function setFilterMode(mode) {
         currentFilterMode = mode;
-        document.querySelectorAll('.filter-tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.filter-tab-btn').forEach(b => b.classList.remove
+
+('active'));
         const btn = document.getElementById('ft-' + mode);
         if (btn) btn.classList.add('active');
         renderData();
     }
 
-    window.addEventListener('DOMContentLoaded', () => {
-        const parsedUrl = new URL(window.location.href);
-        const sharedText = parsedUrl.searchParams.get('text') || parsedUrl.searchParams.get('title') || parsedUrl.searchParams.get('url');
-        
-        if (sharedText) {
-            if (myID) {
-                setTimeout(() => { processBruteForceScanEntry(sharedText); }, 1000);
-            } else {
-                localStorage.setItem('pendingSharedText', sharedText);
-            }
-        }
-    });
-
     function login() {
-        const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = document.getElementById('l-pass').value;
+        const id = document.getElementById('l-id').value.trim().toLowerCase(), ps = 
+
+document.getElementById('l-pass').value;
         if(id === "admin" && ps === "123") { authDone("admin", "admin"); return; }
         db.ref('users/'+id).once('value', snap => {
             if(snap.exists() && snap.val().pass === ps) authDone(id, snap.val().role);
@@ -697,12 +671,6 @@
             loadMonitor(); 
         }
         setupDates(); loadData(myID);
-
-        const pendingText = localStorage.getItem('pendingSharedText');
-        if (pendingText) {
-            localStorage.removeItem('pendingSharedText');
-            setTimeout(() => { processBruteForceScanEntry(pendingText); }, 1000);
-        }
     }
 
     function switchTab(t) {
@@ -715,23 +683,24 @@
         const navBtn = document.getElementById('nb-' + t);
         if (navBtn) navBtn.classList.add('active');
         
-        if(t === 'scan') {
-            startCameraEngine();
-        } else {
-            stopCameraEngine();
-        }
+        if(t === 'scan') { startCameraEngine(); } else { stopCameraEngine(); }
     }
 
     function loadData(id) {
         viewingID = id;
-        db.ref('data/'+id).on('value', snap => { window.currentData = snap.val() || {}; renderData(); });
-        db.ref('utilities/'+id).on('value', snap => { window.utilityData = snap.val() || {}; renderUtilities(); });
+        db.ref('data/'+id).on('value', snap => { window.currentData = snap.val() || {}; 
+
+renderData(); });
+        db.ref('utilities/'+id).on('value', snap => { window.utilityData = snap.val() || 
+
+{}; renderUtilities(); });
     }
 
     function renderData() {
         const m = parseInt(document.getElementById('sel-month').value);
         const body = document.getElementById('ledger-body'); body.innerHTML = "";
         let ti=0, te=0;
+        let htmlContent = "";
 
         Object.entries(window.currentData).reverse().forEach(([k, r]) => {
             if(new Date(r.d).getMonth() == m) {
@@ -742,14 +711,23 @@
                    (currentFilterMode === 'inc' && r.t === 'inc') || 
                    (currentFilterMode === 'exp' && r.t === 'exp')) {
                     
-                    body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.t==='inc'?'var(--success)':'var(--danger)'}">
-                        <div><b>${r.n}</b><br><small style="color:var(--text-muted);">${r.d}</small></div>
+                    htmlContent += `<div class="list-item" style="border-left:4px solid 
+
+${r.t==='inc'?'var(--success)':'var(--danger)'}">
+                        <div><b>${r.n}</b><br><small style="color:var(--text-muted);">
+
+${r.d}</small></div>
                         <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
-                        <i class="fa fa-trash no-print" style="color:var(--danger); font-size:12px; cursor:pointer;" onclick="if(confirm('Delete?')) db.ref('data/${viewingID}/${k}').remove()"></i></div>
+                        <i class="fa fa-trash no-print" style="color:var(--danger); font-
+
+size:12px; cursor:pointer;" onclick="if(confirm('Delete?')) db.ref('data/${viewingID}/
+
+${k}').remove()"></i></div>
                     </div>`;
                 }
             }
         });
+        body.innerHTML = htmlContent;
 
         const balance = ti - te;
         document.getElementById('t-inc').innerText = ti.toLocaleString();
@@ -768,145 +746,86 @@
         
         let keStatus = "No Data", ssgcStatus = "No Data", mobStatus = "No Data";
         let keAmt = 0, ssgcAmt = 0, mobAmt = 0;
+        let htmlContent = "";
 
         Object.entries(window.utilityData || {}).reverse().forEach(([k, r]) => {
             if(new Date(r.d).getMonth() == m) {
                 const a = parseFloat(r.a)||0;
                 
-                if (r.c === 'K-Electric' && keStatus === "No Data") { keStatus = r.s; keAmt = a; }
-                if (r.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = r.s; ssgcAmt = a; }
-                if (r.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = r.s; mobAmt = a; }
+                if (r.c === 'K-Electric' && keStatus === "No Data") { keStatus = r.s; keAmt 
+
+= a; }
+                if (r.c === 'SSGC' && ssgcStatus === "No Data") { ssgcStatus = r.s; ssgcAmt 
+
+= a; }
+                if (r.c === 'Mobilink Bill' && mobStatus === "No Data") { mobStatus = r.s; 
+
+mobAmt = a; }
 
                 const barcodeValue = `BILL-${k.substring(1,9).toUpperCase()}`;
 
-                body.innerHTML += `<div class="list-item" style="border-left:4px solid ${r.s==='Paid'?'var(--success)':'var(--danger)'}">
-                    <div><b>${r.c}</b> <small style="color:var(--text-muted);">(${r.s})</small><br><small style="color:var(--text-muted);">${r.d}</small></div>
+                htmlContent += `<div class="list-item" style="border-left:4px solid 
+
+${r.s==='Paid'?'var(--success)':'var(--danger)'}">
+                    <div><b>${r.c}</b> <small style="color:var(--text-muted);">(${r.s})
+
+</small><br><small style="color:var(--text-muted);">${r.d}</small></div>
                     <div><svg class="barcode-img" id="bc-${k}"></svg></div>
                     <div style="text-align:right"><b>RS. ${a.toLocaleString()}</b><br>
-                    <i class="fa fa-trash no-print" style="color:var(--danger); font-size:12px; cursor:pointer;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/${viewingID}/${k}').remove()"></i></div>
+                    <i class="fa fa-trash no-print" style="color:var(--danger); font-
+
+size:12px; cursor:pointer;" onclick="if(confirm('Delete Bill?')) db.ref('utilities/
+
+${viewingID}/${k}').remove()"></i></div>
                 </div>`;
 
                 setTimeout(() => {
-                    JsBarcode(`#bc-${k}`, barcodeValue, {
-                        format: "CODE128",
-                        width: 1.3,
-                        height: 35,
-                        fontSize: 10,
-                        displayValue: true
-                    });
+                    JsBarcode(`#bc-${k}`, barcodeValue, { format: "CODE128", width: 1.2, 
+
+height: 30, fontSize: 9, displayValue: true });
                 }, 50);
             }
         });
+        body.innerHTML = htmlContent;
 
-        document.getElementById('ke-status').className = `status-badge ${keStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
+        document.getElementById('ke-status').className = `status-badge ${keStatus === 
+
+'Paid' ? 'status-paid' : 'status-unpaid'}`;
         document.getElementById('ke-status').innerText = keStatus;
         document.getElementById('ke-amount').innerText = 'RS. ' + keAmt.toLocaleString();
 
-        document.getElementById('ssgc-status').className = `status-badge ${ssgcStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
-        document.getElementById('ssgc-status').innerText = ssgcStatus;
-        document.getElementById('ssgc-amount').innerText = 'RS. ' + ssgcAmt.toLocaleString();
+        document.getElementById('ssgc-status').className = `status-badge ${ssgcStatus === 
 
-        document.getElementById('mob-status').className = `status-badge ${mobStatus === 'Paid' ? 'status-paid' : 'status-unpaid'}`;
+'Paid' ? 'status-paid' : 'status-unpaid'}`;
+        document.getElementById('ssgc-status').innerText = ssgcStatus;
+        document.getElementById('ssgc-amount').innerText = 'RS. ' + ssgcAmt.toLocaleString
+
+();
+
+        document.getElementById('mob-status').className = `status-badge ${mobStatus === 
+
+'Paid' ? 'status-paid' : 'status-unpaid'}`;
         document.getElementById('mob-status').innerText = mobStatus;
         document.getElementById('mob-amount').innerText = 'RS. ' + mobAmt.toLocaleString();
-    }
-
-    async function smartOCRScan(imageData) {
-        try {
-            const result = await Tesseract.recognize(imageData, 'eng');
-            const text = result.data.text || "";
-            const lines = text.split('\n').map(x => x.trim()).filter(x => x.length > 0);
-
-            let productName = "";
-            let amount = null;
-
-            for (let line of lines) {
-                if (/[a-zA-Z]{3,}/.test(line) && !/\d{5,}/.test(line)) {
-                    if (line.length > 3 && line.length < 60) {
-                        productName = line;
-                        break;
-                    }
-                }
-            }
-
-            const priceMatches = text.match(/\d+(?:\.\d{1,2})?/g) || [];
-            const filtered = priceMatches.filter(v => {
-                let n = parseFloat(v);
-                return n > 5 && n < 100000;
-            });
-
-            if (filtered.length > 0) {
-                amount = parseFloat(filtered[filtered.length - 1]);
-            }
-
-            if (productName || amount) {
-                let combined = `${productName} ${amount || ""}`.trim();
-                processBruteForceScanEntry(combined);
-            }
-        } catch(err) {
-            console.log("OCR Error", err);
-        }
     }
 
     function startCameraEngine() {
         if(!html5QrCode) {
             html5QrCode = new Html5Qrcode("reader");
-
-            const formatsToSupport = [
-                Html5QrcodeSupportedFormats.QR_CODE,
-                Html5QrcodeSupportedFormats.PDF_417,
-                Html5QrcodeSupportedFormats.AZTEC,
-                Html5QrcodeSupportedFormats.CODE_128,
-                Html5QrcodeSupportedFormats.CODE_39,
-                Html5QrcodeSupportedFormats.EAN_13,
-                Html5QrcodeSupportedFormats.UPC_A,
-                Html5QrcodeSupportedFormats.DATA_MATRIX
-            ];
-
-            const config = {
-                fps: 20,
-                qrbox: { width: 300, height: 220 },
-                rememberLastUsedCamera: true,
-                aspectRatio: 1.777,
-                formatsToSupport: formatsToSupport,
-                experimentalFeatures: {
-                    useBarCodeDetectorIfSupported: true
-                }
-            };
-
             html5QrCode.start(
                 { facingMode: "environment" },
-                config,
-                async (decodedText) => {
-                    processBruteForceScanEntry(decodedText);
-                },
-                () => {}
-            ).catch(err => {
-                alert("Camera Error: " + err);
-            });
+                { fps: 10, qrbox: { width: 250, height: 180 }, rememberLastUsedCamera: true 
 
-            setInterval(async () => {
-                try {
-                    const video = document.querySelector("#reader video");
-                    if(video && video.readyState === 4) {
-                        const canvas = document.createElement("canvas");
-                        canvas.width = video.videoWidth;
-                        canvas.height = video.videoHeight;
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(video, 0, 0);
-                        const imgData = canvas.toDataURL("image/png");
-                        smartOCRScan(imgData);
-                    }
-                } catch(e) {}
-            }, 5000);
+},
+                (decodedText) => { processBruteForceScanEntry(decodedText); },
+                () => {}
+            ).catch(err => { console.log("Camera Error: " + err); });
         }
     }
 
     function stopCameraEngine() {
         if(html5QrCode) {
-            html5QrCode.stop().then(() => {
-                html5QrCode = null;
-            }).catch(e => {});
+            html5QrCode.stop().then(() => { html5QrCode = null; }).catch(e => {});
         }
     }
 
@@ -914,125 +833,40 @@
         stopCameraEngine();
         const today = new Date().toISOString().split('T')[0];
         let rawText = scannedCode.trim();
-        let displayDetail = "";
-        let finalAmt = null;
-
-        const blocklistYears = ["2024", "2025", "2026", "2027"];
-        const unileverBrands = ["unilever", "sunsilk", "lux", "dove", "surf excel", "surf", "knorr", "lifebuoy", "vim", "lipton", "ponds", "vaseline", "tresemme", "clear", "glow & lovely", "fair & lovely", "rexona", "close up", "closeup", "comfort"];
-
-        let isUnileverProduct = false;
-        let lowerRaw = rawText.toLowerCase();
-
-        for (let brand of unileverBrands) {
-            if (lowerRaw.includes(brand)) {
-                isUnileverProduct = true;
-                break;
-            }
-        }
-
-        if (!isNaN(rawText.replace(/,/g, "")) && parseFloat(rawText.replace(/,/g, "")) > 0 && !blocklistYears.includes(rawText.trim())) {
-            finalAmt = parseFloat(rawText.replace(/,/g, ""));
-            displayDetail = "Unilever Product";
+        let finalAmt = parseFloat(rawText.replace(/,/g, ""));
+        
+        if(!isNaN(finalAmt) && finalAmt > 0) {
+            executeDatabasePush(today, "Scanned Item", finalAmt);
         } else {
-            const lines = rawText.split('\n').map(l => l.trim()).filter(l => l.length > 0);
-            
-            for (let line of lines) {
-                let lowerLine = line.toLowerCase();
-                let lineHasBrand = unileverBrands.some(brand => lowerLine.includes(brand));
+            const manualAmt = prompt(`Code Detected: "${rawText.substring(0,20)}"\n\nEnter 
 
-                if (lineHasBrand) {
-                    isUnileverProduct = true;
-                    let cleanLine = line.replace(/,/g, "");
-                    let lineNumbers = cleanLine.match(/\d+(?:\.\d{1,2})?/g) || [];
-                    let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) && parseFloat(v) > 5 && parseFloat(v) < 100000);
-
-                    if (filteredNums.length > 0) {
-                        finalAmt = parseFloat(filteredNums[filteredNums.length - 1]);
-                        let numStr = filteredNums[filteredNums.length - 1];
-                        let namePart = line.substring(0, line.lastIndexOf(numStr)).trim();
-                        displayDetail = namePart.replace(/[:=\-\s\.]+$/, "").trim();
-                        break;
-                    }
-                }
-            }
-
-            if (!finalAmt && isUnileverProduct && lines.length > 0) {
-                let targetLine = lines[0];
-                let cleanLine = targetLine.replace(/,/g, "");
-                let lineNumbers = cleanLine.match(/\d+(?:\.\d{1,2})?/g) || [];
-                let filteredNums = lineNumbers.filter(v => !blocklistYears.includes(v) && parseFloat(v) > 5);
-                if (filteredNums.length > 0) {
-                    finalAmt = parseFloat(filteredNums[filteredNums.length - 1]);
-                    displayDetail = targetLine.replace(/\d+(?:\.\d{1,2})?/g, "").trim();
-                }
-            }
-        }
-
-        if (isUnileverProduct) {
-            if (!displayDetail) displayDetail = "Unilever Product";
-
-            if (finalAmt && !isNaN(finalAmt) && finalAmt > 0) {
-                executeDatabasePush(today, displayDetail, finalAmt, rawText);
+Amount (RS):`, "0");
+            let amt = parseFloat(manualAmt);
+            if (!isNaN(amt) && amt > 0) {
+                executeDatabasePush(today, "Scan: " + rawText.substring(0,15), amt);
             } else {
-                setTimeout(() => {
-                    const userAmtInput = prompt(`Unilever Product Detected!\n\nProduct: "${displayDetail}"\n\nEnter Amount (RS):`, "0");
-                    finalAmt = parseFloat(userAmtInput);
-                    if(userAmtInput !== null && !isNaN(finalAmt) && finalAmt >= 0) {
-                        executeDatabasePush(today, displayDetail, finalAmt, rawText);
-                    } else {
-                        alert("Cancelled.");
-                        if(html5QrCode) startCameraEngine();
-                    }
-                }, 150);
-            }
-        } else {
-            setTimeout(() => {
-                const manualAmt = prompt(`Non-Unilever or Standard Code Detected!\n\nData: "${rawText.substring(0,30)}"\n\nEnter Amount to save anyway, or press Cancel:`, "0");
-                if (manualAmt !== null) {
-                    let amt = parseFloat(manualAmt);
-                    if (!isNaN(amt) && amt > 0) {
-                        let desc = rawText.length > 25 ? rawText.substring(0,22) + "..." : rawText;
-                        executeDatabasePush(today, "Scan: " + desc, amt, rawText);
-                        return;
-                    }
-                }
                 if(html5QrCode) startCameraEngine();
-            }, 150);
+            }
         }
     }
 
-    function executeDatabasePush(date, detail, amount, rawCode) {
-        db.ref('data/' + viewingID).push({
-            d: date,
-            n: detail,
-            a: amount,
-            t: 'exp'
-        }).then(() => {
-            alert(`✅ Record Saved Successfully!\n\nDetail: ${detail}\nAmount Added: RS. ${amount.toLocaleString()}`);
+    function executeDatabasePush(date, detail, amount) {
+        db.ref('data/' + viewingID).push({ d: date, n: detail, a: amount, t: 'exp' }).then
+
+(() => {
+            alert(`✅ Saved: RS. ${amount.toLocaleString()}`);
             switchTab('dash');
-        }).catch(err => {
-            alert("Database Error: " + err);
-            if(html5QrCode) startCameraEngine();
         });
     }
 
-    function saveUtilityBill(automatedData = null) {
-        const d = automatedData ? automatedData.d : document.getElementById('u-date').value;
-        const c = automatedData ? automatedData.c : document.getElementById('u-company').value;
-        const a = automatedData ? automatedData.a : document.getElementById('u-amt').value;
-        const s = automatedData ? automatedData.s : document.getElementById('u-status').value;
-        
+    function saveUtilityBill() {
+        const d = document.getElementById('u-date').value;
+        const c = document.getElementById('u-company').value;
+        const a = document.getElementById('u-amt').value;
+        const s = document.getElementById('u-status').value;
         if(d && a) {
-            if(s === 'Paid') {
-                Object.entries(window.utilityData || {}).forEach(([k, r]) => {
-                    if(r.c === c && new Date(r.d).getMonth() === new Date(d).getMonth() && r.s === 'Unpaid') {
-                        db.ref(`utilities/${viewingID}/${k}`).remove();
-                    }
-                });
-                db.ref('data/'+viewingID).push({d, n: c + " Paid", a, t: 'exp'});
-            }
             db.ref('utilities/'+viewingID).push({d, c, a, s}).then(() => {
-                if(!automatedData) { alert("Record Saved!"); document.getElementById('u-amt').value = ""; }
+                alert("Bill Saved!"); document.getElementById('u-amt').value = "";
             });
         }
     }
@@ -1043,91 +877,66 @@
             snap.forEach(c => {
                 const uid = c.key, udata = c.val();
                 db.ref('data/'+uid).once('value', dSnap => {
-                    let ti=0, te=0; dSnap.forEach(e => { const a = parseFloat(e.val().a)||0; if(e.val().t==='inc') ti+=a; else te+=a; });
+                    let ti=0, te=0; dSnap.forEach(e => { const a = parseFloat(e.val().a)||
+
+0; if(e.val().t==='inc') ti+=a; else te+=a; });
                     list.innerHTML += `<div class="card">
-                        <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; justify-content:space-between; align-
+
+items:center;">
                             <b>${uid.toUpperCase()}</b>
                             <div>
-                                <i class="fa fa-eye" style="color:var(--success); margin-right:15px; cursor:pointer;" onclick="loadData('${uid}'); switchTab('dash')"></i>
-                                <i class="fa fa-edit" style="color:var(--secondary); margin-right:15px; cursor:pointer;" onclick="editUser('${uid}','${udata.pass}','${udata.role}')"></i>
-                                <i class="fa fa-trash" style="color:var(--danger); cursor:pointer;" onclick="if(confirm('Delete User?')) db.ref('users/${uid}').remove()"></i>
+                                <i class="fa fa-eye" style="color:var(--success); margin-
+
+right:12px; cursor:pointer;" onclick="loadData('${uid}'); switchTab('dash')"></i>
+                                <i class="fa fa-trash" style="color:var(--danger); 
+
+cursor:pointer;" onclick="if(confirm('Delete?')) db.ref('users/${uid}').remove()"></i>
                             </div>
                         </div>
-                        <div style="font-size:12px; margin-top:8px; color:var(--text-muted);">Role: ${udata.role} | Bal: RS. ${(ti-te).toLocaleString()}</div>
+                        <div style="font-size:11px; margin-top:6px; color:var(--text-
+
+muted);">Role: ${udata.role} | Bal: RS. ${(ti-te).toLocaleString()}</div>
                     </div>`;
                 });
             });
         });
     }
 
-    function editUser(id, pass, role) {
-        document.getElementById('u-id').value = id; document.getElementById('u-pass').value = pass; document.getElementById('u-role').value = role;
-        document.getElementById('u-form-title').innerText = "Edit: " + id.toUpperCase();
-    }
-
     function saveUser() {
-        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
-        if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert("User Updated!"); }); }
+        const id = document.getElementById('u-id').value.trim().toLowerCase(), ps = 
+
+document.getElementById('u-pass').value, rl = document.getElementById('u-role').value;
+        if(id && ps) { db.ref('users/'+id).update({pass:ps, role:rl}).then(() => { alert
+
+("User Updated!"); }); }
     }
 
     function addEntry() {
-        const d = document.getElementById('i-date').value, n = document.getElementById('i-desc').value, a = document.getElementById('i-amt').value, t = document.getElementById('i-type').value;
-        if(d && n && a) { db.ref('data/'+viewingID).push({d, n, a, t}); }
+        const d = document.getElementById('i-date').value, n = document.getElementById('i-
+
+desc').value, a = document.getElementById('i-amt').value, t = document.getElementById('i-
+
+type').value;
+        if(d && n && a) { db.ref('data/'+viewingID).push({d, n, a, t}); 
+
+document.getElementById('i-desc').value = ""; document.getElementById('i-amt').value = ""; 
+
+}
     }
 
     function setupDates() {
-        const n = new Date(); document.getElementById('i-date').valueAsDate = n; document.getElementById('u-date').valueAsDate = n;
+        const n = new Date(); document.getElementById('i-date').valueAsDate = n; 
+
+document.getElementById('u-date').valueAsDate = n;
         const ms = document.getElementById('sel-month');
-        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
+        ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"].forEach
+
+((m, i) => ms.add(new Option(m, i, i==n.getMonth(), i==n.getMonth())));
     }
 
     function logout() { localStorage.clear(); location.reload(); }
     if(myID) startApp();
-
-    const canvas = document.getElementById('canvas-bg');
-    const ctx = canvas.getContext('2d');
-    let particles = [];
-
-    function resizeCanvas() {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-    }
-    window.addEventListener('resize', resizeCanvas);
-    resizeCanvas();
-
-    class Particle {
-        constructor() {
-            this.x = Math.random() * canvas.width;
-            this.y = Math.random() * canvas.height;
-            this.size = Math.random() * 2.5 + 0.8;
-            this.speedX = Math.random() * 0.5 - 0.25;
-            this.speedY = Math.random() * 0.5 - 0.25;
-            this.opacity = Math.random() * 0.7 + 0.2;
-        }
-        update() {
-            this.x += this.speedX;
-            this.y += this.speedY;
-            if (this.x < 0 || this.x > canvas.width) this.speedX *= -1;
-            if (this.y < 0 || this.y > canvas.height) this.speedY *= -1;
-        }
-        draw() {
-            ctx.fillStyle = `rgba(0, 242, 254, ${this.opacity})`;
-            ctx.shadowBlur = 12;
-            ctx.shadowColor = "rgba(0, 242, 254, 0.9)";
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-
-    for (let i = 0; i < 55; i++) particles.push(new Particle());
-
-    function animateParticles() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        particles.forEach(p => { p.update(); p.draw(); });
-        requestAnimationFrame(animateParticles);
-    }
-    animateParticles();
 </script>
 </body>
 </html>
