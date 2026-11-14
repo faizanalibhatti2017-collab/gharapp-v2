@@ -486,9 +486,68 @@
 
         .btn-action:disabled { opacity: .6; cursor: wait; transform: none; }
         .page { contain: layout style; }
+
+        /* Branded startup splash */
+        #startup-splash {
+            position: fixed; inset: 0; z-index: 20000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            gap: 18px; background: radial-gradient(circle at center, #10243a 0%, #030712 68%);
+            opacity: 1; visibility: visible;
+            transition: opacity .65s ease, visibility .65s ease;
+        }
+        #startup-splash.is-hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .splash-logo-wrap {
+            width: min(58vw, 230px); aspect-ratio: 1; display: grid; place-items: center;
+            border-radius: 32%; position: relative;
+            animation: logoFloat 2.2s ease-in-out infinite;
+        }
+        .splash-logo-wrap::before {
+            content: ""; position: absolute; inset: -13px; border-radius: 36%;
+            border: 2px solid rgba(0,242,254,.65);
+            box-shadow: 0 0 22px rgba(0,242,254,.45), inset 0 0 22px rgba(0,242,254,.18);
+            animation: logoRing 2.4s ease-in-out infinite;
+        }
+        .splash-logo {
+            width: 100%; height: 100%; object-fit: contain; border-radius: 24%;
+            filter: drop-shadow(0 0 22px rgba(0,242,254,.55));
+            animation: logoGlow 2s ease-in-out infinite alternate;
+        }
+        .splash-title {
+            color: var(--primary); font-size: 1.25rem; font-weight: 900;
+            letter-spacing: 3px; text-shadow: 0 0 18px var(--primary-glow);
+            animation: splashText 1.6s ease-in-out infinite alternate;
+        }
+        .splash-subtitle { color: #94a3b8; font-size: .72rem; letter-spacing: 3px; }
+        @keyframes logoFloat { 0%,100% { transform: translateY(0) scale(.96); } 50% { transform: translateY(-9px) scale(1.03); } }
+        @keyframes logoRing { 0%,100% { transform: scale(.96) rotate(0); opacity: .55; } 50% { transform: scale(1.08) rotate(8deg); opacity: 1; } }
+        @keyframes logoGlow { from { filter: drop-shadow(0 0 10px rgba(0,242,254,.35)); } to { filter: drop-shadow(0 0 28px rgba(0,242,254,.85)); } }
+        @keyframes splashText { from { opacity: .7; letter-spacing: 2px; } to { opacity: 1; letter-spacing: 4px; } }
+
+        #auth-screen { overflow: hidden; }
+        #auth-screen::before {
+            content: ""; position: absolute; inset: 0; z-index: -1;
+            background: url('logo.png') center center / min(78vw, 430px) auto no-repeat;
+            opacity: .13; pointer-events: none;
+        }
+        .auth-logo {
+            width: 92px; height: 92px; object-fit: contain; display: block;
+            margin: 0 auto 18px; border-radius: 22px;
+            filter: drop-shadow(0 0 18px rgba(0,242,254,.55));
+            animation: logoFloat 3s ease-in-out infinite;
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .splash-logo-wrap, .splash-logo, .splash-logo-wrap::before, .splash-title, .auth-logo { animation: none !important; }
+        }
+
     </style>
 </head>
 <body>
+
+<div id="startup-splash" aria-label="GharApp loading">
+    <div class="splash-logo-wrap"><img class="splash-logo" src="logo.png" alt="GharApp Logo"></div>
+    <div class="splash-title">GHARAPP</div>
+    <div class="splash-subtitle">SMART HOME FINANCE</div>
+</div>
 
 <div class="cyber-bg-container">
     <div class="cyber-orb orb-cyber-1"></div>
@@ -536,9 +595,7 @@
 
 <div id="auth-screen" style="position:fixed; inset:0; background:rgba(3, 7, 18, 0.96); backdrop-filter:blur(35px); z-index:9999; display:flex; align-items:center; justify-content:center; padding: 20px;">
     <div class="card" style="width:100%; max-width:350px; text-align:center;">
-        <div style="width:70px; height:70px; background:linear-gradient(135deg, var(--primary), var(--secondary)); border-radius:22px; margin:0 auto 18px; display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px var(--primary-glow);">
-            <i class="fa fa-qrcode" style="font-size:32px; color:#030712;"></i>
-        </div>
+        <img class="auth-logo" src="logo.png" alt="GharApp Logo">
         <h2 style="color:var(--primary); margin-bottom:18px; font-weight:800; text-shadow:0 0 15px var(--primary-glow);">GharApp Mobile</h2>
         <input type="text" id="l-id" placeholder="Username">
         <input type="password" id="l-pass" placeholder="Password">
@@ -1254,6 +1311,12 @@
 
     function logout() { localStorage.clear(); location.reload(); }
     if(myID) startApp();
+
+    // Branded intro: reveal the existing login or app screen after the logo animation.
+    window.addEventListener('load', () => {
+        const splash = document.getElementById('startup-splash');
+        if (splash) window.setTimeout(() => splash.classList.add('is-hidden'), 2300);
+    });
 
     const canvas = document.getElementById('canvas-bg');
     const ctx = canvas.getContext('2d');
